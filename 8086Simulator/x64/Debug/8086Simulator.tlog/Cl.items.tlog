@@ -1,0 +1,12 @@
+D:\an3\sem1\scs\8086Simulator\dependencies\glad\src\glad.c;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\glad.obj
+D:\an3\sem1\scs\8086Simulator\dependencies\imgui\imgui.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\imgui.obj
+D:\an3\sem1\scs\8086Simulator\dependencies\imgui\imgui_demo.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\imgui_demo.obj
+D:\an3\sem1\scs\8086Simulator\dependencies\imgui\imgui_draw.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\imgui_draw.obj
+D:\an3\sem1\scs\8086Simulator\dependencies\imgui\imgui_impl_glfw.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\imgui_impl_glfw.obj
+D:\an3\sem1\scs\8086Simulator\dependencies\imgui\imgui_impl_opengl3.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\imgui_impl_opengl3.obj
+D:\an3\sem1\scs\8086Simulator\dependencies\imgui\imgui_tables.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\imgui_tables.obj
+D:\an3\sem1\scs\8086Simulator\dependencies\imgui\imgui_widgets.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\imgui_widgets.obj
+D:\an3\sem1\scs\8086Simulator\src\CPU.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\CPU.obj
+D:\an3\sem1\scs\8086Simulator\src\Main.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\Main.obj
+D:\an3\sem1\scs\8086Simulator\src\MainMemory.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\MainMemory.obj
+D:\an3\sem1\scs\8086Simulator\src\Simulator.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\Simulator.obj
