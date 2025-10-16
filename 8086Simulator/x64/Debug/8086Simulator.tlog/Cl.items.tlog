@@ -6,7 +6,16 @@ D:\an3\sem1\scs\8086Simulator\dependencies\imgui\imgui_impl_glfw.cpp;D:\an3\sem1
 D:\an3\sem1\scs\8086Simulator\dependencies\imgui\imgui_impl_opengl3.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\imgui_impl_opengl3.obj
 D:\an3\sem1\scs\8086Simulator\dependencies\imgui\imgui_tables.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\imgui_tables.obj
 D:\an3\sem1\scs\8086Simulator\dependencies\imgui\imgui_widgets.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\imgui_widgets.obj
+D:\an3\sem1\scs\8086Simulator\src\BiuAddressBus.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\BiuAddressBus.obj
+D:\an3\sem1\scs\8086Simulator\src\BIUControlUnit.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\BIUControlUnit.obj
+D:\an3\sem1\scs\8086Simulator\src\BiuDataBus.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\BiuDataBus.obj
+D:\an3\sem1\scs\8086Simulator\src\BIUunit.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\BIUunit.obj
 D:\an3\sem1\scs\8086Simulator\src\CPU.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\CPU.obj
+D:\an3\sem1\scs\8086Simulator\src\DataRegisters.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\DataRegisters.obj
+D:\an3\sem1\scs\8086Simulator\src\EUunit.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\EUunit.obj
+D:\an3\sem1\scs\8086Simulator\src\InstructionQueue.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\InstructionQueue.obj
+D:\an3\sem1\scs\8086Simulator\src\InternalBIURegisters.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\InternalBIURegisters.obj
 D:\an3\sem1\scs\8086Simulator\src\Main.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\Main.obj
+D:\an3\sem1\scs\8086Simulator\src\MainMembus.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\MainMembus.obj
 D:\an3\sem1\scs\8086Simulator\src\MainMemory.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\MainMemory.obj
 D:\an3\sem1\scs\8086Simulator\src\Simulator.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\Simulator.obj

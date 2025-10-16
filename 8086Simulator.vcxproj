@@ -141,8 +141,17 @@
     <ClCompile Include="dependencies\imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="dependencies\imgui\imgui_tables.cpp" />
     <ClCompile Include="dependencies\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="src\BiuAddressBus.cpp" />
+    <ClCompile Include="src\BIUControlUnit.cpp" />
+    <ClCompile Include="src\BiuDataBus.cpp" />
+    <ClCompile Include="src\BIUunit.cpp" />
     <ClCompile Include="src\CPU.cpp" />
+    <ClCompile Include="src\DataRegisters.cpp" />
+    <ClCompile Include="src\EUunit.cpp" />
+    <ClCompile Include="src\InstructionQueue.cpp" />
+    <ClCompile Include="src\InternalBIURegisters.cpp" />
     <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\MainMembus.cpp" />
     <ClCompile Include="src\MainMemory.cpp" />
     <ClCompile Include="src\Simulator.cpp" />
   </ItemGroup>
@@ -156,10 +165,19 @@
     <ClInclude Include="dependencies\imgui\imstb_rectpack.h" />
     <ClInclude Include="dependencies\imgui\imstb_textedit.h" />
     <ClInclude Include="dependencies\imgui\imstb_truetype.h" />
+    <ClInclude Include="include\AddressComputeUnit.h" />
+    <ClInclude Include="include\BiuAddressBus.h" />
+    <ClInclude Include="include\BIUControlUnit.h" />
+    <ClInclude Include="include\BiuDataBus.h" />
     <ClInclude Include="include\BIUunit.h" />
     <ClInclude Include="include\CPU.h" />
+    <ClInclude Include="include\DataRegisters.h" />
     <ClInclude Include="include\EUunit.h" />
+    <ClInclude Include="include\InstructionQueue.h" />
+    <ClInclude Include="include\InternalBIURegisters.h" />
+    <ClInclude Include="include\MainMembus.h" />
     <ClInclude Include="include\MainMemory.h" />
+    <ClInclude Include="include\SegmentRegisters.h" />
     <ClInclude Include="include\Simulator.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

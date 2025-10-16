@@ -6,11 +6,15 @@ void Simulator::run()
 {
 	//~~~~decode instructions
 	//load instructions
-	while (1)
-	{
+
+
+
+	//while (1)
+	//{	
+
 
 		cpu.step();
-	}
+	//}
 
 
 }	
