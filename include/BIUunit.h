@@ -3,28 +3,31 @@
 #include "AddressComputeUnit.h"
 #include "MainMemory.h"
 #include "SegmentRegisters.h"
-
+#include "BiuAddressBus.h"
+#include "BiuDataBus.h"
+#include "MainMembus.h"
+#include "BIUControlUnit.h"
+#include "InstructionQueue.h"
 
 class BIUunit {
 private:
 	AddressComputeUnit addressUnit;
 	SegmentRegisters segreg;
+	BiuDataBus incomingbiudata;
+	BiuAddressBus incomingaddress;
+	MainMembus membus;
+	BIUControlUnit biucontrol;
+	InstructionQueue instrqueue;
 
 	MainMemory* mainmem;
 	
-
+	
 public:
 	BIUunit(MainMemory* mainmem);
 
 	
-	
-	//address buss
-
-	//internal registers
-
-	//data bus
-
-	//memory bus
+	void stepBIU();
+	void dequeueforTest();
 
 	//bus control unit
 

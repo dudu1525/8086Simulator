@@ -13,7 +13,7 @@ uint16_t MainMemory::readFromMemory(bool flag8)
 		highbyte = mem[address+1];
 
 	addressAvailable = false;
-
+	printf("From main memory: Reading from address: %x, data: %x\n", address, mem[address]);
 	return (highbyte << 8) | lowbyte;
 }
 
@@ -39,8 +39,9 @@ bool MainMemory::setAddress(uint32_t addr)
 {
 	if (addr > 0x000fffff)
 		return false;
-
+	
 	address = addr & 0x000fffff;
+	printf("From main memory: Setting Address as: %x\n", addr);
 	addressAvailable = true;
 	return true;
 }
