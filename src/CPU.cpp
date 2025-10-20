@@ -1,27 +1,37 @@
 #include "../include/CPU.h"
 
-
-
+#include <stdio.h>
+#include <string>
 void CPU::step()
-{
+{		
 
-			//call other .step functions
+
+	//define how instructions would look like
+
+	//preload the memory with instructions for testing now
+
+	std::string instruction;
+	while (std::cin>>instruction && instruction!="finish")
+	{
+		biuunit.stepBIU();
+
+		euunit.eustep();
 		
-	
-	
-	//test:
-	//put data on cs segment with ip = 0
-	//check if it appears on instruction queue
+		std::cout << std::endl;
+	}
 
 
 
-	uint16_t value = 0xabcd;
-	mainmem.setAddress(0x00001000);
-	mainmem.writeToMemory(value, false);
-	biuunit.stepBIU();
-	biuunit.stepBIU();
-	biuunit.stepBIU();
-	biuunit.dequeueforTest();
+
+	//uint16_t value = 0xabcd;
+//	mainmem.setAddress(0x00001000);
+	//mainmem.writeToMemory(value, false);
+	//biuunit.stepBIU();
+//	biuunit.stepBIU();
+//	biuunit.stepBIU();
+	//biuunit.stepBIU();
+//	euunit.eustep();
+	//	biuunit.dequeueforTest();
 
 
 

@@ -8,11 +8,12 @@ public:
 	bool notFetched = false;
 	bool enqueue(uint16_t instructionBytes);
 	uint8_t dequeue();
-
+	
+	void putDataOnMainDatBUS();//execution unit control will call this function !!
 
 private:
 	int numOfInstr = 0;
-	int head=0, tail=0;
+
 	uint8_t queue[6];
 
 };

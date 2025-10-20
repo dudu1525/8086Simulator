@@ -6,7 +6,7 @@ class MainMembus {
 
 public:
 	uint32_t addressbus = 0x00000;
-
+	uint16_t databus = 0x0000;
 	//can get data from DATA BUS OR ADDRESS BUS
 	enum mainMemBusState {
 		FREE,

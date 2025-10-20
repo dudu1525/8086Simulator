@@ -23,7 +23,7 @@ bool MainMemory::writeToMemory(uint16_t data, bool flag8)
 
 	uint8_t lowbyte = (uint8_t)data; //lower byte
 	uint8_t highbyte = *((uint8_t*)&data + 1);//higher byte
-
+	printf("From Main Memory: Data put on memory at: %x, data: %x", address, data);
 	mem[address] = lowbyte;
 
 	if (flag8==false)

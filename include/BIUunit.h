@@ -8,6 +8,7 @@
 #include "MainMembus.h"
 #include "BIUControlUnit.h"
 #include "InstructionQueue.h"
+#include "InternalBIURegisters.h"
 
 class BIUunit {
 private:
@@ -18,6 +19,7 @@ private:
 	MainMembus membus;
 	BIUControlUnit biucontrol;
 	InstructionQueue instrqueue;
+	InternalBIURegisters internalregs;
 
 	MainMemory* mainmem;
 	

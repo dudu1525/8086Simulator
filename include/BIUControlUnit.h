@@ -10,19 +10,33 @@ class SegmentRegisters;
 class AddressComputeUnit;
 class MainMemory;
 //^for instruction fetch
+class InternalBIURegisters;
+class BiuDataBus;
+//^for data write
 
 class BIUControlUnit {
 
 public:
-	
-
+	int segmentUsedToWrite = 0;// 0-ds, 1-es, 2-ss for when needing to write data from data bus to memory, set by eu I think, when sending signal to write to mem
+	bool bit8=false;//false->16bit sent, true->8bit sent
+	int directionOfData = 2; //1-from bus to memory, 0 from memory to MAIN DATA BUS, 2-not needed/unitialized <-SIGNAL SET BY EUCONTROL
 	//can get data from DATA BUS OR ADDRESS BUS
 
 	void fetchInstrFromMem(BiuAddressBus* address, InstructionQueue* q, MainMembus* membus, SegmentRegisters* segreg, AddressComputeUnit* computeunit, MainMemory* memory);//instruction that specifically has the scope of checking if the address bus is free and  
 							//putting the cs:ip on it then putting it on main mem bus and fetching from there and putting it into the queue
-							
+	void writeDataToMem(BiuAddressBus* address, MainMembus* membus, SegmentRegisters* segreg, AddressComputeUnit* computeunit, MainMemory* memory,InternalBIURegisters* internalregs, BiuDataBus* databus );
+	
+	void fetchDataFromMem(MainMembus* membus, MainMemory* memory, BiuDataBus* databus, InternalBIURegisters* internalregs);
+	void signalDataBus();//function that sets the flag of the data bus to send data to the internal registers, then to the Main Data Bus
 
+	
 
+	void signalEUControlDataWritten(); //eu control can be in state: need data, if its in this state, then the biu control sends a signal to eucontrol
+										//and eu controll will then send the signal to read from memory and put data on MAIN DATA BUS
+
+private:
+	int writeToMemFlag = 1; //flag needed so data isnt written when theres an operation of reading being done
+							//0- reading, 1-writing 2-idle
 
 
 };

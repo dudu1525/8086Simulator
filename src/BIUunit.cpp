@@ -8,9 +8,9 @@ BIUunit::BIUunit(MainMemory* mainmem)
 
 void BIUunit::stepBIU()
 {
-
+	biucontrol.writeDataToMem(&incomingaddress, &membus, &segreg, &addressUnit, mainmem, &internalregs, &incomingbiudata);
 	biucontrol.fetchInstrFromMem(&incomingaddress, &instrqueue, &membus, &segreg, &addressUnit,mainmem);
-	//+many more
+
 }
 
 void BIUunit::dequeueforTest()
