@@ -25,10 +25,7 @@ public:
 
 
 	void fetchDataFromRegs( InternalBIURegisters* internalregs);
-	//check the internal register 
-	void signalInternalRegisters(InternalBIURegisters* internalregs);//function that signals the internal registers that data is needed by the Main Bus and comes from Memory
-																	//			this should be done by cpu														
-
+												
 	void sendDataToInternalRegisters(InternalBIURegisters* internalregs);
 
 };

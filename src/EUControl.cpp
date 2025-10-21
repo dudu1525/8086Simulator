@@ -16,6 +16,5 @@ void EUControl::testhings()
 	this->euunit->al = 0x34;
 	
 
-	printf("%x", this->euunit->ax);
 }
 

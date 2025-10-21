@@ -9,7 +9,9 @@ void CPU::step()
 	//define how instructions would look like
 
 	//preload the memory with instructions for testing now
-
+	uint16_t value = 0xabcd;
+	mainmem.setAddress(0x00012000);
+	mainmem.writeToMemory(value, false);
 	std::string instruction;
 	while (std::cin>>instruction && instruction!="finish")
 	{
@@ -23,9 +25,7 @@ void CPU::step()
 
 
 
-	//uint16_t value = 0xabcd;
-//	mainmem.setAddress(0x00001000);
-	//mainmem.writeToMemory(value, false);
+	
 	//biuunit.stepBIU();
 //	biuunit.stepBIU();
 //	biuunit.stepBIU();

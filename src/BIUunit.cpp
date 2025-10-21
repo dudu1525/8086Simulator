@@ -10,7 +10,8 @@ void BIUunit::stepBIU()
 {
 	biucontrol.writeDataToMem(&incomingaddress, &membus, &segreg, &addressUnit, mainmem, &internalregs, &incomingbiudata);
 	biucontrol.fetchInstrFromMem(&incomingaddress, &instrqueue, &membus, &segreg, &addressUnit,mainmem);
-
+	biucontrol.fetchDataFromMem(&membus, mainmem, &incomingbiudata, &internalregs, &incomingaddress, &addressUnit, &segreg);
+	incomingbiudata.sendDataToInternalRegisters(&internalregs);
 }
 
 void BIUunit::dequeueforTest()
