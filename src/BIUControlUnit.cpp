@@ -20,7 +20,8 @@ void BIUControlUnit::fetchInstrFromMem(BiuAddressBus* address, InstructionQueue*
 	if (writeToMemFlag != 0) //must be explicitely set to 0 so its in 'read' mode, its set to 0 only if theres space on the queue also
 		return;
 
-	
+	state = READING_INSTR;
+
 	if (address->addressbusState == address->OCCUPIED_WITH_DATA && membus->mainmembusstate==membus->FREE)//put address on external bus
 	{
 		membus->addressbus = address->addressbus;
@@ -42,7 +43,7 @@ void BIUControlUnit::fetchInstrFromMem(BiuAddressBus* address, InstructionQueue*
 			writeToMemFlag = 2;
 			printf("From biu control:(reading instr)(3) 2 instructions fetched from memory succesfully!\n");
 
-
+			state = FREE;
 		}
 		else
 			std::cout << "(reading instr)(3) INSTRUCTION QUEUE FULL!!" << std::endl;
@@ -151,7 +152,9 @@ void BIUControlUnit::fetchDataFromMem(MainMembus* membus, MainMemory* memory, Bi
 	if (state != FREE && state != FETCHING_DATA)
 		return;
 
-	state = FETCHING_DATA; //in case it was free, set to fetching_data
+	state = FETCHING_DATA; 
+	//also add a signal that is required to be passed as 1 from the eu unit or  the main data bus
+
 
 
 	//1put address from which to read from memory

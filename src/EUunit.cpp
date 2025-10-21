@@ -11,11 +11,18 @@ EUunit::EUunit()
 
 void EUunit::eustep()
 {
-    //eucontrol step
-    //alu step
-    //main data bus step
+   
+    //EUCONTROL DECODE
 
-    this->eucontrol.testhings();
+      //send signals  (to get data from memory, to get operands from alu)
+
+    //alu execute
+    
+    //main data bus accept data
+   
+    //send data to regs 
+  
+
 }
 
 

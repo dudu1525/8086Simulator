@@ -32,7 +32,7 @@ void BiuDataBus::sendDataToInternalRegisters(InternalBIURegisters* internalregs)
 		printf("FROM BIU DATA BUS: Somethign went wrong, data bus shouldnt be empty!\n");
 		return;
 	}
-
+	//could signal here that registers were populated
 	this->databusstate == FREE;
 	internalregs->regForData2 = databus;
 	internalregs->bit8toBUS = bit8active;

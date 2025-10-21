@@ -5,16 +5,23 @@
 EUControl::EUControl(EUunit* euunit)
 {
 	this->euunit = euunit;
-
+	instructionsqueue.push(DECODING);
+	
 }
 
-void EUControl::testhings()
+void EUControl::decodeinstr(InstructionQueue* instrqueue)
 {
 
 
-	this->euunit->ah = 0x12;
-	this->euunit->al = 0x34;
-	
+	//DECODE +SIGNAL IF I
+
+	//DECODE INSTR EXTENDED, THE FIRST ONE TO BE DONE, TO GIVE MORE CONTEXT
 
 }
+
+void EUControl::decodeinstrExtended(InstructionQueue* instrqueue)
+{
+}
+
+
 

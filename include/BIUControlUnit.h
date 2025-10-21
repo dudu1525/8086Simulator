@@ -39,6 +39,7 @@ public:
 
 	void signalEUControlDataWritten(); //eu control can be in state: need data, if its in this state, then the biu control sends a signal to eucontrol
 										//and eu controll will then send the signal to read from memory and put data on MAIN DATA BUS
+	//^^^^USED BY THE BIU TO SIGNAL THAT HAS BEEN WRITTEN ON INTERNAL REGS AFTER AN INSTR FETCH
 
 private:
 	int writeToMemFlag = 2; //flag needed so data isnt written when theres an operation of reading being done

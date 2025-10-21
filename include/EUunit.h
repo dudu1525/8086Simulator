@@ -52,6 +52,9 @@ public:
 
 	void eustep();
 	//when sending from al, or ah or bh or bl or smth like that, send just the relevant part, the other one set it to 0x00
+
+    
+
 private:
 	EUControl eucontrol;
 	ALU alu;
