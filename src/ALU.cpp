@@ -1,4 +1,5 @@
 #include "../include/ALU.h"
+#include <stdio.h>
 
 void ALU::executeOp()
 {
@@ -7,7 +8,11 @@ void ALU::executeOp()
 		return;
 
 	if (numofIterations != 0) //simulate alu executing an operation
+	{
+		printf("From Alu: Executing Operation:\n");
+		numofIterations--;
 		return;
+	}
 
 
 	switch (operationToBeExecuted)

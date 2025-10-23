@@ -3,6 +3,7 @@
 #include <stdint.h> 
 
 class InternalBIURegisters;
+class EUControl;
 class BiuDataBus {
 
 public:
@@ -28,6 +29,11 @@ public:
 												
 	void sendDataToInternalRegisters(InternalBIURegisters* internalregs);
 
+	void signalEUControl();
+
+	void getEUrefference(EUControl* eucontrol);
+private:
+	EUControl* eucontrol;
 };
 
 #endif

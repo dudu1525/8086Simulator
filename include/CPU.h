@@ -4,11 +4,13 @@
 #include "EUunit.h"
 
 
+
 class CPU {
 
 
 public:
 	CPU() : biuunit(&mainmem) { 
+		init();
 	}
 
 

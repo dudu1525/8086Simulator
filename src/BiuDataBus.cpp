@@ -1,6 +1,9 @@
 #include "../include/BiuDataBus.h"
 #include <stdio.h>
+
 #include "../include/InternalBIURegisters.h"
+#include "../include/EUControl.h"
+
 
 void BiuDataBus::fetchDataFromRegs(InternalBIURegisters* internalregs)
 {
@@ -29,7 +32,7 @@ void BiuDataBus::sendDataToInternalRegisters(InternalBIURegisters* internalregs)
 {
 	if (this->databusstate == FREE)
 	{
-		printf("FROM BIU DATA BUS: Somethign went wrong, data bus shouldnt be empty!\n");
+		printf("FROM BIU DATA BUS: Something went wrong, data bus shouldnt be empty!\n");
 		return;
 	}
 	//could signal here that registers were populated
@@ -38,6 +41,17 @@ void BiuDataBus::sendDataToInternalRegisters(InternalBIURegisters* internalregs)
 	internalregs->bit8toBUS = bit8active;
 	printf("From biu data:DATA SENT TO REGISTERS:%X\n", internalregs->regForData2);
 
+	//cal here signal eu control
+	this->signalEUControl();
+}
 
+void BiuDataBus::signalEUControl()
+{
+	eucontrol->popState();//pops state, after a data fetch
 
+}
+
+void BiuDataBus::getEUrefference(EUControl* eucontrol)
+{
+	this->eucontrol = eucontrol;
 }

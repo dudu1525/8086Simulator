@@ -2,6 +2,12 @@
 
 #include <stdio.h>
 #include <string>
+
+
+#include "../include/BIUControlUnit.h"
+#include "../include/EUControl.h"
+#include "../include/BiuDataBus.h"
+#include "../include/InstructionQueue.h"
 void CPU::step()
 {		
 
@@ -43,4 +49,26 @@ void CPU::step()
 
 void CPU::init()
 {//init mem and components and other things
+
+	BIUControlUnit* biucontrolreff = biuunit.returnBIUControlReff();
+
+	BiuDataBus* biudatabusreff = biuunit.returnBiuDataBusReff();
+
+	EUControl* eucontrolreff = euunit.returnEuControlreff();
+
+	InstructionQueue* instrqueue = biuunit.returnInstructionQReff();
+
+	biucontrolreff->getEUControlReff(eucontrolreff);
+
+	biudatabusreff->getEUrefference(eucontrolreff);
+
+	eucontrolreff->getBiuBus(biudatabusreff);
+
+	eucontrolreff->getBIUCreff(biucontrolreff);
+
+	eucontrolreff->getInstrQueueReff(instrqueue);
+
+
+
+	printf("components initialized!\n------------------------------\n");
 }

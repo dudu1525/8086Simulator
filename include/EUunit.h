@@ -46,14 +46,12 @@ public:
 
     //functions
 
-	void signalBIUDataNeeded();//pointer to biu control, signals that data is needed from the memory
-	void setWriteSegmentSignal();//set which segment register to use for fetching data or writing it
-	//the eu unit will have a refference to the queue of the biu CLASS
+
 
 	void eustep();
 	//when sending from al, or ah or bh or bl or smth like that, send just the relevant part, the other one set it to 0x00
 
-    
+    EUControl* returnEuControlreff();
 
 private:
 	EUControl eucontrol;

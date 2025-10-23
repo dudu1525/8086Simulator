@@ -34,3 +34,11 @@ uint8_t InstructionQueue::dequeue()
 
 	return byteToBeFetched;
 }
+
+bool InstructionQueue::isQueueFull()
+{
+	if (numOfInstr >= 5)
+		return true;
+	else
+		return false;
+}

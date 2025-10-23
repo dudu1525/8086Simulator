@@ -8,19 +8,28 @@
 
 #include "../include/BiuDataBus.h"
 #include "../include/InternalBIURegisters.h"
+
+#include "../include/EUControl.h"
+
+
 void BIUControlUnit::fetchInstrFromMem(BiuAddressBus* address, InstructionQueue* q, MainMembus* membus, SegmentRegisters* segreg, AddressComputeUnit* computeunit, MainMemory* memory)
 {
 	//input some condition if there are no more instructions to be fetched
 
-	//also input some condition if EU needs something fast!!!
-	//fetching instr when there are other things to do is not important!
+	//PUT CONDITION IF INSTRUCTION QUEUE IS NOT FULL!!!! SO <5
+
+	if (q->isQueueFull() == true)
+		return;
+
+
 
 	//^^make special function for that
 
-	if (writeToMemFlag != 0) //must be explicitely set to 0 so its in 'read' mode, its set to 0 only if theres space on the queue also
+	if (state != FREE && state != READING_INSTR)
 		return;
 
-	state = READING_INSTR;
+		this->state = READING_INSTR;
+	
 
 	if (address->addressbusState == address->OCCUPIED_WITH_DATA && membus->mainmembusstate==membus->FREE)//put address on external bus
 	{
@@ -68,11 +77,10 @@ void BIUControlUnit::fetchInstrFromMem(BiuAddressBus* address, InstructionQueue*
 
 void BIUControlUnit::writeDataToMem(BiuAddressBus* address, MainMembus* membus, SegmentRegisters* segreg, AddressComputeUnit* computeunit, MainMemory* memory, InternalBIURegisters* internalregs, BiuDataBus* databus)
 {
-	if (writeToMemFlag != 1)//eu or smth must set this to '1'
+	if (state != WRITING_DATA)
 		return;
-
-	this->state = WRITING_DATA;
-
+		
+	
 	if (address->addressbusState == address->OCCUPIED_WITH_DATA && membus->mainmembusstate == membus->FREE)//put address on external bus and load data on data bus
 	{
 		membus->addressbus = address->addressbus;
@@ -101,6 +109,8 @@ void BIUControlUnit::writeDataToMem(BiuAddressBus* address, MainMembus* membus, 
 		membus->databus = databus->databus;
 		databus->databusstate = databus->FREE;//mark bus as free
 		printf("FROM BIUControl(writing data)(3): Data put on external bus from internal, internal data bus becomes free!\n");
+
+		this->state = FREE;
 		return;
 
 	}
@@ -112,6 +122,8 @@ void BIUControlUnit::writeDataToMem(BiuAddressBus* address, MainMembus* membus, 
 		{
 			printf("From BIUControl(writing data)(4): 8BIT data put in memory\n");
 			memory->writeToMemory(membus->databus, true);
+
+
 		}
 		else
 		{
@@ -125,6 +137,9 @@ void BIUControlUnit::writeDataToMem(BiuAddressBus* address, MainMembus* membus, 
 
 		this->state = FREE;
 		this->writeToMemFlag = 2;//reset write to mem flag to noop
+
+		this->signalEUControlDataWritten();
+		//signal here the euunit
 		return;
 	}
 
@@ -149,10 +164,10 @@ void BIUControlUnit::writeDataToMem(BiuAddressBus* address, MainMembus* membus, 
 
 void BIUControlUnit::fetchDataFromMem(MainMembus* membus, MainMemory* memory, BiuDataBus* databus, InternalBIURegisters* internalregs,BiuAddressBus* address, AddressComputeUnit* computeunit, SegmentRegisters* segreg)
 {
-	if (state != FREE && state != FETCHING_DATA)
+	if (state != FETCHING_DATA)
 		return;
 
-	state = FETCHING_DATA; 
+	
 	//also add a signal that is required to be passed as 1 from the eu unit or  the main data bus
 
 
@@ -227,6 +242,21 @@ void BIUControlUnit::fetchDataFromMem(MainMembus* membus, MainMemory* memory, Bi
 
 	}
 
+}
+
+void BIUControlUnit::signalEUControlDataWritten()
+{
+	
+	eucontrol->popState();//data was written, advance to the next state
+
+
+
+
+}
+
+void BIUControlUnit::getEUControlReff(EUControl* eucontrol)
+{
+	this->eucontrol = eucontrol;
 }
 
 

@@ -9,8 +9,10 @@ BIUunit::BIUunit(MainMemory* mainmem)
 void BIUunit::stepBIU()
 {
 	biucontrol.writeDataToMem(&incomingaddress, &membus, &segreg, &addressUnit, mainmem, &internalregs, &incomingbiudata);
-	biucontrol.fetchInstrFromMem(&incomingaddress, &instrqueue, &membus, &segreg, &addressUnit,mainmem);
 	biucontrol.fetchDataFromMem(&membus, mainmem, &incomingbiudata, &internalregs, &incomingaddress, &addressUnit, &segreg);
+
+	biucontrol.fetchInstrFromMem(&incomingaddress, &instrqueue, &membus, &segreg, &addressUnit, mainmem); //last one so 
+
 	incomingbiudata.sendDataToInternalRegisters(&internalregs);
 }
 
@@ -24,3 +26,20 @@ void BIUunit::dequeueforTest()
 	printf("second byte:%x\n", secbyte);
 
 }
+
+BIUControlUnit* BIUunit::returnBIUControlReff()
+{
+	return &biucontrol;
+}
+
+BiuDataBus* BIUunit::returnBiuDataBusReff()
+{
+	return &incomingbiudata;
+}
+
+InstructionQueue* BIUunit::returnInstructionQReff()
+{
+	return &instrqueue;
+}
+
+

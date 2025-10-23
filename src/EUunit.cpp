@@ -13,15 +13,17 @@ void EUunit::eustep()
 {
    
     //EUCONTROL DECODE
+    this->eucontrol.decodeinstr();
+     
 
-      //send signals  (to get data from memory, to get operands from alu)
-
-    //alu execute
-    
-    //main data bus accept data
-   
-    //send data to regs 
+    this->alu.executeOp();
   
+
+}
+
+EUControl* EUunit::returnEuControlreff()
+{
+    return &eucontrol;
 
 }
 

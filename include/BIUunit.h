@@ -31,6 +31,11 @@ public:
 	void stepBIU();
 	void dequeueforTest();
 
+	BIUControlUnit*	returnBIUControlReff();
+
+	BiuDataBus* returnBiuDataBusReff();
+	InstructionQueue* returnInstructionQReff();
+
 	//bus control unit
 
 	//instr quque

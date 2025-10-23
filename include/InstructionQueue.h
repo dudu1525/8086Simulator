@@ -11,6 +11,7 @@ public:
 	
 	void putDataOnMainDatBUS();//execution unit control will call this function !!
 
+	bool isQueueFull();
 private:
 	int numOfInstr = 0;
 
