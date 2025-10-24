@@ -5,7 +5,7 @@
 
 
 class SegmentRegisters {
-public:						\
+public:						
 	uint16_t csreg = 0x00100;
 	uint16_t dsreg = 0x01200;
 	uint16_t ssreg = 0x02300;

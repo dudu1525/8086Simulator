@@ -12,6 +12,9 @@ public:
 	void putDataOnMainDatBUS();//execution unit control will call this function !!
 
 	bool isQueueFull();
+	bool isQueueEmpty();
+	bool availableAmountOfBytes(int amount);
+	uint8_t frontOfQueue();
 private:
 	int numOfInstr = 0;
 

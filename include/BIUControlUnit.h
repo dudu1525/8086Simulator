@@ -43,6 +43,7 @@ public:
 	//^^^^USED BY THE BIU TO SIGNAL THAT HAS BEEN WRITTEN ON INTERNAL REGS AFTER AN INSTR FETCH
 
 	void getEUControlReff(EUControl* eucontrol);
+	
 
 private:
 	int writeToMemFlag = 2; //flag needed so data isnt written when theres an operation of reading being done

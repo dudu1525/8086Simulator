@@ -45,3 +45,16 @@ bool MainMemory::setAddress(uint32_t addr)
 	addressAvailable = true;
 	return true;
 }
+
+bool MainMemory::loadInstrIntoMemory(uint8_t instr[],int size)
+{ //start in cs offset:
+	uint32_t address=0x1000;
+
+	for (int i = 0; i < size; i++)
+	{
+		mem[address + i] = instr[i];
+	}
+	
+
+	return false;
+}

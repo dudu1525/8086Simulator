@@ -2,12 +2,38 @@
 
 #include <stdio.h>
 #include <string>
-
-
+//when writing data to memory, if i have in ax, 0xabcd, ill read 0xabcd
+//when i get from instruction queue, i get them as: cd ab
+//I WILL LOAD instructions as they are, so  mov ax, 0xabcd => b8 cd ab (lower)
+//when taking from internal biu registers, data is given normally, i put 0xabcd, i get 0xabcd
+//when taking from instruction queue, i get low then high!!!!!
 #include "../include/BIUControlUnit.h"
 #include "../include/EUControl.h"
 #include "../include/BiuDataBus.h"
 #include "../include/InstructionQueue.h"
+void CPU::decodeInstr()
+{
+
+	//decode instr given in the format mov ax, ...
+}
+void CPU::loadInstr()
+{
+
+	//call memory load instructions 
+
+	uint8_t instr[5] = {
+		0b10111000 ,0xcd, 0xab, // MOV AX, 0XABCD
+		0b10110101, 0xaf ,//MOV CL, 0XAF
+
+	};
+	mainmem.loadInstrIntoMemory(instr, 5);
+
+//	mainmem.setAddress(0x1004);
+	//mainmem.writeToMemory(0xffef, false);
+	//mainmem.setAddress(0x1006);
+//	mainmem.writeToMemory(0xabaa, true);
+	//b8 ab cd  ef ff aa ab
+}
 void CPU::step()
 {		
 
@@ -15,9 +41,7 @@ void CPU::step()
 	//define how instructions would look like
 
 	//preload the memory with instructions for testing now
-	uint16_t value = 0xabcd;
-	mainmem.setAddress(0x00012000);
-	mainmem.writeToMemory(value, false);
+
 	std::string instruction;
 	while (std::cin>>instruction && instruction!="finish")
 	{
@@ -28,22 +52,6 @@ void CPU::step()
 		std::cout << std::endl;
 	}
 
-
-
-
-	
-	//biuunit.stepBIU();
-//	biuunit.stepBIU();
-//	biuunit.stepBIU();
-	//biuunit.stepBIU();
-//	euunit.eustep();
-	//	biuunit.dequeueforTest();
-
-
-
-//	mainmem.setAddress(0x00000000);
-//	uint16_t gottenval = mainmem.readFromMemory(false);
-	//printf("val:0x%04X", gottenval);
 
 }
 

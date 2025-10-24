@@ -11,9 +11,13 @@ class CPU {
 public:
 	CPU() : biuunit(&mainmem) { 
 		init();
+		//decode instr
+
+		loadInstr();
 	}
 
-
+	void decodeInstr();
+	void loadInstr();
 	void step();
 	void init();
 

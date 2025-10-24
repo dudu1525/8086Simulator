@@ -7,6 +7,7 @@ class InstructionQueue;
 class BIUControlUnit;
 class BiuDataBus;
 class InstructionQueue;
+class MainDataBus;
 //ammout of data sent based on W bit
 // 
 //first instruction to do is MOV AX, Immediate,   if MOV AL, IMMEDIATE, only one sending
@@ -25,10 +26,10 @@ public:
 	void decodeinstr();
 	void decodeinstrExtended(InstructionQueue* instrqueue, int numofInstr);//^integrated into decodeinstr
 
-	void sendDataFromInstrToBus(); //or high or low
+	void sendDataFromInstrToBus(MainDataBus* databus); //or high or low
+	void putDataIntoDataRegs(MainDataBus* databus);
 
 
-	void putDataIntoDataRegs();
 
 
 
@@ -76,20 +77,26 @@ public:
 	void getBiuBus(BiuDataBus* biudatabus);
 	void getInstrQueueReff(InstructionQueue* instrqueue);
 
+	void printCurrentState();
+
 private:
 	EUunit* euunit;
 	BIUControlUnit* biucontrol;
 	BiuDataBus* biudatabuss;
 	InstructionQueue* instrqueue;
 
-	std::queue<states> instructionsqueue;//or can use a priprity queue
+	std::queue<states> commandsqueue;//or can use a priprity queue
 
-
+	bool decodeRegister(uint8_t mainByte, uint8_t byteWithWbit, bool typeOfInstr);
 
 	bool numofInstrToBUS = false;//when true, move from instr queue only 8 bits, else move 16bits on the data bus
 
-	int mainRegForRegOutput = 0; //reg used in instructions of type ADD AX, BX
+	int mainRegForRegOutput = 0; //reg used in instructions of type ADD AX, BX (here ax)  (used by the registers themselves)
+
+	int mainRegForInput = 0;//for instr of type ADD AX,BX, its BX  (used by putting onto main data bus)
+
 	int tempregstoPopulate[2] = { 0,0 }; //for ADD AX, BX,  <<ax, bx values to be on temp regs
+
 
 	int dataToPutOnBusOptions = 0; //variable used to select from where to put data on bus (alu, regs, ill see)
 

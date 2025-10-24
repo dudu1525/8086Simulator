@@ -52,6 +52,7 @@ public:
 	//when sending from al, or ah or bh or bl or smth like that, send just the relevant part, the other one set it to 0x00
 
     EUControl* returnEuControlreff();
+    void putInDataRegs(int targetReg, uint16_t dataGiven);
 
 private:
 	EUControl eucontrol;

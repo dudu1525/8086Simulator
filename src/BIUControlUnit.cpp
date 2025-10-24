@@ -64,7 +64,7 @@ void BIUControlUnit::fetchInstrFromMem(BiuAddressBus* address, InstructionQueue*
 	if (address->addressbusState == address->FREE)//put address on internal address bus
 	{
 		uint32_t transfAddress = computeunit->generatePhysicalAddress(segreg->csreg, segreg->ip);
-		segreg->ip++;//increment instruction pointer so it points to next instruction
+		segreg->ip+=2;//increment instruction pointer so it points to next instruction
 		address->addressbusState = address->OCCUPIED_WITH_DATA;
 		address->addressbus = transfAddress;
 		printf("From BIUControl(reading instr)(1):Address fetched from cs:ip and put on interal address bus and putting on external address bus:%x\n",transfAddress );

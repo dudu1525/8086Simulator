@@ -1,12 +1,1 @@
-﻿  BIUControlUnit.cpp
-  BIUunit.cpp
-  BiuDataBus.cpp
-  CPU.cpp
-D:\an3\sem1\scs\8086Simulator\src\BiuDataBus.cpp(39,21): warning C4553: '==': result of expression not used; did you intend '='?
-  EUControl.cpp
-  EUunit.cpp
-  InstructionQueue.cpp
-  Main.cpp
-  Simulator.cpp
-  Generating Code...
-  8086Simulator.vcxproj -> D:\an3\sem1\scs\8086Simulator\x64\Debug\8086Simulator.exe
+﻿  8086Simulator.vcxproj -> D:\an3\sem1\scs\8086Simulator\x64\Debug\8086Simulator.exe
