@@ -1,1 +1,5 @@
-﻿  8086Simulator.vcxproj -> D:\an3\sem1\scs\8086Simulator\x64\Debug\8086Simulator.exe
+﻿  CPU.cpp
+  EUControl.cpp
+  EUunit.cpp
+  Generating Code...
+  8086Simulator.vcxproj -> D:\an3\sem1\scs\8086Simulator\x64\Debug\8086Simulator.exe

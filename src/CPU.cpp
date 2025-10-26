@@ -22,8 +22,8 @@ void CPU::loadInstr()
 	//call memory load instructions 
 
 	uint8_t instr[5] = {
+		0b10110000, 0xaf ,//MOV CL, 0XAF
 		0b10111000 ,0xcd, 0xab, // MOV AX, 0XABCD
-		0b10110101, 0xaf ,//MOV CL, 0XAF
 
 	};
 	mainmem.loadInstrIntoMemory(instr, 5);

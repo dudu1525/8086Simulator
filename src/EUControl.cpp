@@ -115,7 +115,7 @@ void EUControl::printCurrentState()
 
 	
 		if (commandsqueue.empty()) {
-			std::cout << "Queue is empty.\n";
+			std::cout << "From EUcontrol: Queue is empty.\n";
 			return;
 		}
 
@@ -153,7 +153,7 @@ bool EUControl::decodeRegister(uint8_t mainByte, uint8_t byteWithWbit, bool type
 	}
 
 	//0=al, 1=cl, 2=dl, 3=bl, 4=ah, 5=	ch, 6=dh, 7=bh;
-	//8=ax, 9=bx, 10=dx,11=bx, 12=sp, 13=bp, 14=si, 15=di
+	//8=ax, 9=cx, 10=dx,11=bx, 12=sp, 13=bp, 14=si, 15=di
 	
 
 
@@ -311,6 +311,7 @@ void EUControl::putDataIntoDataRegs(MainDataBus* databus) //
 	this->euunit->putInDataRegs(mainRegForRegOutput, databus->data);
 
 	databus->mainbusstate = databus->FREE;
+	databus->data = 0x0000;
 	commandsqueue.pop();
 }
 
