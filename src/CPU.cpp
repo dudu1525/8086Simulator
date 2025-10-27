@@ -42,15 +42,15 @@ void CPU::step()
 
 	//preload the memory with instructions for testing now
 
-	std::string instruction;
-	while (std::cin>>instruction && instruction!="finish")
-	{
+	//std::string instruction;
+//	while (std::cin>>instruction && instruction!="finish")
+	//{
 		biuunit.stepBIU();
 
 		euunit.eustep();
 		
-		std::cout << std::endl;
-	}
+		//std::cout << std::endl;
+	//}
 
 
 }

@@ -153,7 +153,7 @@
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\MainDataBus.cpp" />
     <ClCompile Include="src\MainMemory.cpp" />
-    <ClCompile Include="src\Simulator.cpp" />
+    <ClCompile Include="src\SimulatorUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dependencies\imgui\imconfig.h" />
@@ -180,7 +180,7 @@
     <ClInclude Include="include\MainMembus.h" />
     <ClInclude Include="include\MainMemory.h" />
     <ClInclude Include="include\SegmentRegisters.h" />
-    <ClInclude Include="include\Simulator.h" />
+    <ClInclude Include="include\SimulatorUI.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

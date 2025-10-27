@@ -18,4 +18,4 @@ D:\an3\sem1\scs\8086Simulator\src\InternalBIURegisters.cpp;D:\an3\sem1\scs\8086S
 D:\an3\sem1\scs\8086Simulator\src\Main.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\Main.obj
 D:\an3\sem1\scs\8086Simulator\src\MainDataBus.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\MainDataBus.obj
 D:\an3\sem1\scs\8086Simulator\src\MainMemory.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\MainMemory.obj
-D:\an3\sem1\scs\8086Simulator\src\Simulator.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\Simulator.obj
+D:\an3\sem1\scs\8086Simulator\src\SimulatorUI.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\SimulatorUI.obj
