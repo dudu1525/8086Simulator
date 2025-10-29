@@ -10,7 +10,7 @@ public:
 	//can get data from DATA BUS OR ADDRESS BUS
 	enum mainMemBusState {
 		FREE,
-		SENDING_RECEIVING_DATA, //for when putting data for writing to memory
+		SENDING_RECEIVING_DATA, 
 		SENDING_RECEIVING_ADDRESS,
 		
 	};

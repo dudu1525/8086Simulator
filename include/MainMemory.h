@@ -25,9 +25,9 @@ public:
         std::free(mem);
     }
 public:
+
 	uint16_t readFromMemory(bool flag8);
 	bool writeToMemory(uint16_t data, bool flag8);
-    //potentially write to memory16bits OR 8bits of data
     bool setAddress(uint32_t addr);
     bool loadInstrIntoMemory(uint8_t instr[],int size);
 

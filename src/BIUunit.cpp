@@ -1,9 +1,14 @@
 #include "../include/BIUunit.h"
 
-BIUunit::BIUunit(MainMemory* mainmem)
+BIUunit::BIUunit()
 {
-	this->mainmem = mainmem;
 	
+	
+}
+
+void BIUunit::getMemReff(MainMemory* mem)
+{
+	this->mainmem = mem;
 }
 
 void BIUunit::stepBIU()

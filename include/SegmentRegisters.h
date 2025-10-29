@@ -11,7 +11,6 @@ public:
 	uint16_t ssreg = 0x02300;
 	uint16_t esreg = 0x03400;
 
-	//sp should be 0x32fff in physical, sp initially set to 0xffff
 	uint16_t ip=0x0000;
 
 

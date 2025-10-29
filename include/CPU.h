@@ -9,20 +9,21 @@ class CPU {
 
 
 public:
-	CPU() : biuunit(&mainmem) { 
+	CPU(MainMemory* mem){
 		init();
+		passMemToBiu(mem);
 		//decode instr
 
-		loadInstr();
+		loadInstr(mem);
 	}
 
 	void decodeInstr();
-	void loadInstr();
+	void loadInstr(MainMemory* mainmem);
 	void step();
 	void init();
-
+	void passMemToBiu(MainMemory* mem);
 private:
-	MainMemory mainmem;
+
 	BIUunit biuunit;
 	EUunit euunit;
 	//BIUunit biuunit; -should have a pointer to mainmem when doing smth, should communicate in that dotted line with eu

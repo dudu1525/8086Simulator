@@ -9,13 +9,9 @@ class BiuDataBus;
 class InstructionQueue;
 class MainDataBus;
 //ammout of data sent based on W bit
-// 
-//first instruction to do is MOV AX, Immediate,   if MOV AL, IMMEDIATE, only one sending
-//^^ decode, sendingfromInstrQUueue low, sendingfrominstrqueue high, populateregs
-
 
 //second: MOV [MEM], REG
-//
+// 
 class EUControl {
 
 

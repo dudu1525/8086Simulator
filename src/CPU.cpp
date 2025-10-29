@@ -16,7 +16,7 @@ void CPU::decodeInstr()
 
 	//decode instr given in the format mov ax, ...
 }
-void CPU::loadInstr()
+void CPU::loadInstr(MainMemory* mainmem)
 {
 
 	//call memory load instructions 
@@ -26,7 +26,7 @@ void CPU::loadInstr()
 		0b10111000 ,0xcd, 0xab, // MOV AX, 0XABCD
 
 	};
-	mainmem.loadInstrIntoMemory(instr, 5);
+	mainmem->loadInstrIntoMemory(instr, 5);
 
 //	mainmem.setAddress(0x1004);
 	//mainmem.writeToMemory(0xffef, false);
@@ -79,4 +79,10 @@ void CPU::init()
 
 
 	printf("components initialized!\n------------------------------\n");
+}
+
+void CPU::passMemToBiu(MainMemory* mem)
+{
+
+	biuunit.getMemReff(mem);  
 }

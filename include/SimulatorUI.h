@@ -9,12 +9,15 @@
 
 
 class CPU;
+class MainMemory;
 class SimulatorUI {
 
 
 public:
-	SimulatorUI(CPU* cpu);
+	SimulatorUI(CPU* cpu,MainMemory* mem );
 
+	void takeUserInput();
+	void makeMachineCode();
 
 	int initWindow();
 	void mainRun();
@@ -23,6 +26,7 @@ public:
 
 private:
 	CPU* cpu;
+	MainMemory* memory;
 	GLFWwindow* window;
 
 };

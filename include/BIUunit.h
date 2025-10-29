@@ -25,8 +25,8 @@ private:
 	
 	
 public:
-	BIUunit(MainMemory* mainmem);
-
+	BIUunit();
+	void getMemReff(MainMemory* mem);
 	
 	void stepBIU();
 	void dequeueforTest();

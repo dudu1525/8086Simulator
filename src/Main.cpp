@@ -9,15 +9,17 @@
 
 #include "../include/CPU.h"
 #include "../include/SimulatorUI.h"
-
+#include "../include/MainMemory.h"
 
 int main(int, char**)
 {
-
-    CPU cpu;
-    SimulatorUI sim(&cpu);
+    MainMemory memory;
+    CPU cpu(&memory);
+    SimulatorUI sim(&cpu, &memory);
 
     sim.initWindow();
+    //sim.transform userInput
+    //give to mem
     sim.mainRun();
     sim.destroyWindow();
 
