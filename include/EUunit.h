@@ -54,6 +54,8 @@ public:
     EUControl* returnEuControlreff();
     void putInDataRegs(int targetReg, uint16_t dataGiven);
 
+    uint16_t returnRegData(int registernumber, bool* flag8);
+
 private:
 	EUControl eucontrol;
 	ALU alu;

@@ -21,12 +21,15 @@ void CPU::loadInstr(MainMemory* mainmem)
 
 	//call memory load instructions 
 
-	uint8_t instr[5] = {
-		0b10110000, 0xaf ,//MOV CL, 0XAF
+	uint8_t instr[13] = {
 		0b10111000 ,0xcd, 0xab, // MOV AX, 0XABCD
+		0b10001001, 0b00000110, 0x10, 0x00, //MOV [0010], AX    
+		0b10110000, 0xaf ,//MOV CL, 0XAF
+		0b10001011, 0b00000110, 0x10,0x00,  //MOV AX, [0010]
+
 
 	};
-	mainmem->loadInstrIntoMemory(instr, 5);
+	mainmem->loadInstrIntoMemory(instr,13);
 
 //	mainmem.setAddress(0x1004);
 	//mainmem.writeToMemory(0xffef, false);
@@ -46,8 +49,9 @@ void CPU::step()
 //	while (std::cin>>instruction && instruction!="finish")
 	//{
 		biuunit.stepBIU();
-
+		printf("---------------------------------------\n");
 		euunit.eustep();
+		printf("\n\n");
 		
 		//std::cout << std::endl;
 	//}
@@ -66,6 +70,8 @@ void CPU::init()
 
 	InstructionQueue* instrqueue = biuunit.returnInstructionQReff();
 
+	InternalBIURegisters* internalbiuregs = biuunit.returnInternalBiuRegs();
+
 	biucontrolreff->getEUControlReff(eucontrolreff);
 
 	biudatabusreff->getEUrefference(eucontrolreff);
@@ -75,6 +81,8 @@ void CPU::init()
 	eucontrolreff->getBIUCreff(biucontrolreff);
 
 	eucontrolreff->getInstrQueueReff(instrqueue);
+
+	eucontrolreff->getBIUInternalRegsreff(internalbiuregs);
 
 
 

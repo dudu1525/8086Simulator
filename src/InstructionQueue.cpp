@@ -53,13 +53,15 @@ bool InstructionQueue::isQueueEmpty()
 	
 }
 
-bool InstructionQueue::availableAmountOfBytes(int amount)//if the instr needs more bytes to decode it, pass in the amount, for exmple it needs 2 bytes(opDW)
-	//then numofinstr>=2
+bool InstructionQueue::availableAmountOfBytes(int amount)
+	
 {	
-	if (numOfInstr < amount)
-		return false;
-	else
-	return true;
+
+	if (amount <= numOfInstr)//if there are more or equal instructions in the queue, than the needed amount
+		return true;
+
+	return false;
+
 }
 
 uint8_t InstructionQueue::frontOfQueue()

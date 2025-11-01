@@ -19,7 +19,10 @@ void BIUControlUnit::fetchInstrFromMem(BiuAddressBus* address, InstructionQueue*
 	//PUT CONDITION IF INSTRUCTION QUEUE IS NOT FULL!!!! SO <5
 
 	if (q->isQueueFull() == true)
+	{
+		printf("Instructions Queue is Full!\n");
 		return;
+	}
 
 
 
@@ -107,10 +110,14 @@ void BIUControlUnit::writeDataToMem(BiuAddressBus* address, MainMembus* membus, 
 	{
 		membus->mainmembusstate = membus->SENDING_RECEIVING_DATA;
 		membus->databus = databus->databus;
+		if (databus->bit8active == true)
+			membus->flag8 = true;
+		else
+			membus->flag8 = false;
 		databus->databusstate = databus->FREE;//mark bus as free
 		printf("FROM BIUControl(writing data)(3): Data put on external bus from internal, internal data bus becomes free!\n");
 
-		this->state = FREE;
+		
 		return;
 
 	}
@@ -118,7 +125,7 @@ void BIUControlUnit::writeDataToMem(BiuAddressBus* address, MainMembus* membus, 
 
 	if (membus->mainmembusstate == membus->SENDING_RECEIVING_DATA)//write data from membus to memory
 	{
-		if (this->bit8 == true)//only 8 bits to be written
+		if (membus->flag8 == true)//only 8 bits to be written
 		{
 			printf("From BIUControl(writing data)(4): 8BIT data put in memory\n");
 			memory->writeToMemory(membus->databus, true);
@@ -210,7 +217,7 @@ void BIUControlUnit::fetchDataFromMem(MainMembus* membus, MainMemory* memory, Bi
 	{
 		membus->mainmembusstate = membus->FREE;
 		databus->databus = membus->databus;
-		databus->databusstate = databus->OCCUPIED_WITH_DATA;
+		databus->databusstate = databus->OCCUPIED_TO_INTERNALREGS;
 		if (bit8 == true)
 			databus->bit8active = true;
 		else

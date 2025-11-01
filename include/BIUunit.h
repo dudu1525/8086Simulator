@@ -29,12 +29,14 @@ public:
 	void getMemReff(MainMemory* mem);
 	
 	void stepBIU();
-	void dequeueforTest();
+
 
 	BIUControlUnit*	returnBIUControlReff();
 
 	BiuDataBus* returnBiuDataBusReff();
 	InstructionQueue* returnInstructionQReff();
+
+	InternalBIURegisters* returnInternalBiuRegs();
 
 	//bus control unit
 

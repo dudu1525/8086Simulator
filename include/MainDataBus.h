@@ -8,7 +8,7 @@ class MainDataBus {
 
 public:
 	uint16_t data = 0x0000;
-
+	bool bit8 = false;//set when taking data from data registers
 
 	enum states {
 		FREE,

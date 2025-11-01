@@ -8,28 +8,45 @@ class BIUControlUnit;
 class BiuDataBus;
 class InstructionQueue;
 class MainDataBus;
+class InternalBIURegisters;
 //ammout of data sent based on W bit
 
-//second: MOV [MEM], REG
-// 
+//second: MOV [MEM], REG no displacements
+// decode, send from instr bus, send from instr bus, put on internnal regs, put data on bus from reg, put on internal regs, 
+// signal biu for write, biu signals write done(pops signal biu for write )>>decode
+
+//third: MOV REG, [MEM] no displacements
+//decode,put from instrbus, put from instrbus, put on internal regs, signal biu for fetch   (biu signals back data was put on internal regs), getfromInternalRegs, put data on register
+//^same opcode, difference is only the D bit, decode more is needed
+
+//ADD NEXT
+//SUB
+
+//jump
+
 class EUControl {
 
 
 public:
 	EUControl(EUunit* euunit);
 
+	void euControlStep(MainDataBus* databus);
 
 	void decodeinstr();
 	void decodeinstrExtended(InstructionQueue* instrqueue, int numofInstr);//^integrated into decodeinstr
 
-	void sendDataFromInstrToBus(MainDataBus* databus); //or high or low
+	void sendDataFromInstrToBus(MainDataBus* databus); 
 	void putDataIntoDataRegs(MainDataBus* databus);
 
+	void sendDataFromBusToInternalBIURegs(MainDataBus* databus);
+
+	void putDataOnBus(MainDataBus* databus);
 
 
 
 
-	void putDataIntoTempRegs();//
+
+	void putDataIntoTempRegs();
 
 	void signalBIUForFetch(); //if biu not in that mode, but remain here, exec this function until cpu signals to pop state//AFTER THIS, getdataFromInternalBiuregs must come!
 
@@ -37,11 +54,9 @@ public:
 
 	void signalALUForStartExec();
 
-	void sendDataFromBusToInternalBIURegs();
-
 	void getDataFromInternalBIURegs();
 
-	void putDataOnBus(); //function to put data on bus, either from biu internal regs, one of the regs (ax,bx,etc), from alu,
+	
 
 
 
@@ -72,6 +87,7 @@ public:
 	void getBIUCreff(BIUControlUnit* biucontrol);
 	void getBiuBus(BiuDataBus* biudatabus);
 	void getInstrQueueReff(InstructionQueue* instrqueue);
+	void getBIUInternalRegsreff(InternalBIURegisters* internalbiuregs);
 
 	void printCurrentState();
 
@@ -80,24 +96,29 @@ private:
 	BIUControlUnit* biucontrol;
 	BiuDataBus* biudatabuss;
 	InstructionQueue* instrqueue;
+	InternalBIURegisters* intenralbiuregs;
 
 	std::queue<states> commandsqueue;//or can use a priprity queue
 
 	bool decodeRegister(uint8_t mainByte, uint8_t byteWithWbit, bool typeOfInstr);
 
-	bool numofInstrToBUS = false;//when true, move from instr queue only 8 bits, else move 16bits on the data bus
-
-	int mainRegForRegOutput = 0; //reg used in instructions of type ADD AX, BX (here ax)  (used by the registers themselves)
+	int mainRegForRegOutput = 0; //reg used in instructions of type ADD AX, BX (here ax)  (used by the registers themselves) or a
 
 	int mainRegForInput = 0;//for instr of type ADD AX,BX, its BX  (used by putting onto main data bus)
+
+
+
 
 	int tempregstoPopulate[2] = { 0,0 }; //for ADD AX, BX,  <<ax, bx values to be on temp regs
 
 
-	int dataToPutOnBusOptions = 0; //variable used to select from where to put data on bus (alu, regs, ill see)
 
 
-	std::queue<int> instrQueueFuturePosition;
+	std::queue<int> instrQueueFuturePosition; //for puttin on low or high bytes on the data bus
+
+	std::queue<int> locationForInternalRegsWrite; //for choosing where to put data from data bus into internal regs
+
+	std::queue<int> locationFromWhenPopulatingDataBus; //for choosing between register, temp regs, alu the data to be put on main data bus
 
 };
 

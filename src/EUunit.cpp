@@ -11,16 +11,22 @@ EUunit::EUunit()
 
 void EUunit::eustep()
 {
-   
+   //could also make a switch case for the current state here so no more execute in a single step, will see
     //EUCONTROL DECODE
-    this->eucontrol.printCurrentState();
-    this->eucontrol.decodeinstr();
-    this->eucontrol.sendDataFromInstrToBus(&maindatabus);
-    this->eucontrol.putDataIntoDataRegs(&maindatabus);
+    this->eucontrol.euControlStep(&maindatabus);
+
+   // this->eucontrol.decodeinstr();
+  //  this->eucontrol.sendDataFromInstrToBus(&maindatabus);
+  //  this->eucontrol.putDataIntoDataRegs(&maindatabus);
+
+   // this->eucontrol.signalBIUForWrite();
+  //  this->eucontrol.putDataOnBus(&maindatabus);
+  //  this->eucontrol.sendDataFromBusToInternalBIURegs(&maindatabus);
+
      
 
     this->alu.executeOp();
-    printf("\nDATA IN AX:%x\n", ax);
+   // printf("\nDATA IN AX:%x\n", ax);
 
 }
 
@@ -108,6 +114,93 @@ void EUunit::putInDataRegs(int targetReg,uint16_t dataGiven) //TO BE IMPLEMENTED
 
 
     }
+
+
+}
+
+uint16_t EUunit::returnRegData(int registernumber, bool* flag8)
+{
+    if (registernumber < 8)
+        (*flag8) = true;
+    else
+        (*flag8) = false;
+
+
+    //always put the data on the lower half
+    switch (registernumber)
+    {
+    case 0: //al
+            return (ax & 0x00ff);
+        break;
+
+    case 1://cl
+        return (cx & 0x00ff);
+        break;
+
+    case 2://dl
+        return (dx & 0x00ff);
+        break;
+
+    case 3://bl
+        return (bx & 0x00ff);
+        break;
+
+    case 4://ah
+        return ((ax>>8) & 0x00ff);
+        break;
+
+    case 5://ch
+        return ((cx >> 8) & 0x00ff);       
+        break;
+
+
+
+    case 6://dh
+        return ((dx >> 8) & 0x00ff);       
+        break;
+
+    case 7://bh
+        return ((bx >> 8) & 0x00ff);       
+        break;
+
+    case 8://ax
+        return ax;
+        break;
+
+    case 9://cx
+        return cx;
+        break;
+
+    case 10://dx
+        return dx;
+        break;
+
+    case 11://bx
+        return bx;
+        break;
+
+    case 12://sp
+        return sp;
+        break;
+
+    case 13://bp
+        return bp;
+    break;
+
+    case 14://si
+        return si;
+        break;
+
+
+    case 15://di
+        return di;
+        break;
+
+
+
+
+    }
+
 
 
 }

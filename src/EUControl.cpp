@@ -6,6 +6,7 @@
 #include "../include/BIUControlUnit.h"
 #include "../include/MainDataBus.h"
 #include "../include/InstructionQueue.h"
+#include "../include/InternalBIURegisters.h"
 #include <string>
 #include <iostream>
 
@@ -14,6 +15,45 @@ EUControl::EUControl(EUunit* euunit)
 	this->euunit = euunit;
 	commandsqueue.push(DECODING);
 	
+}
+
+void EUControl::euControlStep(MainDataBus* databus)
+{
+	this->printCurrentState();
+
+	if (commandsqueue.empty()) {
+		return;
+	}
+
+	switch (commandsqueue.front()) {
+	case IDLE: break;
+
+	case DECODING: this->decodeinstr(); break;
+
+	case SENDING_FROM_INSTR_QUEUE: sendDataFromInstrToBus(databus); break;
+
+	case POPULATE_REGISTERS: putDataIntoDataRegs(databus); break;
+
+	case POPULATE_TEMP_REGISTERS:  break;
+
+	case PUT_ON_INTERNAL_REGS: sendDataFromBusToInternalBIURegs(databus); break;
+
+	case SIGNAL_ALU: break;
+
+	case GET_FROM_INTERNAL_REGS:  break;
+
+	case PUT_DATA_ON_BUS: putDataOnBus(databus); break;
+
+	case SIGNAL_MEM_WRITE_DATA: signalBIUForWrite(); break;
+
+	case SIGNAL_MEM_FETCH_DATA:  break;
+
+	case UPDATE_FLAGS:  break;
+
+	default: std::cout << "Front state: UNKNOWN\n"; break;
+	}
+
+
 }
 
 void EUControl::decodeinstr()
@@ -27,9 +67,10 @@ void EUControl::decodeinstr()
 	if (instrqueue->isQueueEmpty() == true)  //instr queue needs to have bytes available
 		return;
 
-
-
 	uint8_t instrToBeFetched = instrqueue->frontOfQueue(); //instr to be fetched from queue
+
+
+
 
 
 	if ( ((instrToBeFetched >> 4) & 0b1111) == 0b1011) //TYPE MOV REG,IMMEDIATE
@@ -54,32 +95,57 @@ void EUControl::decodeinstr()
 
 			commandsqueue.push(DECODING);
 		}
-
-
-
-		
 	}
-	else
-	{//identify if it is of type opcodeDW and fetch another byte first, and  only after
+	else if ((instrToBeFetched>>2 & 0b111111) == 0b100010) //TYPE MOV REG, MEM, or MOV MEM,REG
+	{
 		if (instrqueue->availableAmountOfBytes(2) == false) 
 			return;
+		instrqueue->dequeue();
+		uint8_t secondPartOP= instrqueue->frontOfQueue(); //mod,reg,r/m;
+		instrqueue->dequeue();
+
+		decodeRegister(secondPartOP, instrToBeFetched, true);//put on output register
+
+		uint8_t dbit = (instrToBeFetched >> 1) & 0b1;
+
+		commandsqueue.push(SENDING_FROM_INSTR_QUEUE);
+		instrQueueFuturePosition.push(0);
+		commandsqueue.push(SENDING_FROM_INSTR_QUEUE);
+		instrQueueFuturePosition.push(1);
+
+		if (dbit == 1) //type MOV REG, MEM
+		{
+
+
+
+
+		}
+		else//type MOV MEM,REG
+		{
+			mainRegForInput = mainRegForRegOutput;
+			commandsqueue.push(PUT_ON_INTERNAL_REGS);
+			locationForInternalRegsWrite.push(1);
+
+			commandsqueue.push(PUT_DATA_ON_BUS); //get from mainregforImput
+			locationFromWhenPopulatingDataBus.push(0);
+
+			commandsqueue.push(PUT_ON_INTERNAL_REGS);
+			locationForInternalRegsWrite.push(0);
+
+			commandsqueue.push(SIGNAL_MEM_WRITE_DATA);
+			//biu pops this state ^^
+			commandsqueue.push(DECODING);
+
+		}
+		
+
+
+
+
 		
 	}
 	
-	
 
-
-	//DECODE +SIGNAL IF I
-
-	//DECODE INSTR EXTENDED, THE FIRST ONE TO BE DONE, TO GIVE MORE CONTEXT
-
-
-	
-
-	//after done all the decoding
-	//pop the front
-
-	printf("DECODE DONE\n");
 	commandsqueue.pop();
 }
 
@@ -87,28 +153,8 @@ void EUControl::decodeinstrExtended(InstructionQueue* instrqueue, int numofInstr
 {
 }
 
-
-
-void EUControl::popState()
-{
-
-	this->commandsqueue.pop();
-}
-
-void EUControl::getBIUCreff(BIUControlUnit* biucontrol)
-{
-	this->biucontrol = biucontrol;
-}
-
-void EUControl::getBiuBus(BiuDataBus* biudatabus)
-{
-	this->biudatabuss = biudatabus;
-}
-
-void EUControl::getInstrQueueReff(InstructionQueue* instrqueue)
-{
-	this->instrqueue = instrqueue;
-}
+//decoding part
+//###########################################################################################################################################
 
 void EUControl::printCurrentState()
 {
@@ -243,6 +289,9 @@ bool EUControl::decodeRegister(uint8_t mainByte, uint8_t byteWithWbit, bool type
 
 
 }
+//###########################################################################################################################################
+//execution commands below
+
 
 void EUControl::sendDataFromInstrToBus(MainDataBus* databus)
 {
@@ -265,7 +314,7 @@ void EUControl::sendDataFromInstrToBus(MainDataBus* databus)
 
 	int bytePos = instrQueueFuturePosition.front();
 	
-
+	
 	if (bytePos == 0)//low byte
 	{
 		if (databus->mainbusstate != databus->FREE && databus->mainbusstate != databus->HIGHER_SET)
@@ -273,6 +322,7 @@ void EUControl::sendDataFromInstrToBus(MainDataBus* databus)
 		instrQueueFuturePosition.pop();
 
 		uint8_t fetchedDataByte = instrqueue->dequeue();
+
 		databus->putOnLowerPart(fetchedDataByte);
 		
 
@@ -315,6 +365,96 @@ void EUControl::putDataIntoDataRegs(MainDataBus* databus) //
 	commandsqueue.pop();
 }
 
+void EUControl::sendDataFromBusToInternalBIURegs(MainDataBus* databus)
+{
+	if (commandsqueue.empty() == true)
+		return;
+
+	if (commandsqueue.front() != PUT_ON_INTERNAL_REGS)
+		return;
+	if (locationForInternalRegsWrite.empty() == true)
+		return;
+
+	if (databus->mainbusstate == databus->FREE)
+		return;
+
+
+	switch (locationForInternalRegsWrite.front())
+	{
+	case 0://data1
+		this->intenralbiuregs->regForData = databus->data;
+		if (databus->bit8 == true)
+			this->intenralbiuregs->bit8ToMemory = true;
+		break;
+
+	case 1://offset1
+		this->intenralbiuregs->regForOffset = databus->data;
+		break;
+
+	case 2://offset2
+		this->intenralbiuregs->regForOffset2 = databus->data;
+		break;
+
+	}
+	printf("From EUControl: Putting data on Internal Regs: %x\n", databus->data);
+	locationForInternalRegsWrite.pop();
+
+	databus->mainbusstate = databus->FREE;
+	databus->data = 0x0000;
+
+	commandsqueue.pop();
+
+}
+
+void EUControl::putDataOnBus(MainDataBus* databus)
+{
+	if (commandsqueue.empty() == true)
+		return;
+
+
+	if (commandsqueue.front() != PUT_DATA_ON_BUS)
+		return;
+	if (locationFromWhenPopulatingDataBus.empty() == true)
+		return;
+
+	if (databus->mainbusstate != databus->FREE)
+		return;
+	
+	switch (locationFromWhenPopulatingDataBus.front())
+	{
+	case 0://data regs
+		bool bit8;
+		databus->data = euunit->returnRegData(mainRegForInput, &bit8);
+		databus->bit8 = bit8;
+		if (bit8 == true)
+			databus->mainbusstate = databus->LOWER_SET;
+		else
+			databus->mainbusstate = databus->FULL;
+
+		break;
+
+	case 1://temp regs
+
+		break;
+
+	case 2://alu
+
+		break;
+
+	}
+	printf("From EuControl: Data put on Main bus:%x\n", databus->data);
+
+	locationFromWhenPopulatingDataBus.pop();
+
+	commandsqueue.pop();
+}
+
+
+
+
+
+
+
 void EUControl::signalBIUForFetch()
 {
 	if (biucontrol->state != biucontrol->FREE)
@@ -327,8 +467,55 @@ void EUControl::signalBIUForFetch()
 
 void EUControl::signalBIUForWrite()
 {
+	if (commandsqueue.empty() == true)
+		return;
+
+	if (commandsqueue.front() != SIGNAL_MEM_WRITE_DATA)
+		return;
+
+
 	if (biucontrol->state != biucontrol->FREE)
 		return;
 
 	biucontrol->state = biucontrol->WRITING_DATA;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+//#############################################################################################################################
+//used for outside the eu control
+void EUControl::popState()
+{
+
+	this->commandsqueue.pop();
+}
+
+void EUControl::getBIUCreff(BIUControlUnit* biucontrol)
+{
+	this->biucontrol = biucontrol;
+}
+
+void EUControl::getBiuBus(BiuDataBus* biudatabus)
+{
+	this->biudatabuss = biudatabus;
+}
+
+void EUControl::getInstrQueueReff(InstructionQueue* instrqueue)
+{
+	this->instrqueue = instrqueue;
+}
+
+void EUControl::getBIUInternalRegsreff(InternalBIURegisters* internalbiuregs)
+{
+	this->intenralbiuregs = internalbiuregs;
 }

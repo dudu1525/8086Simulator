@@ -11,7 +11,7 @@ void BiuDataBus::fetchDataFromRegs(InternalBIURegisters* internalregs)
 	//this means the data flows from bus to memory, then set the flag to 1
 	this->fromMainBusToMemoryFlag = 1;
 
-	if (this->databusstate == OCCUPIED_WITH_DATA)
+	if (this->databusstate != FREE)
 	{
 		printf("FROM BIUDATABUS: Biu data bus was occupied with data");
 		return;
@@ -24,13 +24,13 @@ void BiuDataBus::fetchDataFromRegs(InternalBIURegisters* internalregs)
 		this->bit8active = true;
 	else
 		this->bit8active = false;
-	databusstate = OCCUPIED_WITH_DATA;
+	databusstate = OCCUPIED_TO_MEM;
 
 }
 
 void BiuDataBus::sendDataToInternalRegisters(InternalBIURegisters* internalregs)
 {
-	if (this->databusstate == FREE)
+	if (this->databusstate != OCCUPIED_TO_INTERNALREGS)
 	{
 		printf("FROM BIU DATA BUS: Something went wrong, data bus shouldnt be empty! (its empty, can be ok)\n");
 		return;

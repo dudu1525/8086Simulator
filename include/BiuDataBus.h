@@ -17,6 +17,8 @@ public:
 	//can get data from either the internal regs
 	enum dataBusState {
 		FREE,
+		OCCUPIED_TO_MEM,
+		OCCUPIED_TO_INTERNALREGS,
 		OCCUPIED_WITH_DATA
 	};
 

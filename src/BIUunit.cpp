@@ -21,16 +21,6 @@ void BIUunit::stepBIU()
 	incomingbiudata.sendDataToInternalRegisters(&internalregs);
 }
 
-void BIUunit::dequeueforTest()
-{
-	uint8_t firstbyte = instrqueue.dequeue();
-	printf("first byte:%x\n", firstbyte);
-
-	uint8_t secbyte = instrqueue.dequeue();
-
-	printf("second byte:%x\n", secbyte);
-
-}
 
 BIUControlUnit* BIUunit::returnBIUControlReff()
 {
@@ -45,6 +35,11 @@ BiuDataBus* BIUunit::returnBiuDataBusReff()
 InstructionQueue* BIUunit::returnInstructionQReff()
 {
 	return &instrqueue;
+}
+
+InternalBIURegisters* BIUunit::returnInternalBiuRegs()
+{
+	return &internalregs;
 }
 
 

@@ -1,5 +1,2 @@
-﻿  Main.cpp
-  SimulatorUI.cpp
-  Generating Code...
-D:\an3\sem1\scs\8086Simulator\src\SimulatorUI.cpp(48,1): warning C4715: 'SimulatorUI::initWindow': not all control paths return a value
+﻿  CPU.cpp
   8086Simulator.vcxproj -> D:\an3\sem1\scs\8086Simulator\x64\Debug\8086Simulator.exe
