@@ -60,21 +60,21 @@ void EUunit::putInDataRegs(int targetReg,uint16_t dataGiven) //TO BE IMPLEMENTED
         break;
 
     case 4://ah
-        ax = (ax & 0x00FF) | (dataGiven & 0xFF00);
+        ax = (ax & 0x00FF) | (dataGiven & 0x00ff); //either 0xff00 if i keep in lower byte on high part, or the same
         break;
 
     case 5://ch
-        cx = (cx & 0x00FF) | (dataGiven & 0xFF00);
+        cx = (cx & 0x00FF) | (dataGiven & 0x00ff);
         break;
 
 
 
     case 6://dh
-        dx = (dx & 0x00FF) | (dataGiven & 0xFF00);
+        dx = (dx & 0x00FF) | (dataGiven & 0x00ff);
         break;
 
     case 7://bh
-        bx = (bx & 0x00FF) | (dataGiven & 0xFF00);
+        bx = (bx & 0x00FF) | (dataGiven & 0x00ff);
         break;
 
     case 8://ax

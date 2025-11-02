@@ -36,7 +36,7 @@ void BiuDataBus::sendDataToInternalRegisters(InternalBIURegisters* internalregs)
 		return;
 	}
 	//could signal here that registers were populated
-	this->databusstate == FREE;
+	this->databusstate = FREE;
 	internalregs->regForData2 = databus;
 	internalregs->bit8toBUS = bit8active;
 	printf("From biu data:DATA SENT TO REGISTERS:%X\n", internalregs->regForData2);

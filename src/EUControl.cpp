@@ -40,13 +40,13 @@ void EUControl::euControlStep(MainDataBus* databus)
 
 	case SIGNAL_ALU: break;
 
-	case GET_FROM_INTERNAL_REGS:  break;
+	case GET_FROM_INTERNAL_REGS:getDataFromInternalBIURegs(databus);  break;
 
 	case PUT_DATA_ON_BUS: putDataOnBus(databus); break;
 
 	case SIGNAL_MEM_WRITE_DATA: signalBIUForWrite(); break;
 
-	case SIGNAL_MEM_FETCH_DATA:  break;
+	case SIGNAL_MEM_FETCH_DATA: signalBIUForFetch();  break;
 
 	case UPDATE_FLAGS:  break;
 
@@ -115,16 +115,26 @@ void EUControl::decodeinstr()
 
 		if (dbit == 1) //type MOV REG, MEM
 		{
+			commandsqueue.push(PUT_ON_INTERNAL_REGS);
+			locationForInternalRegsWrite.push(2);//put on offset2
 
+			commandsqueue.push(SIGNAL_MEM_FETCH_DATA);
+			if (instrToBeFetched % 2 == 1)//word
+				this->bit8forFetching = false;
+			else
+				this->bit8forFetching = true;
+			//biu pops this state
+			commandsqueue.push(GET_FROM_INTERNAL_REGS);
 
-
-
+			commandsqueue.push(POPULATE_REGISTERS);
+			
+			commandsqueue.push(DECODING);
 		}
 		else//type MOV MEM,REG
 		{
 			mainRegForInput = mainRegForRegOutput;
 			commandsqueue.push(PUT_ON_INTERNAL_REGS);
-			locationForInternalRegsWrite.push(1);
+			locationForInternalRegsWrite.push(1); //put on offset1
 
 			commandsqueue.push(PUT_DATA_ON_BUS); //get from mainregforImput
 			locationFromWhenPopulatingDataBus.push(0);
@@ -457,9 +467,19 @@ void EUControl::putDataOnBus(MainDataBus* databus)
 
 void EUControl::signalBIUForFetch()
 {
-	if (biucontrol->state != biucontrol->FREE)
+	if (commandsqueue.empty() == true)
 		return;
 
+	if (commandsqueue.front() != SIGNAL_MEM_FETCH_DATA)
+		return;
+
+	if (biucontrol->state != biucontrol->FREE)
+		return;
+	if (this->bit8forFetching == true)
+		biucontrol->bit8 = true;
+	else
+		biucontrol->bit8 = false;
+	
 	biucontrol->state = biucontrol->FETCHING_DATA;
 
 
@@ -478,6 +498,35 @@ void EUControl::signalBIUForWrite()
 		return;
 
 	biucontrol->state = biucontrol->WRITING_DATA;
+}
+
+void EUControl::getDataFromInternalBIURegs(MainDataBus* databus)
+{
+
+	if (commandsqueue.empty() == true)
+		return;
+
+	if (commandsqueue.front() != GET_FROM_INTERNAL_REGS)
+		return;
+
+
+	if (databus->mainbusstate != databus->FREE)
+		return;
+
+	if (intenralbiuregs->bit8toBUS == true)
+		databus->bit8 = true;
+	else
+		databus->bit8 = false;
+	if (databus->bit8==true)
+	databus->putOnLowerPart(intenralbiuregs->regForData2);
+	else
+	{
+		databus->data = intenralbiuregs->regForData2;
+		databus->mainbusstate = databus->FULL;
+
+	}
+
+	commandsqueue.pop();
 }
 
 

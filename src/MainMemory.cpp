@@ -15,7 +15,7 @@ uint16_t MainMemory::readFromMemory(bool flag8)
 	addressAvailable = false;
 	printf("From main memory: Reading from address: %x, data: %x\n", address, mem[address]);
 	return (highbyte << 8) | lowbyte;
-}
+}//if 8bits are read, the lowbyte is allways taken and sent, no matter if its later stored in a high part of a word
 
 bool MainMemory::writeToMemory(uint16_t data, bool flag8)
 {
@@ -23,7 +23,7 @@ bool MainMemory::writeToMemory(uint16_t data, bool flag8)
 
 	uint8_t lowbyte = (uint8_t)data; //lower byte
 	uint8_t highbyte = *((uint8_t*)&data + 1);//higher byte
-	printf("From Main Memory: Data put on memory at: %x, data: %x", address, data);
+	printf("From Main Memory: Data put on memory at: %x, data: %x\n", address, data);
 	mem[address] = lowbyte;
 
 	if (flag8==false)

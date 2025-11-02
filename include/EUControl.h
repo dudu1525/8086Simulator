@@ -42,22 +42,21 @@ public:
 
 	void putDataOnBus(MainDataBus* databus);
 
-
-
-
-
-	void putDataIntoTempRegs();
-
 	void signalBIUForFetch(); //if biu not in that mode, but remain here, exec this function until cpu signals to pop state//AFTER THIS, getdataFromInternalBiuregs must come!
 
 	void signalBIUForWrite();//for both fetch/write signals, the euC is in this state before, and after this, it just comes the next instruction, simple
 
+
+
+	void getDataFromInternalBIURegs(MainDataBus* databus);
+
+
+	void putDataIntoTempRegs();
+
 	void signalALUForStartExec();
 
-	void getDataFromInternalBIURegs();
 
 	
-
 
 
 
@@ -106,7 +105,7 @@ private:
 
 	int mainRegForInput = 0;//for instr of type ADD AX,BX, its BX  (used by putting onto main data bus)
 
-
+	bool bit8forFetching = false;
 
 
 	int tempregstoPopulate[2] = { 0,0 }; //for ADD AX, BX,  <<ax, bx values to be on temp regs

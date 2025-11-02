@@ -188,7 +188,7 @@ void BIUControlUnit::fetchDataFromMem(MainMembus* membus, MainMemory* memory, Bi
 	//from data bus to internal regs, then into main data bus (data bus checks the interal regs )
 
 
-	if (address->addressbusState == address->OCCUPIED_WITH_DATA && membus->mainmembusstate == membus->FREE)//put address on external bus and load data on data bus
+	if (address->addressbusState == address->OCCUPIED_WITH_DATA && membus->mainmembusstate == membus->FREE)//put address on external bus 
 	{
 		membus->addressbus = address->addressbus;
 		address->addressbusState = address->FREE;

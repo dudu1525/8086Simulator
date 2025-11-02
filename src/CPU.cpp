@@ -25,7 +25,7 @@ void CPU::loadInstr(MainMemory* mainmem)
 		0b10111000 ,0xcd, 0xab, // MOV AX, 0XABCD
 		0b10001001, 0b00000110, 0x10, 0x00, //MOV [0010], AX    
 		0b10110000, 0xaf ,//MOV CL, 0XAF
-		0b10001011, 0b00000110, 0x10,0x00,  //MOV AX, [0010]
+		0b10001011, 0b00001110, 0x10,0x00,  //MOV CX, [0010]
 
 
 	};
@@ -41,20 +41,12 @@ void CPU::step()
 {		
 
 
-	//define how instructions would look like
-
-	//preload the memory with instructions for testing now
-
-	//std::string instruction;
-//	while (std::cin>>instruction && instruction!="finish")
-	//{
 		biuunit.stepBIU();
 		printf("---------------------------------------\n");
 		euunit.eustep();
+		printf("CX:%x\n", euunit.cx);
 		printf("\n\n");
 		
-		//std::cout << std::endl;
-	//}
 
 
 }
