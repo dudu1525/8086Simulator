@@ -40,6 +40,8 @@ void EUControl::euControlStep(MainDataBus* databus)
 
 	case SIGNAL_ALU: break;
 
+	case AWAIT_ALU_OP: break;
+
 	case GET_FROM_INTERNAL_REGS:getDataFromInternalBIURegs(databus);  break;
 
 	case PUT_DATA_ON_BUS: putDataOnBus(databus); break;
@@ -132,6 +134,8 @@ void EUControl::decodeinstr()
 
 		if (dbit == 1) //type MOV REG, MEM
 		{
+			this->fetchSkipped = false;
+
 			commandsqueue.push(PUT_ON_INTERNAL_REGS);
 			locationForInternalRegsWrite.push(2);//put on offset2
 
@@ -173,7 +177,80 @@ void EUControl::decodeinstr()
 
 		
 	}
-	
+	else if ((instrToBeFetched >> 2 & 0b111111) == 0b000000) //type ADD
+	{
+		fetchSkipped = true;
+		getDataFromBIU = false;
+
+		if (instrqueue->availableAmountOfBytes(2) == false)
+			return;
+
+		instrqueue->dequeue();
+		uint8_t secondPartOP = instrqueue->frontOfQueue(); //mod,reg,r/m;
+		instrqueue->dequeue();
+
+		uint8_t modBits = (secondPartOP >> 6) & 0b11;
+
+		if (modBits == 0b11) // ADD reg reg
+		{
+
+
+
+		}
+		else
+		{
+			decodeRegister(secondPartOP, instrToBeFetched, true);//put on output register
+
+			uint8_t dbit = (instrToBeFetched >> 1) & 0b1;
+
+			commandsqueue.push(SENDING_FROM_INSTR_QUEUE);
+			instrQueueFuturePosition.push(0);
+			commandsqueue.push(SENDING_FROM_INSTR_QUEUE);
+			instrQueueFuturePosition.push(1);
+
+			if (dbit == 1) //type ADD REG, MEM
+			{
+				commandsqueue.push(PUT_ON_INTERNAL_REGS);
+				locationForInternalRegsWrite.push(2);//put on offset2
+
+				commandsqueue.push(SIGNAL_MEM_FETCH_DATA);
+				if (instrToBeFetched % 2 == 1)//word
+					this->bit8forFetching = false;
+				else
+					this->bit8forFetching = true;
+
+				//get data from data regs
+				//put into temp regs
+
+				//get from biu internal regs
+				//put on temp regs2
+
+				//signal ALU (give operation and operands from temp regs)
+				//await alu execution  (alu pops this off
+			
+
+				//populate data registers (for this case)
+			}
+			else //type add MEM, reg
+			{
+				mainRegForInput = mainRegForRegOutput;
+
+
+			}
+
+
+		}
+
+
+
+
+
+
+
+
+
+		commandsqueue.push(DECODING);
+	}
 
 	commandsqueue.pop();
 }
@@ -206,6 +283,7 @@ void EUControl::printCurrentState()
 		case PUT_DATA_ON_BUS: std::cout << "Front state: PUT_DATA_ON_BUS\n"; break;
 		case SIGNAL_MEM_WRITE_DATA: std::cout << "Front state: SIGNAL_MEM_WRITE_DATA\n"; break;
 		case SIGNAL_MEM_FETCH_DATA: std::cout << "Front state: SIGNAL_MEM_FETCH_DATA\n"; break;
+		case AWAIT_ALU_OP:std::cout << "Front state: AWAIT ALU DATA\n"; break;
 		case UPDATE_FLAGS: std::cout << "Front state: UPDATE_FLAGS\n"; break;
 		default: std::cout << "Front state: UNKNOWN\n"; break;
 		}
@@ -572,6 +650,12 @@ void EUControl::signalBIUForFetch()
 	
 	biucontrol->state = biucontrol->FETCHING_DATA;
 
+	if (this->fetchSkipped == true)
+	{
+		this->commandsqueue.pop();
+		this->fetchSkipped = false;
+	}
+
 
 }
 
@@ -601,6 +685,9 @@ void EUControl::getDataFromInternalBIURegs(MainDataBus* databus)
 
 
 	if (databus->mainbusstate != databus->FREE)
+		return;
+
+	if (this->getDataFromBIU == false)
 		return;
 
 	if (intenralbiuregs->bit8toBUS == true)

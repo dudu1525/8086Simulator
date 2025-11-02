@@ -41,13 +41,22 @@ void BiuDataBus::sendDataToInternalRegisters(InternalBIURegisters* internalregs)
 	internalregs->bit8toBUS = bit8active;
 	printf("From biu data:DATA SENT TO REGISTERS:%X\n", internalregs->regForData2);
 
-	//cal here signal eu control
+	
 	this->signalEUControl();
 }
 
 void BiuDataBus::signalEUControl()
-{
-	eucontrol->popState();//pops state, after a data fetch
+{	
+		if (eucontrol->fetchSkipped==false)//for MOV
+		{
+			eucontrol->popState();//pops state, after a data fetch
+			eucontrol->getDataFromBIU = true;
+		}
+		else//for Others
+		{
+			eucontrol->getDataFromBIU = true;
+
+		}
 
 }
 

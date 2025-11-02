@@ -1,2 +1,3 @@
-﻿  CPU.cpp
+﻿  EUunit.cpp
+D:\an3\sem1\scs\8086Simulator\src\EUunit.cpp(197,1): warning C4715: 'EUunit::returnRegData': not all control paths return a value
   8086Simulator.vcxproj -> D:\an3\sem1\scs\8086Simulator\x64\Debug\8086Simulator.exe

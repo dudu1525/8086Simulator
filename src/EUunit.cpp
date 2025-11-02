@@ -11,22 +11,13 @@ EUunit::EUunit()
 
 void EUunit::eustep()
 {
-   //could also make a switch case for the current state here so no more execute in a single step, will see
-    //EUCONTROL DECODE
+
     this->eucontrol.euControlStep(&maindatabus);
 
-   // this->eucontrol.decodeinstr();
-  //  this->eucontrol.sendDataFromInstrToBus(&maindatabus);
-  //  this->eucontrol.putDataIntoDataRegs(&maindatabus);
-
-   // this->eucontrol.signalBIUForWrite();
-  //  this->eucontrol.putDataOnBus(&maindatabus);
-  //  this->eucontrol.sendDataFromBusToInternalBIURegs(&maindatabus);
-
-     
 
     this->alu.executeOp();
-   // printf("\nDATA IN AX:%x\n", ax);
+    this->alu.putOnBus(&maindatabus, &eucontrol);
+  
 
 }
 
@@ -64,7 +55,6 @@ void EUunit::putInDataRegs(int targetReg,uint16_t dataGiven) //TO BE IMPLEMENTED
         break;
 
     case 5://ch
-        printf("putting in ch:%x\n", dataGiven);
         cx = (cx & 0x00FF) | ((dataGiven & 0x00ff)<<8);
         break;
 

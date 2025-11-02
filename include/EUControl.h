@@ -12,9 +12,18 @@ class InternalBIURegisters;
 
 
 
-//ADD NEXT
-//SUB
+//ADD reg,mem
 
+//^ put instr1 q, put instr2 q , put in biuinternalregs, signalBIUFORFETCH,   getFromDataRegs, putOnTempRegs,    GETfromBIUInternal, PUTonTempRegs, signalAlu(give op) and operands
+//await alu(alu will signal this to be popped after executing), PopulateDataRegs , decode
+
+//add mem,reg
+
+//add reg,reg	
+
+//add reg, immd
+
+//sub
 //jump
 
 class EUControl {
@@ -49,7 +58,8 @@ public:
 	void signalALUForStartExec();
 
 
-	
+	bool fetchSkipped = false;//true=>just pop state and do other operations
+	bool getDataFromBIU = false; //set by other components when in state of getting data from biu
 
 
 
@@ -65,6 +75,7 @@ public:
 		PUT_DATA_ON_BUS,//either from alu, from regs,                <<SIGNAL IF 8BIT IS NEEDED
 		SIGNAL_MEM_WRITE_DATA,      
 		SIGNAL_MEM_FETCH_DATA,
+		AWAIT_ALU_OP,
 
 		UPDATE_FLAGS
 		//can combine some of the states, to do more
@@ -114,6 +125,7 @@ private:
 
 	bool bit8forFetching = false; //indicates if 8bits or 16bits are required from memory when fetching
 
+	
 
 	int tempregstoPopulate[2] = { 0,0 }; //for ADD AX, BX,  <<ax, bx values to be on temp regs
 

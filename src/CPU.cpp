@@ -21,22 +21,19 @@ void CPU::loadInstr(MainMemory* mainmem)
 
 	//call memory load instructions 
 
-	uint8_t instr[15] = {
+	uint8_t instr[19] = {
 		0b10111000 ,0xcd, 0xab, // MOV AX, 0XABCD
 		0b10001001, 0b00000110, 0x10, 0x00, //MOV [0010], AX    
 		0b10110000, 0xaf ,//MOV al, 0XAF
 		0b10001011, 0b00001110, 0x10,0x00,  //MOV CX, [0010]
 		0B10001010, 0b11101000,  //mov ch, al
 
+		0b00000011, 0b00001110, 0x10, 0x00     //ADD CX, [0010]
+
 
 	};
-	mainmem->loadInstrIntoMemory(instr,15);
+	mainmem->loadInstrIntoMemory(instr,19);
 
-//	mainmem.setAddress(0x1004);
-	//mainmem.writeToMemory(0xffef, false);
-	//mainmem.setAddress(0x1006);
-//	mainmem.writeToMemory(0xabaa, true);
-	//b8 ab cd  ef ff aa ab
 }
 void CPU::step()
 {		
