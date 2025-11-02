@@ -64,7 +64,8 @@ void EUunit::putInDataRegs(int targetReg,uint16_t dataGiven) //TO BE IMPLEMENTED
         break;
 
     case 5://ch
-        cx = (cx & 0x00FF) | (dataGiven & 0x00ff);
+        printf("putting in ch:%x\n", dataGiven);
+        cx = (cx & 0x00FF) | ((dataGiven & 0x00ff)<<8);
         break;
 
 

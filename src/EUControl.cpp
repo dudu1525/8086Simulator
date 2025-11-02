@@ -96,14 +96,31 @@ void EUControl::decodeinstr()
 			commandsqueue.push(DECODING);
 		}
 	}
-	else if ((instrToBeFetched>>2 & 0b111111) == 0b100010) //TYPE MOV REG, MEM, or MOV MEM,REG
+	else if ((instrToBeFetched>>2 & 0b111111) == 0b100010) //TYPE MOV REG, MEM, or MOV MEM,REG, MOV REG1, REG2
 	{
 		if (instrqueue->availableAmountOfBytes(2) == false) 
 			return;
+
 		instrqueue->dequeue();
 		uint8_t secondPartOP= instrqueue->frontOfQueue(); //mod,reg,r/m;
 		instrqueue->dequeue();
 
+
+		uint8_t modBits = (secondPartOP >> 6) & 0b11;
+
+		if (modBits == 0b11)//reg reg
+		{
+			decodeRegRegInstr(secondPartOP, instrToBeFetched % 2);
+
+			commandsqueue.push(PUT_DATA_ON_BUS); //get from mainregforImput
+			locationFromWhenPopulatingDataBus.push(0);
+
+			commandsqueue.push(POPULATE_REGISTERS);
+
+			commandsqueue.push(DECODING);
+		}
+		else
+		{		
 		decodeRegister(secondPartOP, instrToBeFetched, true);//put on output register
 
 		uint8_t dbit = (instrToBeFetched >> 1) & 0b1;
@@ -148,6 +165,8 @@ void EUControl::decodeinstr()
 
 		}
 		
+
+		}
 
 
 
@@ -295,6 +314,77 @@ bool EUControl::decodeRegister(uint8_t mainByte, uint8_t byteWithWbit, bool type
 
 
 		return false;
+	}
+
+
+}
+
+void EUControl::decodeRegRegInstr(uint8_t byteToBeDecoded, int bit8)
+{
+	uint8_t reg1 = (byteToBeDecoded >> 3) & 0b111;
+
+	uint8_t reg2 = byteToBeDecoded & 0b111;
+
+	if (bit8 == 1)
+	{
+		switch (reg1)
+		{
+		case 0:mainRegForRegOutput = 8; break;
+		case 1:mainRegForRegOutput = 9;  break;
+		case 2:mainRegForRegOutput = 10;  break;
+		case 3:mainRegForRegOutput = 11;  break;
+		case 4:mainRegForRegOutput = 12;  break;
+		case 5:mainRegForRegOutput = 13;  break;
+		case 6:mainRegForRegOutput = 14;  break;
+		case 7:mainRegForRegOutput = 15;  break;
+
+		}
+
+		switch (reg2)
+		{
+		case 0:mainRegForInput = 8; break;
+		case 1:mainRegForInput = 9;  break;
+		case 2:mainRegForInput = 10;  break;
+		case 3:mainRegForInput = 11;  break;
+		case 4:mainRegForInput = 12;  break;
+		case 5:mainRegForInput = 13;  break;
+		case 6:mainRegForInput = 14;  break;
+		case 7:mainRegForInput = 15;  break;
+
+		}
+
+
+	}
+	else
+	{
+		switch (reg1)
+		{
+		case 0:mainRegForRegOutput = 0; break;
+		case 1:mainRegForRegOutput = 1;  break;
+		case 2:mainRegForRegOutput = 2;  break;
+		case 3:mainRegForRegOutput = 3;  break;
+		case 4:mainRegForRegOutput = 4;  break;
+		case 5:mainRegForRegOutput = 5;  break;
+		case 6:mainRegForRegOutput = 6;  break;
+		case 7:mainRegForRegOutput = 7;  break;
+
+		}
+
+		switch (reg2)
+		{
+		case 0:mainRegForInput = 0; break;
+		case 1:mainRegForInput = 1;  break;
+		case 2:mainRegForInput = 2;  break;
+		case 3:mainRegForInput = 3;  break;
+		case 4:mainRegForInput = 4;  break;
+		case 5:mainRegForInput = 5;  break;
+		case 6:mainRegForInput = 6;  break;
+		case 7:mainRegForInput = 7;  break;
+
+		}
+
+
+
 	}
 
 

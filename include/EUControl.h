@@ -9,15 +9,8 @@ class BiuDataBus;
 class InstructionQueue;
 class MainDataBus;
 class InternalBIURegisters;
-//ammout of data sent based on W bit
 
-//second: MOV [MEM], REG no displacements
-// decode, send from instr bus, send from instr bus, put on internnal regs, put data on bus from reg, put on internal regs, 
-// signal biu for write, biu signals write done(pops signal biu for write )>>decode
 
-//third: MOV REG, [MEM] no displacements
-//decode,put from instrbus, put from instrbus, put on internal regs, signal biu for fetch   (biu signals back data was put on internal regs), getfromInternalRegs, put data on register
-//^same opcode, difference is only the D bit, decode more is needed
 
 //ADD NEXT
 //SUB
@@ -91,21 +84,35 @@ public:
 	void printCurrentState();
 
 private:
+	/////////////////////////////////refferences
 	EUunit* euunit;
 	BIUControlUnit* biucontrol;
 	BiuDataBus* biudatabuss;
 	InstructionQueue* instrqueue;
 	InternalBIURegisters* intenralbiuregs;
 
-	std::queue<states> commandsqueue;//or can use a priprity queue
+
+	///////////////////////////////////internal functions
+
 
 	bool decodeRegister(uint8_t mainByte, uint8_t byteWithWbit, bool typeOfInstr);
+	void decodeRegRegInstr(uint8_t byteToBeDecoded, int bit8);
+
+
+
+
+	/////////////////////////////////variables to indicate flow of execution
+
+
+	std::queue<states> commandsqueue;//holds state of the eu control
+
+	
 
 	int mainRegForRegOutput = 0; //reg used in instructions of type ADD AX, BX (here ax)  (used by the registers themselves) or a
 
 	int mainRegForInput = 0;//for instr of type ADD AX,BX, its BX  (used by putting onto main data bus)
 
-	bool bit8forFetching = false;
+	bool bit8forFetching = false; //indicates if 8bits or 16bits are required from memory when fetching
 
 
 	int tempregstoPopulate[2] = { 0,0 }; //for ADD AX, BX,  <<ax, bx values to be on temp regs
