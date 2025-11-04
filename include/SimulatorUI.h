@@ -27,6 +27,19 @@ public:
 private:
 	CPU* cpu;
 	MainMemory* memory;
+
+	//window components
 	GLFWwindow* window;
+	GLFWmonitor* monitor;
+
+	//input panel
+	void drawInputPanel(); //input text, 2 buttons
+
+	//simulator panel
+	void drawSimulatorPanel();
+
+
+	bool inputWindowVisible=true;
+	bool commandsCorrect = false;
 
 };

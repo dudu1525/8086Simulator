@@ -11,6 +11,10 @@
 #include "../include/EUControl.h"
 #include "../include/BiuDataBus.h"
 #include "../include/InstructionQueue.h"
+bool CPU::verifyInstructionsGiven()
+{
+	return false;
+}
 void CPU::decodeInstr()
 {
 

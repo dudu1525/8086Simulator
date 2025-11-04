@@ -17,6 +17,7 @@ public:
 		loadInstr(mem);
 	}
 
+	bool verifyInstructionsGiven();
 	void decodeInstr();
 	void loadInstr(MainMemory* mainmem);
 	void step();
