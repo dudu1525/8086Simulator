@@ -31,7 +31,7 @@ uint8_t InstructionQueue::dequeue()
 	numOfInstr--;
 	for (int i = 0; i < numOfInstr; i++)
 		queue[i] = queue[i + 1];
-
+	queue[numOfInstr] = 0x00;
 
 	return byteToBeFetched;
 }
@@ -67,4 +67,9 @@ bool InstructionQueue::availableAmountOfBytes(int amount)
 uint8_t InstructionQueue::frontOfQueue()
 {
 	return queue[0];
+}
+
+uint8_t* InstructionQueue::returnFullQueue()
+{
+	return queue;
 }

@@ -70,7 +70,7 @@ void EUControl::decodeinstr()
 		return;
 
 	uint8_t instrToBeFetched = instrqueue->frontOfQueue(); //instr to be fetched from queue
-
+	currentDecodedInstruction = instrToBeFetched;
 
 
 
@@ -267,7 +267,7 @@ void EUControl::printCurrentState()
 
 	
 		if (commandsqueue.empty()) {
-			std::cout << "From EUcontrol: Queue is empty.\n";
+			std::cout << "From EUcontrol:Command Queue is empty.\n";
 			return;
 		}
 
@@ -288,6 +288,50 @@ void EUControl::printCurrentState()
 		default: std::cout << "Front state: UNKNOWN\n"; break;
 		}
 	
+}
+
+const char* EUControl::returnCurrentDecodedInst()
+{
+	static char buffer[32];
+
+	if (commandsqueue.empty() || commandsqueue.front() != DECODING)
+	{
+		snprintf(buffer, sizeof(buffer), "Nothing being Decoded");
+	}
+	else
+	{
+		snprintf(buffer, sizeof(buffer), "%02X", currentDecodedInstruction);
+	}
+
+	return buffer;
+}
+
+const char* EUControl::returnCurrentState()
+{
+
+
+	if (commandsqueue.empty()) {
+		return "From EUcontrol:Command Queue is empty.\n";
+		
+	}
+
+	switch (commandsqueue.front()) {
+	case IDLE: return "Front state: IDLE\n"; break;
+	case DECODING: return "Front state: DECODING\n"; break;
+	case SENDING_FROM_INSTR_QUEUE: return"Front state: SENDING_FROM_INSTR_QUEUE\n"; break;
+	case POPULATE_REGISTERS: return "Front state: POPULATE_REGISTERS\n"; break;
+	case POPULATE_TEMP_REGISTERS: return "Front state: POPULATE_TEMP_REGISTERS\n"; break;
+	case PUT_ON_INTERNAL_REGS: return "Front state: PUT_ON_INTERNAL_REGS\n"; break;
+	case SIGNAL_ALU: return "Front state: SIGNAL_ALU\n"; break;
+	case GET_FROM_INTERNAL_REGS: return "Front state: GET_FROM_INTERNAL_REGS\n"; break;
+	case PUT_DATA_ON_BUS: return "Front state: PUT_DATA_ON_BUS\n"; break;
+	case SIGNAL_MEM_WRITE_DATA: return "Front state: SIGNAL_MEM_WRITE_DATA\n"; break;
+	case SIGNAL_MEM_FETCH_DATA: return "Front state: SIGNAL_MEM_FETCH_DATA\n"; break;
+	case AWAIT_ALU_OP:return "Front state: AWAIT ALU DATA\n"; break;
+	case UPDATE_FLAGS: return "Front state: UPDATE_FLAGS\n"; break;
+	default: return "Front state: UNKNOWN\n"; break;
+	}
+
 }
 
 bool EUControl::decodeRegister(uint8_t mainByte, uint8_t byteWithWbit, bool typeOfInstr)

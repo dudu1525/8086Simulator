@@ -12,6 +12,12 @@
 
 class BIUunit {
 private:
+
+
+	MainMemory* mainmem;
+	
+	
+public:
 	AddressComputeUnit addressUnit;
 	SegmentRegisters segreg;
 	BiuDataBus incomingbiudata;
@@ -20,11 +26,6 @@ private:
 	BIUControlUnit biucontrol;
 	InstructionQueue instrqueue;
 	InternalBIURegisters internalregs;
-
-	MainMemory* mainmem;
-	
-	
-public:
 	BIUunit();
 	void getMemReff(MainMemory* mem);
 	

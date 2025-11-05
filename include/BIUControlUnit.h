@@ -44,7 +44,7 @@ public:
 
 	void getEUControlReff(EUControl* eucontrol);
 	
-
+	const char* returnCurrentState();
 private:
 	int writeToMemFlag = 2; //flag needed so data isnt written when theres an operation of reading being done
 							//0- reading, 1-writing 2-idle

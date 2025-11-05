@@ -2,6 +2,7 @@
 #define EUControl_H
 #include <stdint.h> 
 #include <queue>
+#include <string>
 class EUunit;
 class InstructionQueue;
 class BIUControlUnit;
@@ -31,7 +32,7 @@ class EUControl {
 
 public:
 	EUControl(EUunit* euunit);
-
+	const char* returnCurrentState();
 	void euControlStep(MainDataBus* databus);
 
 	void decodeinstr();
@@ -91,8 +92,10 @@ public:
 	void getBiuBus(BiuDataBus* biudatabus);
 	void getInstrQueueReff(InstructionQueue* instrqueue);
 	void getBIUInternalRegsreff(InternalBIURegisters* internalbiuregs);
-
 	void printCurrentState();
+	char* instrBeingExecuted=NULL;
+	uint8_t currentDecodedInstruction;
+	const char* returnCurrentDecodedInst();
 
 private:
 	/////////////////////////////////refferences
@@ -113,7 +116,7 @@ private:
 
 
 	/////////////////////////////////variables to indicate flow of execution
-
+	
 
 	std::queue<states> commandsqueue;//holds state of the eu control
 

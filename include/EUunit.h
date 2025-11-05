@@ -56,10 +56,12 @@ public:
 
     uint16_t returnRegData(int registernumber, bool* flag8);
 
+
+    EUControl eucontrol;
+    ALU alu;
+    MainDataBus maindatabus;
 private:
-	EUControl eucontrol;
-	ALU alu;
-	MainDataBus maindatabus;
+	
 
 	//SSEND DATA AS 0X00(DATA) DATA IS ALWAYS ON LOWER BYTE
 };

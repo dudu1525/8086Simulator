@@ -266,4 +266,17 @@ void BIUControlUnit::getEUControlReff(EUControl* eucontrol)
 	this->eucontrol = eucontrol;
 }
 
+const char* BIUControlUnit::returnCurrentState()
+{
+	switch (state)
+	{
+	case READING_INSTR: return "Current State: Reading Instruction"; break;
+	case FETCHING_DATA: return "Current State: Fetching Data From Memory"; break;
+	case WRITING_DATA: return "Current State: Writing Data to Memory"; break;
+	case FREE: return "Current State: Free"; break;
+
+
+	}
+}
+
 

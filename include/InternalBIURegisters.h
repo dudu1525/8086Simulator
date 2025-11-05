@@ -5,8 +5,8 @@
 
 class InternalBIURegisters {
 public:
-	uint16_t regForData=0xabcd;  //direction from main data bus to memory
-	uint16_t regForOffset = 0x0011; 
+	uint16_t regForData=0x0000;  //direction from main data bus to memory
+	uint16_t regForOffset = 0x0000; 
 	bool bit8ToMemory=false; //true = write 8 bits only
 
 
