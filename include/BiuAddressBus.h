@@ -15,9 +15,14 @@ public:
 
 	addressBusState addressbusState=FREE;
 	
-	//biucontrol will request to fetch data from it if its available
+	const char* returnState() {
+		switch (addressbusState)
+		{
+		case FREE: return "FREE"; break;
+		case OCCUPIED_WITH_DATA: return "Occupied with Address Data"; break;
+		}
+	}
 
-	//biucontrol will also put data into it
 
 
 

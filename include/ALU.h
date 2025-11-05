@@ -27,6 +27,9 @@ public:
 	void executeOp();
 	void setOperandsandOperation(uint16_t op1, uint16_t op2,int operation);
 	void putOnBus(MainDataBus* maindatabus, EUControl* eucontrol);
+
+const char* returnState();
+const char* returnOperation();
 private:
 
 

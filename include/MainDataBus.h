@@ -24,6 +24,7 @@ public:
 	void putOnLowerPart(uint8_t dataGiven);
 	void putOnHigherPart(uint8_t dataGiven);
 	void putAll(uint16_t dataGiven);
+	const char* returnState();
 private:
 
 

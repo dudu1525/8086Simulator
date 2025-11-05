@@ -71,3 +71,26 @@ void ALU::putOnBus(MainDataBus* maindatabus, EUControl* eucontrol)
 	//notify the operation was put on bus
 	eucontrol->popState();
 }
+
+const char* ALU::returnState()
+{
+
+	switch (alustate)
+	{
+	case FREE: return "FREE"; break;
+	case EXECUTING_OP: return "EXECUTING OPERATION"; break;
+	case PUT_ON_DATABUS: return "Putting on Data Bus"; break;
+	}
+
+}
+
+const char* ALU::returnOperation()
+{
+	switch (operationToBeExecuted)
+	{
+	case 0: return "NOOP"; break;
+	case 1:return "ADDITION"; break;
+	case 2: return "SUBSTRACTION"; break;
+	default: return "NOTHING"; break;
+	}
+}

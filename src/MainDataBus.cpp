@@ -43,3 +43,14 @@ void MainDataBus::putOnHigherPart(uint8_t dataGiven)
 	else
 		this->mainbusstate = this->HIGHER_SET;
 }
+
+const char* MainDataBus::returnState()
+{
+	switch (mainbusstate)
+	{
+	case LOWER_SET: return "LOWER BYTE SET"; break;
+	case HIGHER_SET: return "HIGHER BYTE SET"; break;
+	case FREE: return "FREE"; break;
+	case FULL: return "FULL"; break;
+	}
+}

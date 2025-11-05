@@ -1,3 +1,14 @@
-﻿  SimulatorUI.cpp
+﻿  ALU.cpp
+  CPU.cpp
+  EUControl.cpp
+D:\an3\sem1\scs\8086Simulator\src\EUControl.cpp(742,41): warning C4244: 'argument': conversion from 'uint16_t' to 'uint8_t', possible loss of data
+  EUunit.cpp
+  Main.cpp
+  SimulatorUI.cpp
+  Generating Code...
 D:\an3\sem1\scs\8086Simulator\src\SimulatorUI.cpp(62,1): warning C4715: 'SimulatorUI::initWindow': not all control paths return a value
+D:\an3\sem1\scs\8086Simulator\include\BiuAddressBus.h(24,1): warning C4715: 'BiuAddressBus::returnState': not all control paths return a value
+D:\an3\sem1\scs\8086Simulator\include\MainMembus.h(29,1): warning C4715: 'MainMembus::returnState': not all control paths return a value
+D:\an3\sem1\scs\8086Simulator\src\EUunit.cpp(197,1): warning C4715: 'EUunit::returnRegData': not all control paths return a value
+D:\an3\sem1\scs\8086Simulator\src\ALU.cpp(85,1): warning C4715: 'ALU::returnState': not all control paths return a value
   8086Simulator.vcxproj -> D:\an3\sem1\scs\8086Simulator\x64\Debug\8086Simulator.exe

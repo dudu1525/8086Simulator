@@ -18,7 +18,15 @@ public:
 
 	mainMemBusState mainmembusstate=FREE;
 	
+	const char* returnState() {
 
+		switch (mainmembusstate)
+		{
+		case FREE: return "FREE"; break;
+		case SENDING_RECEIVING_ADDRESS: return "SENDING/RECEIVING ADDRESS DATA"; break;
+		case SENDING_RECEIVING_DATA: return "SENDING/RECEIVING DATA"; break;
+		}
+	}
 
 
 };

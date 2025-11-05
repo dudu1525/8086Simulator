@@ -295,6 +295,9 @@ void SimulatorUI::drawSimulatorPanel()
     ImGui::Text("%s", cpu->euunit.eucontrol.returnCurrentState());
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
     ImGui::Text("Current Decoded Instruction:\n%s", cpu->euunit.eucontrol.returnCurrentDecodedInst());
+    ImGui::Dummy(ImVec2(0.0f, 10.0f));
+    ImGui::Text("\nTemporary register 1: %04x", cpu->euunit.tempreg1);
+    ImGui::Text("\nTemporary register 2: %04x", cpu->euunit.tempreg2);
     ImGui::EndChild();
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
@@ -309,7 +312,7 @@ void SimulatorUI::drawSimulatorPanel()
     }
 
     ImGui::EndChild();
-
+    ImGui::Text("Flags");
     ImGui::BeginChild("Flags", ImVec2(0, 150), true);
 
     ImGui::EndChild();
@@ -320,25 +323,57 @@ void SimulatorUI::drawSimulatorPanel()
 
     ImGui::NextColumn();
     //third column
-    ImGui::BeginChild("Alu", ImVec2(0, 150), true);
-    ImGui::EndChild();
+    ImGui::Text("ALU");
+    ImGui::BeginChild("ALU", ImVec2(0, 150), true);
+    ImGui::Text("Opperand 1: %04x\n", cpu->euunit.alu.operand1);
+    ImGui::Text("Opperand 2: %04x\n", cpu->euunit.alu.operand2);
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
+    ImGui::Text("Current state: %s", cpu->euunit.alu.returnState());
+    ImGui::Text("Current operation: %s", cpu->euunit.alu.returnOperation());
+    ImGui::Dummy(ImVec2(0.0f, 10.0f));
+    ImGui::Text("Result: %04x\n", cpu->euunit.alu.result);
+    ImGui::EndChild();
+
+    ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+    ImGui::Text("Main Data Bus");
     ImGui::BeginChild("Main Data Bus", ImVec2(0, 150), true);
+    ImGui::Text("Current data: %04x\n", cpu->euunit.maindatabus.data);
+    ImGui::Text("Current state: %s", cpu->euunit.maindatabus.returnState());
     ImGui::EndChild();
+
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+    ImGui::Text("BIU Address Bus");
     ImGui::BeginChild("BIU Address Bus", ImVec2(0, 150), true);
+    ImGui::Text("Current data: %04x\n", cpu->biuunit.incomingaddress.addressbus);
+    ImGui::Text("Current state: %s", cpu->biuunit.incomingaddress.returnState());
     ImGui::EndChild();  
+
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+    ImGui::Text("BIU Data Bus");
     ImGui::BeginChild("BIU Data Bus", ImVec2(0, 150), true);
+    ImGui::Text("Current data: %04x\n", cpu->biuunit.incomingbiudata.databus);
+    ImGui::Text("Current state: %s", cpu->biuunit.incomingbiudata.returnState());
     ImGui::EndChild();
 
 
     ImGui::NextColumn();
     //4th column
+    ImGui::Text("Main Memory");
+    ImGui::BeginChild("Memory", ImVec2(0, 250), true);
+    ImGui::EndChild();
 
+    ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
+    ImGui::Text("Exterior Memory BUS");
+    ImGui::BeginChild("Memorybus", ImVec2(0, 250), true);
+    ImGui::Text("Current data: %04x\n", cpu->biuunit.membus.databus);
+    ImGui::Text("Current address used: %08x\n", cpu->biuunit.membus.addressbus);
+    ImGui::Text("Current state: %s", cpu->biuunit.membus.returnState());
 
-
+    ImGui::EndChild();
 
     ImGui::EndChild();
 

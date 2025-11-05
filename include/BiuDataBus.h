@@ -34,6 +34,8 @@ public:
 	void signalEUControl();
 
 	void getEUrefference(EUControl* eucontrol);
+
+	const char* returnState();
 private:
 	EUControl* eucontrol;
 };

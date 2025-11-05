@@ -64,3 +64,15 @@ void BiuDataBus::getEUrefference(EUControl* eucontrol)
 {
 	this->eucontrol = eucontrol;
 }
+
+const char* BiuDataBus::returnState()
+{
+	switch (databusstate)
+	{
+	case FREE: return "FREE"; break;
+	case OCCUPIED_TO_MEM: return "Sending Data to Memory"; break;
+	case OCCUPIED_TO_INTERNALREGS: return "Sending Data to Internal BIU Registers"; break;
+	case OCCUPIED_WITH_DATA: return "Occupied with data"; break;
+
+	}
+}
