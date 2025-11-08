@@ -16,7 +16,13 @@ bool CPU::verifyInstructionsGiven()
 	return false;
 }
 void CPU::decodeInstr()
-{
+{ 
+	
+	//0b1011 W reg -> MOV REG, immd
+	//100010 D W   ->mov (w=1-word, d=0->to mem, d=1 ->to reg
+	//0b 100010 D W , MOD=11 FirstReg, SecondReg (reg/reg)
+	// 
+	//0b 000000 D W, MOD reg r/m(110 default) ^^
 
 	//decode instr given in the format mov ax, ...
 }
@@ -26,13 +32,13 @@ void CPU::loadInstr(MainMemory* mainmem)
 	//call memory load instructions 
 
 	uint8_t instr[19] = {
-		0b10111000 ,0xcd, 0xab, // MOV AX, 0XABCD
+		0b10111000 ,0x12, 0x00, // MOV AX, 0XABCD
 		0b10001001, 0b00000110, 0x10, 0x00, //MOV [0010], AX    
 		0b10110000, 0xaf ,//MOV al, 0XAF
 		0b10001011, 0b00001110, 0x10,0x00,  //MOV CX, [0010]
-		0B10001010, 0b11101000,  //mov ch, al
+		0B10001010, 0b11101000,  //mov ch=101, al=000 
 
-		0b00000011, 0b00001110, 0x10, 0x00     //ADD CX, [0010]
+		0b00000011, 0b00001110, 0x10, 0x00     //ADD CX=001, [0010]
 
 
 	};

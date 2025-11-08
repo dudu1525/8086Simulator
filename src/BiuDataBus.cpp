@@ -51,11 +51,12 @@ void BiuDataBus::signalEUControl()
 		{
 			eucontrol->popState();//pops state, after a data fetch
 			eucontrol->getDataFromBIU = true;
+			printf("SKIPPING!!!!!!\n");
 		}
 		else//for Others
 		{
 			eucontrol->getDataFromBIU = true;
-
+			printf("NO!!!!SKIPPING!!!!!!\n");
 		}
 
 }

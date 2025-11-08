@@ -34,7 +34,7 @@ void EUControl::euControlStep(MainDataBus* databus)
 
 	case POPULATE_REGISTERS: putDataIntoDataRegs(databus); break;
 
-	case POPULATE_TEMP_REGISTERS:  break;
+	case POPULATE_TEMP_REGISTERS: putDataIntoTempRegs(databus);  break;
 
 	case PUT_ON_INTERNAL_REGS: sendDataFromBusToInternalBIURegs(databus); break;
 
@@ -134,7 +134,9 @@ void EUControl::decodeinstr()
 
 		if (dbit == 1) //type MOV REG, MEM
 		{
-			this->fetchSkipped = false;
+			this->fetchSkipped = false; //DO NOT POP THE STATE, WAIT FOR BIU TO POP IT! (this means here to not pop it, inside signal for fetch)
+			getDataFromBIU = false;
+
 
 			commandsqueue.push(PUT_ON_INTERNAL_REGS);
 			locationForInternalRegsWrite.push(2);//put on offset2
@@ -179,7 +181,7 @@ void EUControl::decodeinstr()
 	}
 	else if ((instrToBeFetched >> 2 & 0b111111) == 0b000000) //type ADD
 	{
-		fetchSkipped = true;
+		fetchSkipped = true;//means pop the state after signaling to the BIUControl
 		getDataFromBIU = false;
 
 		if (instrqueue->availableAmountOfBytes(2) == false)
@@ -213,17 +215,29 @@ void EUControl::decodeinstr()
 				commandsqueue.push(PUT_ON_INTERNAL_REGS);
 				locationForInternalRegsWrite.push(2);//put on offset2
 
-				commandsqueue.push(SIGNAL_MEM_FETCH_DATA);
+				commandsqueue.push(SIGNAL_MEM_FETCH_DATA); 
 				if (instrToBeFetched % 2 == 1)//word
 					this->bit8forFetching = false;
 				else
 					this->bit8forFetching = true;
 
-				//get data from data regs
-				//put into temp regs
 
-				//get from biu internal regs
-				//put on temp regs2
+				mainRegForInput = mainRegForRegOutput; // input for main data bus!
+				commandsqueue.push(PUT_DATA_ON_BUS); //put data on bus from data regs
+				locationFromWhenPopulatingDataBus.push(0);//signal data is needed from data regs
+			
+
+				locationForInternalRegsWrite.push(0); //first temp register
+				locationForInternalRegsWrite.push(1);//second temp register
+				commandsqueue.push(POPULATE_TEMP_REGISTERS);
+
+				
+				commandsqueue.push(GET_FROM_INTERNAL_REGS); 
+
+
+				commandsqueue.push(POPULATE_TEMP_REGISTERS);
+
+				
 
 				//signal ALU (give operation and operands from temp regs)
 				//await alu execution  (alu pops this off
@@ -240,13 +254,6 @@ void EUControl::decodeinstr()
 
 
 		}
-
-
-
-
-
-
-
 
 
 		commandsqueue.push(DECODING);
@@ -270,7 +277,7 @@ void EUControl::printCurrentState()
 			std::cout << "From EUcontrol:Command Queue is empty.\n";
 			return;
 		}
-
+		printf("FETCHSKIPPED:: %d\n", fetchSkipped);
 		switch (commandsqueue.front()) {
 		case IDLE: std::cout << "Front state: IDLE\n"; break;
 		case DECODING: std::cout << "Front state: DECODING\n"; break;
@@ -697,7 +704,7 @@ void EUControl::signalBIUForFetch()
 	if (this->fetchSkipped == true)
 	{
 		this->commandsqueue.pop();
-		this->fetchSkipped = false;
+		//this->fetchSkipped = false;
 	}
 
 
@@ -719,7 +726,7 @@ void EUControl::signalBIUForWrite()
 }
 
 void EUControl::getDataFromInternalBIURegs(MainDataBus* databus)
-{
+{   
 
 	if (commandsqueue.empty() == true)
 		return;
@@ -731,13 +738,15 @@ void EUControl::getDataFromInternalBIURegs(MainDataBus* databus)
 	if (databus->mainbusstate != databus->FREE)
 		return;
 
-	if (this->getDataFromBIU == false)
+	if (this->getDataFromBIU == false) //if this signal is set to false, dont get data yet
 		return;
 
 	if (intenralbiuregs->bit8toBUS == true)
 		databus->bit8 = true;
 	else
 		databus->bit8 = false;
+
+
 	if (databus->bit8==true)
 	databus->putOnLowerPart(intenralbiuregs->regForData2);
 	else
@@ -746,7 +755,40 @@ void EUControl::getDataFromInternalBIURegs(MainDataBus* databus)
 		databus->mainbusstate = databus->FULL;
 
 	}
+	printf("DATA GOTTEN FROM INTERNAL REGS:%x", databus->data);
+	getDataFromBIU = 0;
+	commandsqueue.pop();
+}
 
+void EUControl::putDataIntoTempRegs(MainDataBus* databus)
+{
+	if (commandsqueue.empty() == true)
+		return;
+
+	if (commandsqueue.front() != POPULATE_TEMP_REGISTERS)
+		return;
+
+	if (databus->mainbusstate == databus->FREE)
+		return; //something is worng, data should be on bus!
+
+	if (locationForInternalRegsWrite.front() == 0)//first temp reg
+	{
+		euunit->tempreg1 = databus->data;
+
+	}
+	else//second temp reg
+	{
+		euunit->tempreg2 = databus->data;
+
+	}
+
+
+
+	locationForInternalRegsWrite.pop();
+
+	databus->mainbusstate = databus->FREE;
+	databus->data = 0x0000;
+	printf("From EuControl: Data was put into temp reg from data bus\n");
 	commandsqueue.pop();
 }
 

@@ -18,6 +18,9 @@ class InternalBIURegisters;
 //^ put instr1 q, put instr2 q , put in biuinternalregs, signalBIUFORFETCH,   getFromDataRegs, putOnTempRegs,    GETfromBIUInternal, PUTonTempRegs, signalAlu(give op) and operands
 //await alu(alu will signal this to be popped after executing), PopulateDataRegs , decode
 
+
+
+
 //add mem,reg
 
 //add reg,reg	
@@ -54,13 +57,16 @@ public:
 	void getDataFromInternalBIURegs(MainDataBus* databus);
 
 
-	void putDataIntoTempRegs();
+	void putDataIntoTempRegs(MainDataBus* databus);
+
+
 
 	void signalALUForStartExec();
 
 
 	bool fetchSkipped = false;//true=>just pop state and do other operations
 	bool getDataFromBIU = false; //set by other components when in state of getting data from biu
+	//^used for fetches to the main data bus
 
 
 
@@ -123,8 +129,11 @@ private:
 	
 
 	int mainRegForRegOutput = 0; //reg used in instructions of type ADD AX, BX (here ax)  (used by the registers themselves) or a
+	//output is used to put data into registers from bus (direction bus ->regs)
 
 	int mainRegForInput = 0;//for instr of type ADD AX,BX, its BX  (used by putting onto main data bus)
+	//input is used as the register to fetch data from when putting on data bus (direction regs ->data bus)
+
 
 	bool bit8forFetching = false; //indicates if 8bits or 16bits are required from memory when fetching
 
@@ -137,7 +146,7 @@ private:
 
 	std::queue<int> instrQueueFuturePosition; //for puttin on low or high bytes on the data bus
 
-	std::queue<int> locationForInternalRegsWrite; //for choosing where to put data from data bus into internal regs
+	std::queue<int> locationForInternalRegsWrite; //for choosing where to put data from data bus into internal regs 0-first, 1-second
 
 	std::queue<int> locationFromWhenPopulatingDataBus; //for choosing between register, temp regs, alu the data to be put on main data bus
 
