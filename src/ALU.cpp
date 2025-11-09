@@ -7,7 +7,7 @@
 void ALU::executeOp()
 {
 
-	if (alustate == FREE) //eucontrol sets as executing
+	if (alustate!=EXECUTING_OP) //eucontrol sets as executing
 		return;
 
 	if (numofIterations != 0) //simulate alu executing an operation
@@ -17,18 +17,21 @@ void ALU::executeOp()
 		return;
 	}
 
-
+	//when numOfIterations reaches 0, execute the operation
 	switch (operationToBeExecuted)
 	{
-	case 1:
-
+	case 0://addition
+		result = operand1 + operand2;
+		break;
 
 	default:
-		result = 0x0000; //if  operation is set to 0, dont put nothing on the alubus
+		result = 0x0000;
 		break;
 	}
 
 	//set flags now
+	operand1 = 0x0000;
+	operand2 = 0x0000;
 	alustate = PUT_ON_DATABUS;
 
 }
@@ -41,9 +44,11 @@ void ALU::setOperandsandOperation(uint16_t op1, uint16_t op2,int operation)
 	operationToBeExecuted = operation;
 	switch (operation)
 	{
-	case 0: break; //noop
-	case 1:numofIterations = 4; break;//add
+	case 0:numofIterations = 4; break; //add
+	case 1:numofIterations = 4; break;//sub
 	}
+
+	alustate = EXECUTING_OP;
 }
 
 void ALU::putOnBus(MainDataBus* maindatabus, EUControl* eucontrol)
@@ -55,20 +60,24 @@ void ALU::putOnBus(MainDataBus* maindatabus, EUControl* eucontrol)
 	if (maindatabus->mainbusstate != maindatabus->FREE)
 		return;
 
-	alustate = FREE;
+	
 
-	if (operationToBeExecuted == 0)
-	{
-		
-
-	}
-	else
-	{
-
-	}
+	//if (operationToBeExecuted == 0)
+	//{
+		maindatabus->data = result;
 
 
+	//}
+	//else
+	//{
+
+	//}
+
+	result = 0x0000;//reset to 0
+	operationToBeExecuted = 10;//set to noop
+	maindatabus->mainbusstate = maindatabus->FULL;
 	//notify the operation was put on bus
+	alustate = FREE;
 	eucontrol->popState();
 }
 
@@ -88,9 +97,9 @@ const char* ALU::returnOperation()
 {
 	switch (operationToBeExecuted)
 	{
-	case 0: return "NOOP"; break;
-	case 1:return "ADDITION"; break;
+	case 0: return "ADDITION"; break;
+	case 1:return "SUBSTRACTION"; break;
 	case 2: return "SUBSTRACTION"; break;
-	default: return "NOTHING"; break;
+	case 10: return "NOOP"; break;
 	}
 }

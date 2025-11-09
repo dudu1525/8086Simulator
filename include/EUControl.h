@@ -139,9 +139,9 @@ private:
 
 	
 
-	int tempregstoPopulate[2] = { 0,0 }; //for ADD AX, BX,  <<ax, bx values to be on temp regs
+	//int tempregstoPopulate[2] = { 0,0 }; //for ADD AX, BX,  <<ax, bx values to be on temp regs
 
-
+	int aluOpCommand = 0; //signals alu what operation to do, 0-add, 1-sub
 
 
 	std::queue<int> instrQueueFuturePosition; //for puttin on low or high bytes on the data bus

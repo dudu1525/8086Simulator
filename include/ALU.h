@@ -20,7 +20,7 @@ public:
 	int operationToBeExecuted = 0; //0 add, 1 sub
 	state alustate = FREE;
 	
-	int numofIterations = 0; //simulates how many steps does the instruction need to be executed
+	int numofIterations = 100; //simulates how many steps does the instruction need to be executed
 	//4 for add
 	//4 for sub
 

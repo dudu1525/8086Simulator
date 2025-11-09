@@ -38,7 +38,7 @@ void EUControl::euControlStep(MainDataBus* databus)
 
 	case PUT_ON_INTERNAL_REGS: sendDataFromBusToInternalBIURegs(databus); break;
 
-	case SIGNAL_ALU: break;
+	case SIGNAL_ALU:signalALUForStartExec(); break;
 
 	case AWAIT_ALU_OP: break;
 
@@ -196,7 +196,7 @@ void EUControl::decodeinstr()
 		if (modBits == 0b11) // ADD reg reg
 		{
 
-
+			//be careful here of instr ADD LOW, HIGH OR ADD HIGH, LOW, how data is put in buses and regs and temp regs!
 
 		}
 		else
@@ -237,13 +237,20 @@ void EUControl::decodeinstr()
 
 				commandsqueue.push(POPULATE_TEMP_REGISTERS);
 
-				
+				aluOpCommand = 0;//signal addition
+				commandsqueue.push(SIGNAL_ALU);
 
-				//signal ALU (give operation and operands from temp regs)
-				//await alu execution  (alu pops this off
+				commandsqueue.push(AWAIT_ALU_OP);
+
+				//commandsqueue.push(PUT_DATA_ON_BUS);
+			//	locationFromWhenPopulatingDataBus.push(2); //put data from alu
 			
+		
+				//mainregforOutput used for populating register
+				commandsqueue.push(POPULATE_REGISTERS);
 
-				//populate data registers (for this case)
+
+				
 			}
 			else //type add MEM, reg
 			{
@@ -789,6 +796,26 @@ void EUControl::putDataIntoTempRegs(MainDataBus* databus)
 	databus->mainbusstate = databus->FREE;
 	databus->data = 0x0000;
 	printf("From EuControl: Data was put into temp reg from data bus\n");
+	commandsqueue.pop();
+}
+
+void EUControl::signalALUForStartExec()
+{
+	if (commandsqueue.empty() == true)
+		return;
+
+	if (commandsqueue.front() != SIGNAL_ALU)
+		return;
+
+
+	if (euunit->alu.alustate != euunit->alu.FREE)
+		return;
+
+	euunit->alu.setOperandsandOperation(euunit->tempreg1, euunit->tempreg2, aluOpCommand);
+	euunit->tempreg1 = 0x0000;
+	euunit->tempreg2 = 0x0000;
+
+
 	commandsqueue.pop();
 }
 
