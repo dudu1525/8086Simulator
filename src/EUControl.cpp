@@ -210,53 +210,51 @@ void EUControl::decodeinstr()
 			commandsqueue.push(SENDING_FROM_INSTR_QUEUE);
 			instrQueueFuturePosition.push(1);
 
+			commandsqueue.push(PUT_ON_INTERNAL_REGS);
+			locationForInternalRegsWrite.push(2);//put on offset2 in biuInternal
+
+
+
+			if (instrToBeFetched % 2 == 1)//word
+				this->bit8forFetching = false;
+			else
+				this->bit8forFetching = true;
+			commandsqueue.push(SIGNAL_MEM_FETCH_DATA);
+
+			mainRegForInput = mainRegForRegOutput; // input for main data bus!
+			locationFromWhenPopulatingDataBus.push(0);//signal data is needed from data regs
+			commandsqueue.push(PUT_DATA_ON_BUS); //put data on bus from data regs
+
+			locationForTempRegs.push(0);
+			locationForTempRegs.push(1);
+			commandsqueue.push(POPULATE_TEMP_REGISTERS);
+
+			commandsqueue.push(GET_FROM_INTERNAL_REGS);
+
+			commandsqueue.push(POPULATE_TEMP_REGISTERS);
+
+			aluOpCommand = 0;//signal addition
+			commandsqueue.push(SIGNAL_ALU);
+
+			commandsqueue.push(AWAIT_ALU_OP);
+
 			if (dbit == 1) //type ADD REG, MEM
 			{
-				commandsqueue.push(PUT_ON_INTERNAL_REGS);
-				locationForInternalRegsWrite.push(2);//put on offset2
-
-				commandsqueue.push(SIGNAL_MEM_FETCH_DATA); 
-				if (instrToBeFetched % 2 == 1)//word
-					this->bit8forFetching = false;
-				else
-					this->bit8forFetching = true;
-
-
-				mainRegForInput = mainRegForRegOutput; // input for main data bus!
-				commandsqueue.push(PUT_DATA_ON_BUS); //put data on bus from data regs
-				locationFromWhenPopulatingDataBus.push(0);//signal data is needed from data regs
-			
-
-				locationForInternalRegsWrite.push(0); //first temp register
-				locationForInternalRegsWrite.push(1);//second temp register
-				commandsqueue.push(POPULATE_TEMP_REGISTERS);
-
-				
-				commandsqueue.push(GET_FROM_INTERNAL_REGS); 
-
-
-				commandsqueue.push(POPULATE_TEMP_REGISTERS);
-
-				aluOpCommand = 0;//signal addition
-				commandsqueue.push(SIGNAL_ALU);
-
-				commandsqueue.push(AWAIT_ALU_OP);
-
-				//commandsqueue.push(PUT_DATA_ON_BUS);
-			//	locationFromWhenPopulatingDataBus.push(2); //put data from alu
-			
 		
 				//mainregforOutput used for populating register
 				commandsqueue.push(POPULATE_REGISTERS);
 
-
-				
 			}
 			else //type add MEM, reg
 			{
-				mainRegForInput = mainRegForRegOutput;
+				locationForInternalRegsWrite.push(0);//write on data reg1
+				locationForInternalRegsWrite.push(4);//write on offsetreg1
 
+				commandsqueue.push(PUT_ON_INTERNAL_REGS);//one to put data
+				commandsqueue.push(PUT_ON_INTERNAL_REGS);//one to copy offset1 used for fetch
 
+				commandsqueue.push(SIGNAL_MEM_WRITE_DATA);
+				//this is popped after writing data
 			}
 
 
@@ -608,8 +606,16 @@ void EUControl::sendDataFromBusToInternalBIURegs(MainDataBus* databus)
 
 	if (commandsqueue.front() != PUT_ON_INTERNAL_REGS)
 		return;
+
 	if (locationForInternalRegsWrite.empty() == true)
 		return;
+
+	if(locationForInternalRegsWrite.front() == 4)//special put offset1 from offset2
+	{
+		this->intenralbiuregs->regForOffset = this->intenralbiuregs->regForOffset2;
+		locationForInternalRegsWrite.pop();
+		commandsqueue.pop();
+	}
 
 	if (databus->mainbusstate == databus->FREE)
 		return;
@@ -778,7 +784,7 @@ void EUControl::putDataIntoTempRegs(MainDataBus* databus)
 	if (databus->mainbusstate == databus->FREE)
 		return; //something is worng, data should be on bus!
 
-	if (locationForInternalRegsWrite.front() == 0)//first temp reg
+	if (locationForTempRegs.front() == 0)//first temp reg
 	{
 		euunit->tempreg1 = databus->data;
 
@@ -791,7 +797,7 @@ void EUControl::putDataIntoTempRegs(MainDataBus* databus)
 
 
 
-	locationForInternalRegsWrite.pop();
+	locationForTempRegs.pop();
 
 	databus->mainbusstate = databus->FREE;
 	databus->data = 0x0000;

@@ -13,15 +13,15 @@ class InternalBIURegisters;
 
 
 
-//ADD reg,mem
 
 //^ put instr1 q, put instr2 q , put in biuinternalregs, signalBIUFORFETCH,   getFromDataRegs, putOnTempRegs,    GETfromBIUInternal, PUTonTempRegs, signalAlu(give op) and operands
 //await alu(alu will signal this to be popped after executing), PopulateDataRegs , decode
 
 
-
-
 //add mem,reg
+//^put instr1, instr2, put in biuinternalregs, signal biufetch, getfromdataregs, put on tempregs1, getfrombiuInternal, put on temp regs, signal aluop, await alu, 
+//put in biuinternal, signalMemForWrite, (waits for pop), decode
+
 
 //add reg,reg	
 
@@ -149,6 +149,8 @@ private:
 	std::queue<int> locationForInternalRegsWrite; //for choosing where to put data from data bus into internal regs 0-first, 1-second
 
 	std::queue<int> locationFromWhenPopulatingDataBus; //for choosing between register, temp regs, alu the data to be put on main data bus
+
+	std::queue<int> locationForTempRegs;
 
 };
 

@@ -31,18 +31,19 @@ void CPU::loadInstr(MainMemory* mainmem)
 
 	//call memory load instructions 
 
-	uint8_t instr[19] = {
+	uint8_t instr[23] = {
 		0b10111000 ,0x12, 0x14, // MOV AX, 0X1412
 		0b10001001, 0b00000110, 0x10, 0x00, //MOV [0010], AX    
 		0b10110000, 0xaf ,//MOV al, 0XAF
 		0b10001011, 0b00001110, 0x10,0x00,  //MOV CX, [0010]
 		0B10001010, 0b11101000,  //mov ch=101, al=000 
 
-		0b00000010, 0b00101110, 0x10, 0x00     //ADD CX=001, [0010]   add ch, [0010]
+		0b00000011, 0b00001110, 0x10, 0x00,     //ADD CX=001, [0010]   
+		0b00000001, 0b00001110, 0x10,0x20, //MOV [2010], CX
 
 
 	};
-	mainmem->loadInstrIntoMemory(instr,19);
+	mainmem->loadInstrIntoMemory(instr,23);
 
 }
 void CPU::step()
