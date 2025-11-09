@@ -195,8 +195,28 @@ void EUControl::decodeinstr()
 
 		if (modBits == 0b11) // ADD reg reg
 		{
+			decodeRegRegInstr(secondPartOP, instrToBeFetched % 2);
 
-			//be careful here of instr ADD LOW, HIGH OR ADD HIGH, LOW, how data is put in buses and regs and temp regs!
+			locationFromWhenPopulatingDataBus.push(4);//put output first (sub ah,al -> out=ah, 4=out 0=in
+			locationFromWhenPopulatingDataBus.push(0);
+			commandsqueue.push(PUT_DATA_ON_BUS); 
+
+			locationForTempRegs.push(0);//put on first temp reg
+			locationForTempRegs.push(1);//secodn temp reg
+			commandsqueue.push(POPULATE_TEMP_REGISTERS);
+
+
+			commandsqueue.push(PUT_DATA_ON_BUS);
+
+			commandsqueue.push(POPULATE_TEMP_REGISTERS);
+
+
+			aluOpCommand = 0;//signal addition
+			commandsqueue.push(SIGNAL_ALU);
+			commandsqueue.push(AWAIT_ALU_OP);
+
+			commandsqueue.push(POPULATE_REGISTERS);
+
 
 		}
 		else
@@ -648,7 +668,7 @@ void EUControl::sendDataFromBusToInternalBIURegs(MainDataBus* databus)
 
 }
 
-void EUControl::putDataOnBus(MainDataBus* databus)
+void EUControl::putDataOnBus(MainDataBus* databus)//even high bytes are put on the lower part of the bus!
 {
 	if (commandsqueue.empty() == true)
 		return;
@@ -681,6 +701,16 @@ void EUControl::putDataOnBus(MainDataBus* databus)
 
 	case 2://alu
 
+	break;
+
+	case 4:
+		bool bit88;
+		databus->data = euunit->returnRegData(mainRegForRegOutput, &bit88);
+		databus->bit8 = bit88;
+		if (bit88 == true)
+			databus->mainbusstate = databus->LOWER_SET;
+		else
+			databus->mainbusstate = databus->FULL;
 		break;
 
 	}
