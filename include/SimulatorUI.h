@@ -39,6 +39,9 @@ private:
 	void drawSimulatorPanel();
 
 
+	void passInstructions();
+	char inputBuffer[1024 * 4];
+
 	bool inputWindowVisible=true;
 	bool commandsCorrect = false;
 

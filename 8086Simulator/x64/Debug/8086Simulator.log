@@ -1,2 +1,8 @@
 ﻿  CPU.cpp
+D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(247,41): warning C4101: 'e': unreferenced local variable
+D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(250,37): warning C4101: 'e': unreferenced local variable
+D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(280,40): warning C4101: 'e': unreferenced local variable
+D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(283,36): warning C4101: 'e': unreferenced local variable
+D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(337,40): warning C4101: 'e': unreferenced local variable
+D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(340,36): warning C4101: 'e': unreferenced local variable
   8086Simulator.vcxproj -> D:\an3\sem1\scs\8086Simulator\x64\Debug\8086Simulator.exe

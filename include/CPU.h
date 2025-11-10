@@ -26,8 +26,18 @@ public:
 
 	BIUunit biuunit;
 	EUunit euunit;
+	std::vector<std::string>& returnInstructions();
 private:
+	std::vector<std::string> instructionsAssembly;
+	std::vector<uint8_t> instructionsEncoded;
+	bool verifyOneInstruction(std::string currentInstr);
 
+	int numofInstrs=0;//num of bytes sent on memory
+
+
+	//int typeOfInstr = 0; // 0 - mov reg, immd,  1- mov mem/reg, reg/mem
+	// 
+	// 
 	//BIUunit biuunit;
 	//EUunit euunit;
 	// 

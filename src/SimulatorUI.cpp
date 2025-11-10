@@ -171,14 +171,16 @@ void SimulatorUI::drawInputPanel()
     ImGui::SetWindowFontScale(1.0f);
 
 
-    static char inputBuffer[1024 * 4] = "";
+    
 
     ImGui::SetCursorPosX(centerwidget);
     ImGui::SetCursorPosY(110);
     ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
   //  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0, 0, 0, 1));
+  //  memset(inputBuffer, 0x00, 1024 * 4);
     if (ImGui::InputTextMultiline("##input", inputBuffer, IM_ARRAYSIZE(inputBuffer), ImVec2(widgetWidth, 500)))
     {
+       
 
         commandsCorrect = false;
     }
@@ -188,11 +190,23 @@ void SimulatorUI::drawInputPanel()
     ImGui::SetCursorPosY(650);
     if (ImGui::Button("Verify Commands", ImVec2(300, 50)))
     {
-       
+        passInstructions();
+        if (cpu->verifyInstructionsGiven()==true)
+        {
+
+           
+            commandsCorrect = true;
+
+        }
+        else
+        {
+            commandsCorrect = false;
+           
+        }
         //call bool cpu.verifycommands
         //based on the result, make the save and begin visible
 
-        commandsCorrect = true;
+   
     }
     if (commandsCorrect)
     {
@@ -203,7 +217,10 @@ void SimulatorUI::drawInputPanel()
             //cpu encodeIntoMachineCode
         }
     }
-
+    else
+    {
+        ImGui::Text("Instructions are not correct!");
+    }
     //can have another panel in which the encoded instructions are visible (the 001etc format)
 
 
@@ -381,5 +398,57 @@ void SimulatorUI::drawSimulatorPanel()
 
 
     //maybe add a command being executed right now: 
+
+}
+
+void SimulatorUI::passInstructions()
+{
+
+    std::vector<std::string>& instructions = cpu->returnInstructions();
+    instructions.clear();
+    int index = 0;
+    int numLines = 0;
+    char linebuffer[1024];
+    int linesize = 0;
+    while (inputBuffer[index] != '\0')
+    {
+
+        if (inputBuffer[index] != '\n')
+        {
+            linebuffer[linesize] = inputBuffer[index];
+            linesize++;
+
+       }
+        else
+        {       
+            linebuffer[linesize] = '\0';
+            instructions.push_back(linebuffer);
+            linesize = 0;
+            numLines++;
+            memset(linebuffer, '\0', 1024);
+
+
+        }
+
+
+
+        index++;
+   }
+    if (linesize > 0)
+    {
+        linebuffer[linesize] = '\0';
+        instructions.push_back(linebuffer);
+    }
+
+    //filter the ones without anything in them
+    for (int i = 0; i < instructions.size(); )
+    {
+        if (instructions[i].empty()) 
+            instructions.erase(instructions.begin() + i);
+        else
+            i++;
+    }
+
+
 
 }
