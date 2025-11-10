@@ -310,6 +310,8 @@ void SimulatorUI::drawSimulatorPanel()
         ImGui::Text("%02x", queueReff[i]);
         ImGui::SameLine();
     }
+    ImGui::Dummy(ImVec2(0.0f, 10.0f));
+    ImGui::Text("Instructions in queue:%d", this->cpu->biuunit.instrqueue.numOfInstr);
 
     ImGui::EndChild();
     ImGui::Text("Flags");

@@ -32,22 +32,28 @@ void CPU::loadInstr(MainMemory* mainmem)
 	//call memory load instructions 
 
 	uint8_t instr[30] = {
-		0b10111000 ,0x12, 0x14, // MOV AX, 0X1412
+		0b10111000 ,0x12, 0x00, // MOV AX, 0X1412
 		0b10001001, 0b00000110, 0x10, 0x00, //MOV [0010], AX    
-		0b10110000, 0xaf ,//MOV al, 0XAF
-		0b10001011, 0b00001110, 0x10,0x00,  //MOV CX, [0010]
+		0b00000011, 0b00000110, 0x10, 0x00, //ADD AX, [0010]
+		0b11101001, 0x07, 0x00, //JMP  //jumps to 0x0007, 
+
 		0B10001010, 0b11101000,  //mov ch=101, al=000 
 
-		0b00000011, 0b00001110, 0x10, 0x00,     //ADD CX=001, [0010]   
+		0b10001011, 0b00011110, 0x10,0x00,  //MOV BX, [0010]           <<<SHOULD GO HERE!!!!
+		0b00000011, 0b00001110, 0x10, 0x00,     //ADD CX=001, [0010]      
 		0b00000000, 0b00101110, 0x10,0x00, //ADD [0010], CX    cl now
-		0b10001011, 0b00011110, 0x10,0x00,  //MOV BX, [0010]
+
 		0b00000010, 0b11101001, //add ch, cl
-
-
-		//NEED TO CHECK THE MEMORY AT THAT LOCATION WITH A MOV
-		//IF GOOD, NEED TO TEST ON 8BITS
+		
 
 	};
+	//decode in the instr directly the address of the label!!! so just modify directly the IP
+	// 
+	//when wanna go back, the decoder sees if label is specified, and if its back, it computes the 
+	//offset based on the 2scomplement.
+	//the instr itself just modifies the ip! and adds whats required, (wraps around for negative values=high numbers)
+	//jmp label ==> jmp offset from jump to label (relative)
+
 	mainmem->loadInstrIntoMemory(instr,30);
 
 }

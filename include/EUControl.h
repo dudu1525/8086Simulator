@@ -14,20 +14,13 @@ class InternalBIURegisters;
 
 
 
-
-
-
-//add reg,reg	
-
-//get from first reg, put on first temp reg, get from second reg, populate second reg, 
-//signal alu, await alu, put on data reg
-
-
+//jump -->flushcomponents, decode  <-empty temp regs, main data bus, biu internal units, alu, restart biu control state, biu buses 
+//New IP = (Address of the JMP instruction + 3) + 16-bit signed offset
 
 //add reg, immd
 
 //sub
-//jump
+
 
 class EUControl {
 
@@ -58,7 +51,7 @@ public:
 
 	void putDataIntoTempRegs(MainDataBus* databus);
 
-
+	void flushComponents(MainDataBus* databus);
 
 	void signalALUForStartExec();
 
@@ -82,6 +75,7 @@ public:
 		SIGNAL_MEM_WRITE_DATA,      
 		SIGNAL_MEM_FETCH_DATA,
 		AWAIT_ALU_OP,
+		FLUSH_COMPONENTS,
 
 		UPDATE_FLAGS
 		//can combine some of the states, to do more
@@ -102,6 +96,8 @@ public:
 	uint8_t currentDecodedInstruction;
 	const char* returnCurrentDecodedInst();
 
+	uint16_t computedIp = 0x0000;
+
 private:
 	/////////////////////////////////refferences
 	EUunit* euunit;
@@ -117,7 +113,7 @@ private:
 	bool decodeRegister(uint8_t mainByte, uint8_t byteWithWbit, bool typeOfInstr);
 	void decodeRegRegInstr(uint8_t byteToBeDecoded, int bit8);
 
-
+	void decodeJumpInstr(uint16_t opcodeByte);
 
 
 	/////////////////////////////////variables to indicate flow of execution
@@ -150,6 +146,9 @@ private:
 	std::queue<int> locationFromWhenPopulatingDataBus; //for choosing between register, temp regs, alu the data to be put on main data bus
 
 	std::queue<int> locationForTempRegs;
+
+
+	bool flagNotEnoughBytes = false;
 
 };
 

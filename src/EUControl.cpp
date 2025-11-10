@@ -50,6 +50,8 @@ void EUControl::euControlStep(MainDataBus* databus)
 
 	case SIGNAL_MEM_FETCH_DATA: signalBIUForFetch();  break;
 
+	case FLUSH_COMPONENTS: flushComponents(databus); break;
+
 	case UPDATE_FLAGS:  break;
 
 	default: std::cout << "Front state: UNKNOWN\n"; break;
@@ -283,6 +285,15 @@ void EUControl::decodeinstr()
 
 		commandsqueue.push(DECODING);
 	}
+	else if ((instrToBeFetched >> 2 & 0b111111) == 0b111010)//jump instr
+	{
+
+		decodeJumpInstr(instrToBeFetched);
+		if (flagNotEnoughBytes == true)
+			return;
+	}
+
+	printf("Instr being decoded:%x\n", instrToBeFetched);
 
 	commandsqueue.pop();
 }
@@ -317,6 +328,7 @@ void EUControl::printCurrentState()
 		case SIGNAL_MEM_FETCH_DATA: std::cout << "Front state: SIGNAL_MEM_FETCH_DATA\n"; break;
 		case AWAIT_ALU_OP:std::cout << "Front state: AWAIT ALU DATA\n"; break;
 		case UPDATE_FLAGS: std::cout << "Front state: UPDATE_FLAGS\n"; break;
+		case FLUSH_COMPONENTS: std::cout << "Front state:FLUSH COMPONENTS\n"; break;
 		default: std::cout << "Front state: UNKNOWN\n"; break;
 		}
 	
@@ -361,6 +373,7 @@ const char* EUControl::returnCurrentState()
 	case SIGNAL_MEM_FETCH_DATA: return "Front state: SIGNAL_MEM_FETCH_DATA\n"; break;
 	case AWAIT_ALU_OP:return "Front state: AWAIT ALU DATA\n"; break;
 	case UPDATE_FLAGS: return "Front state: UPDATE_FLAGS\n"; break;
+	case FLUSH_COMPONENTS: return "Front state: Flushing Components"; break;
 	default: return "Front state: UNKNOWN\n"; break;
 	}
 
@@ -540,6 +553,50 @@ void EUControl::decodeRegRegInstr(uint8_t byteToBeDecoded, int bit8)
 
 
 	}
+
+
+}
+void EUControl::decodeJumpInstr(uint16_t opcodeByte)
+{
+
+	if ((opcodeByte >> 1) % 2 == 0)//2 instructions to be fetched
+	{
+		if (instrqueue->availableAmountOfBytes(3) == false)
+		{
+			flagNotEnoughBytes = true;
+			return;
+		}
+		else
+			flagNotEnoughBytes = false;
+		
+		uint16_t jumpAddress=instrqueue->dequeue2();
+	          
+		uint8_t lowbyte = instrqueue->frontOfQueue();
+		instrqueue->dequeue();
+		uint8_t highbyte = instrqueue->frontOfQueue();
+		instrqueue->dequeue();
+
+		computedIp = (highbyte << 8) | lowbyte;//still unsigned, direct value to IP!
+
+		//printf("OffsetGiven: %x\n", offsetGiven);
+		//computedIp= jumpAddress + 3 + offsetGiven;  //<for positive   >for negative: jumpAddress+offset
+		//printf("NEW IP: %x\n", computedIp);
+
+
+	}
+	else//only 1 instruction needs fetch, special type of jump
+	{
+		if (instrqueue->availableAmountOfBytes(2) == false)
+			return;
+
+
+
+
+
+	}
+	commandsqueue.push(FLUSH_COMPONENTS);
+	commandsqueue.push(DECODING);
+
 
 
 }
@@ -833,6 +890,27 @@ void EUControl::putDataIntoTempRegs(MainDataBus* databus)
 	databus->data = 0x0000;
 	printf("From EuControl: Data was put into temp reg from data bus\n");
 	commandsqueue.pop();
+}
+
+void EUControl::flushComponents(MainDataBus* databus)
+{
+	if (commandsqueue.empty() == true)
+		return;
+
+	if (commandsqueue.front() != FLUSH_COMPONENTS)
+		return;
+
+	this->instrqueue->flushQueue();
+	this->euunit->tempreg1 = 0x0000;
+	this->euunit->tempreg2 = 0x0000;
+	databus->data = 0x0000;
+	databus->mainbusstate =	databus->FREE;
+	databus->bit8 = false;
+	this->euunit->alu.flushAlu();
+
+	this->biucontrol->flushSignal = true;
+
+
 }
 
 void EUControl::signalALUForStartExec()

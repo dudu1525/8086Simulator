@@ -81,6 +81,16 @@ void ALU::putOnBus(MainDataBus* maindatabus, EUControl* eucontrol)
 	eucontrol->popState();
 }
 
+void ALU::flushAlu()
+{
+	alustate = FREE;
+	operationToBeExecuted = 0;
+	result = 0x0000;
+	operand1 = 0x0000;
+	operand2 = 0x0000;
+	numofIterations = 100;
+}
+
 const char* ALU::returnState()
 {
 

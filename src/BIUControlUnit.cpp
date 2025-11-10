@@ -18,6 +18,23 @@ void BIUControlUnit::fetchInstrFromMem(BiuAddressBus* address, InstructionQueue*
 
 	//PUT CONDITION IF INSTRUCTION QUEUE IS NOT FULL!!!! SO <5
 
+	if (this->flushSignal == true)
+	{
+		flushSignal = false;
+		state = FREE;
+		address->addressbusState = address->FREE;
+		membus->mainmembusstate = membus->FREE;
+		address->addressbus = 0x0000;
+		membus->addressbus = 0x0000;
+		membus->databus = 0x0000;
+		membus->flag8 = false;
+		
+
+		segreg->ip = eucontrol->computedIp;
+		this->eucontrol->popState();
+		return;
+	}
+
 	if (q->isQueueFull() == true)
 	{
 		printf("Instructions Queue is Full!\n");
@@ -26,7 +43,7 @@ void BIUControlUnit::fetchInstrFromMem(BiuAddressBus* address, InstructionQueue*
 
 
 
-	//^^make special function for that
+	
 
 	if (state != FREE && state != READING_INSTR)
 		return;
@@ -49,13 +66,14 @@ void BIUControlUnit::fetchInstrFromMem(BiuAddressBus* address, InstructionQueue*
 	if (membus->mainmembusstate == membus->SENDING_RECEIVING_ADDRESS)//fetch data from memory and put it on instruction queue
 	{
 		
-		if (q->enqueue(memory->readFromMemory(false)) == true)//successfull enqueue to  instruction queue
+		if (q->enqueue(memory->readFromMemory(false), segreg->ip) == true)//successfull enqueue to  instruction queue
 		{
 			membus->mainmembusstate = membus->FREE;
 			writeToMemFlag = 2;
 			printf("From biu control:(reading instr)(3) 2 instructions fetched from memory succesfully!\n");
-
+		
 			state = FREE;
+			segreg->ip += 2;//increment instruction pointer so it points to next instruction	
 		}
 		else
 			std::cout << "(reading instr)(3) INSTRUCTION QUEUE FULL!!" << std::endl;
@@ -67,7 +85,7 @@ void BIUControlUnit::fetchInstrFromMem(BiuAddressBus* address, InstructionQueue*
 	if (address->addressbusState == address->FREE)//put address on internal address bus
 	{
 		uint32_t transfAddress = computeunit->generatePhysicalAddress(segreg->csreg, segreg->ip);
-		segreg->ip+=2;//increment instruction pointer so it points to next instruction
+		
 		address->addressbusState = address->OCCUPIED_WITH_DATA;
 		address->addressbus = transfAddress;
 		printf("From BIUControl(reading instr)(1):Address fetched from cs:ip and put on interal address bus and putting on external address bus:%x\n",transfAddress );

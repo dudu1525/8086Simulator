@@ -21,6 +21,8 @@ public:
 	int segmentUsedToWrite = 0;// 0-ds, 1-es, 2-ss for when needing to write data from data bus to memory, set by eu I think, when sending signal to write to mem
 	bool bit8=false;//false->16bit sent, true->8bit sent
 
+	bool flushSignal = false;
+
 	enum BIUControlState{
 		FREE,
 		READING_INSTR,
@@ -45,6 +47,7 @@ public:
 	void getEUControlReff(EUControl* eucontrol);
 	
 	const char* returnCurrentState();
+	//int numofInstrToRead = 0;//there will be a problem when 'inter segment jump' happens!
 private:
 	int writeToMemFlag = 2; //flag needed so data isnt written when theres an operation of reading being done
 							//0- reading, 1-writing 2-idle
