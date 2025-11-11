@@ -3,6 +3,7 @@
 #define SIZE 1024*1024
 #include <cstdlib>
 #include <iostream>
+#include <vector>
 class MainMemory {
 
 private:
@@ -29,7 +30,7 @@ public:
 	uint16_t readFromMemory(bool flag8);
 	bool writeToMemory(uint16_t data, bool flag8);
     bool setAddress(uint32_t addr);
-    bool loadInstrIntoMemory(uint8_t instr[],int size);
+    bool loadInstrIntoMemory(std::vector<uint8_t> instr,int size);
 
 
 

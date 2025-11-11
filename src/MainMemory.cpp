@@ -46,13 +46,13 @@ bool MainMemory::setAddress(uint32_t addr)
 	return true;
 }
 
-bool MainMemory::loadInstrIntoMemory(uint8_t instr[],int size)
+bool MainMemory::loadInstrIntoMemory(std::vector<uint8_t> instr,int size)
 { //start in cs offset:
 	uint32_t address=0x1000;
 
 	for (int i = 0; i < size; i++)
 	{
-		mem[address + i] = instr[i];
+		mem[address + i] = instr.at(i);
 	}
 	
 
