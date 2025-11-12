@@ -84,7 +84,7 @@ void BIUControlUnit::fetchInstrFromMem(BiuAddressBus* address, InstructionQueue*
 	
 	if (address->addressbusState == address->FREE)//put address on internal address bus
 	{
-		uint32_t transfAddress = computeunit->generatePhysicalAddress(segreg->csreg, segreg->ip);
+		uint32_t transfAddress = computeunit->generatePhysicalAddress(segreg->csreg, segreg->ip, 0);
 		
 		address->addressbusState = address->OCCUPIED_WITH_DATA;
 		address->addressbus = transfAddress;
@@ -172,9 +172,9 @@ void BIUControlUnit::writeDataToMem(BiuAddressBus* address, MainMembus* membus, 
 	{
 		uint32_t transfAddress{};
 		if (segmentUsedToWrite == 0)
-			transfAddress = computeunit->generatePhysicalAddress(segreg->dsreg, internalregs->regForOffset);
+			transfAddress = computeunit->generatePhysicalAddress(segreg->dsreg, internalregs->regForOffset,1);
 		else if (segmentUsedToWrite == 1)
-			transfAddress = computeunit->generatePhysicalAddress(segreg->esreg, internalregs->regForOffset);
+			transfAddress = computeunit->generatePhysicalAddress(segreg->esreg, internalregs->regForOffset,1);
 
 		address->addressbusState = address->OCCUPIED_WITH_DATA;
 		address->addressbus = transfAddress;
@@ -256,9 +256,9 @@ void BIUControlUnit::fetchDataFromMem(MainMembus* membus, MainMemory* memory, Bi
 	{
 		uint32_t transfAddress{};
 		if (segmentUsedToWrite == 0)
-			transfAddress = computeunit->generatePhysicalAddress(segreg->dsreg, internalregs->regForOffset2);
+			transfAddress = computeunit->generatePhysicalAddress(segreg->dsreg, internalregs->regForOffset2,1);
 		else if (segmentUsedToWrite == 1)
-			transfAddress = computeunit->generatePhysicalAddress(segreg->esreg, internalregs->regForOffset2);
+			transfAddress = computeunit->generatePhysicalAddress(segreg->esreg, internalregs->regForOffset2,1);
 
 		address->addressbusState = address->OCCUPIED_WITH_DATA;
 		address->addressbus = transfAddress;

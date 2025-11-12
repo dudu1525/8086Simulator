@@ -244,43 +244,18 @@ void SimulatorUI::drawSimulatorPanel()
     ImGui::BeginChild("CommandArea", ImVec2(0, io.DisplaySize.y - 100), true); 
      
 
-    ImGui::Columns(4, nullptr, false);
-    //first column
+    ImGui::Columns(5, nullptr, false);
+    ImGui::SetColumnWidth(0, 300.0f);
+    ImGui::SetColumnWidth(1, 300.0f);
+    ImGui::SetColumnWidth(2, 300.0f);
+    ImGui::SetColumnWidth(3, 150.0f);
+    ImGui::SetColumnWidth(4, 330.0f);
+    /////////////////////////////////////////////////////////////////////////// //first column
 
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
-    //Data Registers
-    ImGui::BeginChild("FirstColumn", ImVec2(0, 0), true);
-    ImGui::Text("Data Registers");
-
-    ImGui::BeginChild("DataRegs", ImVec2(0, 200), true);
-    ImGui::Text("AX: %04x", cpu->euunit.ax);
-    ImGui::Text("BX: %04x", cpu->euunit.bx);
-    ImGui::Text("CX: %04x", cpu->euunit.cx);
-    ImGui::Text("DX: %04x", cpu->euunit.dx);
-    ImGui::Dummy(ImVec2(0.0f, 10.0f));
-    ImGui::Text("SP: %04x", cpu->euunit.sp);
-    ImGui::Text("BP: %04x", cpu->euunit.bp);
-    ImGui::Text("SI: %04x", cpu->euunit.si);
-    ImGui::Text("DI: %04x", cpu->euunit.di);
-
-    ImGui::EndChild();
-    ImGui::Dummy(ImVec2(0.0f, 10.0f));
-    //Segment Registers
-    ImGui::Text("Segment Registers");  
-    ImGui::BeginChild("SegRegs", ImVec2(0, 200), true);
-
-    ImGui::Dummy(ImVec2(0.0f, 10.0f));
-    ImGui::Text("DS: %04x", cpu->biuunit.segreg.dsreg);
-    ImGui::Text("SS: %04x", cpu->biuunit.segreg.ssreg);
-    ImGui::Text("ES: %04x", cpu->biuunit.segreg.esreg);
-    ImGui::Text("CS: %04x", cpu->biuunit.segreg.csreg);
-    ImGui::Dummy(ImVec2(0.0f, 10.0f));
-    ImGui::Text("IP: %04x", cpu->biuunit.segreg.ip);
-    ImGui::EndChild();
-    ImGui::Dummy(ImVec2(0.0f, 10.0f));
-    //Internal BIU Registers
+    ////////////////////////////////Internal BIU Registers
     ImGui::Text("Internal BIU Registers");
-    ImGui::BeginChild("BIURegs", ImVec2(0, 200), true);
+    ImGui::BeginChild("BIURegs", ImVec2(0, 110), true);
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
     ImGui::Text("DataReg1: %04x", cpu->biuunit.internalregs.regForData);
     ImGui::Text("OffsetReg1: %04x", cpu->biuunit.internalregs.regForOffset);
@@ -290,14 +265,14 @@ void SimulatorUI::drawSimulatorPanel()
     ImGui::EndChild();
 
 
-    ImGui::EndChild();
+    ImGui::Text("Current instr index:%d", cpu->euunit.eucontrol.currentInstructionIndex);
 
 
 
-
+    /////////////////////////////////////////////////////////////////////////// //second column
     ImGui::NextColumn();
-    //second column
-    ImGui::BeginChild("SecondColumn", ImVec2(0, 0), true);
+   
+   
     ImGui::Text("BIU Control Unit");
    
     ImGui::BeginChild("BIUcontrol", ImVec2(0, 200), true);
@@ -318,6 +293,7 @@ void SimulatorUI::drawSimulatorPanel()
     ImGui::EndChild();
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
+
     ImGui::Text("Instructions Queue");
 
     ImGui::BeginChild("InstrQueue", ImVec2(0, 100), true);
@@ -331,17 +307,19 @@ void SimulatorUI::drawSimulatorPanel()
     ImGui::Text("Instructions in queue:%d", this->cpu->biuunit.instrqueue.numOfInstr);
 
     ImGui::EndChild();
+
+
     ImGui::Text("Flags");
     ImGui::BeginChild("Flags", ImVec2(0, 150), true);
 
     ImGui::EndChild();
    
 
-    ImGui::EndChild();
+    
 
 
     ImGui::NextColumn();
-    //third column
+    /////////////////////////////////////////////////////////////////////////////   //third column
     ImGui::Text("ALU");
     ImGui::BeginChild("ALU", ImVec2(0, 150), true);
     ImGui::Text("Opperand 1: %04x\n", cpu->euunit.alu.operand1);
@@ -377,24 +355,125 @@ void SimulatorUI::drawSimulatorPanel()
     ImGui::Text("Current state: %s", cpu->biuunit.incomingbiudata.returnState());
     ImGui::EndChild();
 
-
+    /////////////////////////////////////////////////////////////////////////////// 4th column
     ImGui::NextColumn();
-    //4th column
-    ImGui::Text("Main Memory");
-    ImGui::BeginChild("Memory", ImVec2(0, 250), true);
+    ImGui::Dummy(ImVec2(0.0f, 10.0f));
+    /////////////////////////////////////////Data Registers
+
+    ImGui::Text("Data Registers");
+
+    ImGui::BeginChild("DataRegs", ImVec2(120, 170), true);
+    ImGui::Text("AX: %04x", cpu->euunit.ax);
+    ImGui::Text("BX: %04x", cpu->euunit.bx);
+    ImGui::Text("CX: %04x", cpu->euunit.cx);
+    ImGui::Text("DX: %04x", cpu->euunit.dx);
+    ImGui::Dummy(ImVec2(0.0f, 10.0f));
+    ImGui::Text("SP: %04x", cpu->euunit.sp);
+    ImGui::Text("BP: %04x", cpu->euunit.bp);
+    ImGui::Text("SI: %04x", cpu->euunit.si);
+    ImGui::Text("DI: %04x", cpu->euunit.di);
+
+    ImGui::EndChild();
+    ImGui::Dummy(ImVec2(0.0f, 10.0f));
+    /////////////////////////////////////Segment Registers
+    ImGui::Text("Segment Registers");
+    ImGui::BeginChild("SegRegs", ImVec2(120, 140), true);
+
+    ImGui::Dummy(ImVec2(0.0f, 10.0f));
+    ImGui::Text("DS: %04x", cpu->biuunit.segreg.dsreg);
+    ImGui::Text("SS: %04x", cpu->biuunit.segreg.ssreg);
+    ImGui::Text("ES: %04x", cpu->biuunit.segreg.esreg);
+    ImGui::Text("CS: %04x", cpu->biuunit.segreg.csreg);
+    ImGui::Dummy(ImVec2(0.0f, 10.0f));
+    ImGui::Text("IP: %04x", cpu->biuunit.segreg.ip);
     ImGui::EndChild();
 
+
+    ImGui::NextColumn();
+    /////////////////////////////////////////////////////////////////////////////      //5th column
+    ///////////////////////////////////////////////////code segment
+    ImGui::Text("Main Memory");
+    ImGui::Text("Code Segment Memory");
+    ImGui::BeginChild("Memory1", ImVec2(0, 150), true);
+   
+  
+    uint8_t val = 0x01;
+    uint32_t startAddressCS = 0x1000;
+    for (int j=0;j<6554;j++)
+    {
+        ImGui::Text("%05x x: ", startAddressCS+j*10);
+        ImGui::SameLine();
+        for (int i = 0; i < 10; i++)
+        {
+            ImGui::Text("%02x", memory->returnAddressAt(startAddressCS + j * 10 + i) );
+            ImGui::SameLine();
+        }
+        ImGui::Dummy(ImVec2(0.0f, 10.0f));
+    }
+
+    ImGui::EndChild();
+
+
+    ///////////////////////////////////////////////////data segment
+    ImGui::Text("Data Segment Memory");
+    ImGui::BeginChild("Memory2", ImVec2(0, 150), true);
+  
+    uint32_t startAddressDS = 0x012000;
+    uint8_t val2 = 0x03;
+    for (int j = 0; j < 6554; j++)
+    {
+        ImGui::Text("%05x x: ", startAddressDS + j * 10);
+        ImGui::SameLine();
+        for (int i = 0; i < 10; i++)
+        {
+            ImGui::Text("%02x", memory->returnAddressAt(startAddressDS + j * 10 + i));
+            ImGui::SameLine();
+        }
+        ImGui::Dummy(ImVec2(0.0f, 10.0f));
+    }
+
+    ImGui::EndChild();
+
+
+    ///////////////////////////////////////////////////stack segment
+    ImGui::Text("Stack Segment Memory");
+    ImGui::BeginChild("Memory3", ImVec2(0, 150), true);
+
+    uint32_t startAddressSS = 0x023000;
+    uint8_t val3 = 0x02;
+    for (int j = 0; j < 6554; j++)
+    {
+        ImGui::Text("%05x x: ", startAddressSS + j * 10);
+        ImGui::SameLine();
+        for (int i = 0; i < 10; i++)
+        {
+            ImGui::Text("%02x", memory->returnAddressAt(startAddressSS + j * 10 + i));
+            ImGui::SameLine();
+        }
+        ImGui::Dummy(ImVec2(0.0f, 10.0f));
+    }
+
+    ImGui::EndChild();
+
+
+
+    ///////////////////////////////////////////////////external mem bus
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
     ImGui::Text("Exterior Memory BUS");
-    ImGui::BeginChild("Memorybus", ImVec2(0, 250), true);
+
+    ImGui::BeginChild("Memorybus", ImVec2(0, 70), true);
     ImGui::Text("Current data: %04x\n", cpu->biuunit.membus.databus);
     ImGui::Text("Current address used: %08x\n", cpu->biuunit.membus.addressbus);
     ImGui::Text("Current state: %s", cpu->biuunit.membus.returnState());
-
     ImGui::EndChild();
 
-    ImGui::EndChild();
+
+
+
+
+   
+    ImGui::EndChild();//finalize the columns
 
 
     //maybe add a command being executed right now: 

@@ -11,7 +11,8 @@ class EUunit {
 public:
 	EUunit();
 	uint16_t tempreg1, tempreg2; //temp regs before alu
-	uint16_t sp, bp, di, si;
+    uint16_t sp = 0xFFFF;//this shouldnt go lower than ffff, overflow must be checked!
+        uint16_t bp, di, si;
     union {
         struct {
             uint8_t al;

@@ -66,7 +66,7 @@ void CPU::decodeInstr(std::string currentInstr)
 	else if (words.at(0) == "add")
 	{
 
-
+		decodeADD(words);
 	}
 	else if (words.at(0) == "sub")
 	{
@@ -75,7 +75,7 @@ void CPU::decodeInstr(std::string currentInstr)
 	}
 	else if (words.at(0) == "jmp")
 	{
-
+		decodeJMP(words);
 	}
 
 
@@ -406,6 +406,7 @@ bool CPU::verifyOneInstruction(std::string currentInstr)
 
 void CPU::decodeMOV(std::vector<std::string> instruction)
 {
+	
 	if (isRegister(instruction.at(1)) && isRegister(instruction.at(2)))
 	{	//0b 100010 d w
 		//88 or 89 or 8a or 8b
@@ -453,10 +454,74 @@ void CPU::decodeMOV(std::vector<std::string> instruction)
 	}
 	else//mov reg, immd B_
 	{
+		
 		instructionsEncoded.push_back(decodeOneRegister(instruction.at(1), 0));
 		transformToBytes(instruction.at(2), 1);
 	}
 
+}
+
+void CPU::decodeADD(std::vector<std::string> instruction)
+{
+	if (isRegister(instruction.at(1)) && isRegister(instruction.at(2)))
+	{	//0b 000000 d w
+		//00 01 02 03
+		if (numBytes == 0)//byte
+		{
+			instructionsEncoded.push_back(0B00000010);
+
+		}
+		else//word
+		{
+			instructionsEncoded.push_back(0B00000011);
+
+		}
+
+		instructionsEncoded.push_back(decodeRegisters(instruction.at(1), instruction.at(2)));
+
+	}
+	else if (isRegister(instruction.at(1)) && isMemory(instruction.at(2)))//add reg, mem
+	{
+		if (numBytes == 0)
+		{
+			instructionsEncoded.push_back(0B00000010);
+		}
+		else
+		{
+			instructionsEncoded.push_back(0B00000011);
+		}
+
+		instructionsEncoded.push_back(decodeOneRegister(instruction.at(1), 1));
+		transformToBytes(instruction.at(2), 0);
+	}
+	else if (isRegister(instruction.at(2)) && isMemory(instruction.at(1)))//mov mem, reg
+	{
+		if (numBytes == 0)
+		{
+			instructionsEncoded.push_back(0B00000000);
+		}
+		else
+		{
+			instructionsEncoded.push_back(0B00000001);
+		}
+
+		instructionsEncoded.push_back(decodeOneRegister(instruction.at(2), 1));
+		transformToBytes(instruction.at(1), 0);
+	}
+	else//mov reg/mem, immd B_
+	{
+		//instructionsEncoded.push_back(decodeOneRegister(instruction.at(1), 0));
+		//transformToBytes(instruction.at(2), 1);
+	}
+
+
+}
+
+void CPU::decodeJMP(std::vector<std::string> instruction)
+{
+	instructionsEncoded.push_back(0b11101001);
+	numBytes = 1;
+	transformToBytes(instruction.at(1), 1);
 }
 
 bool CPU::isMemory(std::string argument)
@@ -617,7 +682,7 @@ uint8_t CPU::decodeOneRegister(std::string argument, int direction)
 
 	if (direction == 1)//reg, mem  or mem/reg
 	{
-		return (0b11000000 | (reg1 << 3) | 0b110);
+		return (0b00000000 | (reg1 << 3) | 0b110); //first 2-0s means no mem displacement 
 
 	}
 	else//reg, immd

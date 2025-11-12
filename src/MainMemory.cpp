@@ -1,5 +1,10 @@
 #include "./../include/MainMemory.h"
 
+uint8_t MainMemory::returnAddressAt(uint32_t addr)
+{
+	return mem[(addr & 0x000fffff)];
+}
+
 uint16_t MainMemory::readFromMemory(bool flag8)
 {//data is taken, inversed and sent
 	if (addressAvailable == false)

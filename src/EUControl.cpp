@@ -181,7 +181,7 @@ void EUControl::decodeinstr()
 
 		
 	}
-	else if ((instrToBeFetched >> 2 & 0b111111) == 0b000000) //type ADD
+	else if ((instrToBeFetched >> 2 & 0b111111) == 0b000000) ///////////////////////////////////////////////////////type ADD
 	{
 		fetchSkipped = true;//means pop the state after signaling to the BIUControl
 		getDataFromBIU = false;
@@ -285,7 +285,7 @@ void EUControl::decodeinstr()
 
 		commandsqueue.push(DECODING);
 	}
-	else if ((instrToBeFetched >> 2 & 0b111111) == 0b111010)//jump instr
+	else if ((instrToBeFetched >> 2 & 0b111111) == 0b111010)/////////////////////////////////////////////////////jump instr
 	{
 
 		decodeJumpInstr(instrToBeFetched);
@@ -294,7 +294,8 @@ void EUControl::decodeinstr()
 	}
 
 	printf("Instr being decoded:%x\n", instrToBeFetched);
-
+	
+	currentInstructionIndex++;
 	commandsqueue.pop();
 }
 
@@ -577,6 +578,8 @@ void EUControl::decodeJumpInstr(uint16_t opcodeByte)
 		instrqueue->dequeue();
 
 		computedIp = (highbyte << 8) | lowbyte;//still unsigned, direct value to IP!
+
+		currentInstructionIndex = computedIp;
 
 		//printf("OffsetGiven: %x\n", offsetGiven);
 		//computedIp= jumpAddress + 3 + offsetGiven;  //<for positive   >for negative: jumpAddress+offset

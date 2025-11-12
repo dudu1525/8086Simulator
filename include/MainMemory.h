@@ -13,7 +13,7 @@ private:
    
 public:
     bool addressAvailable = true; //flag that signals if the value is available to be written
-
+    uint8_t returnAddressAt(uint32_t addr);
     MainMemory() {
         mem = (uint8_t*)std::calloc(SIZE, sizeof(uint8_t));
         if (!mem) {
@@ -32,6 +32,8 @@ public:
     bool setAddress(uint32_t addr);
     bool loadInstrIntoMemory(std::vector<uint8_t> instr,int size);
 
+    uint32_t startInstrAddress=0x00001000;//display like 20 for a read, init 
+    uint32_t startWrFetchAddress;//display like 20 at each fetch/write
 
 
 
