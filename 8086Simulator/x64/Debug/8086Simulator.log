@@ -1,19 +1,11 @@
 ﻿  CPU.cpp
-D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(114,76): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(287,41): warning C4101: 'e': unreferenced local variable
-D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(290,37): warning C4101: 'e': unreferenced local variable
-D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(320,40): warning C4101: 'e': unreferenced local variable
-D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(323,36): warning C4101: 'e': unreferenced local variable
-D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(377,40): warning C4101: 'e': unreferenced local variable
-D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(380,36): warning C4101: 'e': unreferenced local variable
-  EUControl.cpp
-D:\an3\sem1\scs\8086Simulator\src\EUControl.cpp(854,41): warning C4244: 'argument': conversion from 'uint16_t' to 'uint8_t', possible loss of data
-  EUunit.cpp
-  Main.cpp
-  SimulatorUI.cpp
-  Generating Code...
-D:\an3\sem1\scs\8086Simulator\src\SimulatorUI.cpp(62,1): warning C4715: 'SimulatorUI::initWindow': not all control paths return a value
-D:\an3\sem1\scs\8086Simulator\include\BiuAddressBus.h(24,1): warning C4715: 'BiuAddressBus::returnState': not all control paths return a value
-D:\an3\sem1\scs\8086Simulator\include\MainMembus.h(29,1): warning C4715: 'MainMembus::returnState': not all control paths return a value
-D:\an3\sem1\scs\8086Simulator\src\EUunit.cpp(197,1): warning C4715: 'EUunit::returnRegData': not all control paths return a value
+D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(147,76): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(331,41): warning C4101: 'e': unreferenced local variable
+D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(334,37): warning C4101: 'e': unreferenced local variable
+D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(364,40): warning C4101: 'e': unreferenced local variable
+D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(367,36): warning C4101: 'e': unreferenced local variable
+D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(421,40): warning C4101: 'e': unreferenced local variable
+D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(424,36): warning C4101: 'e': unreferenced local variable
+D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(653,56): warning C4267: '=': conversion from 'size_t' to 'uint16_t', possible loss of data
+D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(677,1): warning C4715: 'CPU::returnValueFromLabel': not all control paths return a value
   8086Simulator.vcxproj -> D:\an3\sem1\scs\8086Simulator\x64\Debug\8086Simulator.exe

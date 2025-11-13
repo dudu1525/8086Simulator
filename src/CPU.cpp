@@ -21,19 +21,42 @@ bool CPU::verifyInstructionsGiven()
 	if (instructionsAssembly.size() == 0)
 		return false;
 
+	labelMap.clear();
+	/////////////////////////////////////////////////////////verification 1
 	for (int i = 0; i < instructionsAssembly.size(); i++)
 	{
 		std::string currentInstr = instructionsAssembly.at(i);
-		if (verifyOneInstruction(currentInstr) == false)
+		if (verifyOneInstruction(currentInstr, i) == false)
 			return false;
 
 	}
-	instructionsEncoded.clear();
-
+	/////////////////////////////////////////////////////////verification 2 ->for labels
 	for (int i = 0; i < instructionsAssembly.size(); i++)
 	{
 		std::string currentInstr = instructionsAssembly.at(i);
-		decodeInstr(currentInstr);
+		if (verifyAgain(currentInstr, i) == false)
+			return false;
+	}
+
+	for (auto i : labelMap)
+		std::cout << i.first << "    " << i.second.instIndexEncoded;
+
+
+	instructionsEncoded.clear();
+	
+	/////////////////////////////////////////////////////////encode 1
+	for (int i = 0; i < instructionsAssembly.size(); i++)
+	{
+		std::string currentInstr = instructionsAssembly.at(i);
+		decodeInstr(currentInstr, i);
+
+	}
+	///////////////////////////////////////////////////////////////encode 2
+	currentJmpInstr = 0;
+	for (int i = 0; i < instructionsAssembly.size(); i++)
+	{
+		std::string currentInstr = instructionsAssembly.at(i);
+		encodeJumpInstr(currentInstr, i);
 
 	}
 
@@ -41,12 +64,12 @@ bool CPU::verifyInstructionsGiven()
 
 	for (int i = 0; i < instructionsEncoded.size(); i++)
 		printf("%x ", instructionsEncoded.at(i));
-
+	////////////////////////////////////////////////////////////load instructions
 	loadInstr(mem); 
 
 	return true;
 }
-void CPU::decodeInstr(std::string currentInstr)
+void CPU::decodeInstr(std::string currentInstr, int indexInstr)
 {
 	std::vector<std::string> words;
 	std::stringstream ss(currentInstr);
@@ -75,7 +98,17 @@ void CPU::decodeInstr(std::string currentInstr)
 	}
 	else if (words.at(0) == "jmp")
 	{
-		decodeJMP(words);
+		decodeJMP(words); //just so it fills up the memory, it will be remade later
+
+	}
+	else if (words.at(0).back() == ':') //is a label
+	{
+		
+		std::string labelString = words.at(0);
+		labelString.pop_back();
+
+		searchLabelAndPutValue(labelString, indexInstr);
+
 	}
 
 
@@ -170,7 +203,7 @@ std::vector<std::string>& CPU::returnInstructions()
 	return instructionsAssembly;
 }
 
-bool CPU::verifyOneInstruction(std::string currentInstr)
+bool CPU::verifyOneInstruction(std::string currentInstr, int currentIndex)
 {
 	std::vector<std::string> words;
 	std::stringstream ss(currentInstr);
@@ -188,7 +221,7 @@ bool CPU::verifyOneInstruction(std::string currentInstr)
 	int sizeInstr = -1; //0-byte, 1-word
 	//1 - reg, mem // mem,reg   2 - reg,reg   3- add reg,reg  4-add reg, mem  5-add mem,reg  6-jmp
 	//
-
+	
 	for (int i = 0; i < words.size(); i++)
 	{
 		std::transform(words.at(i).begin(), words.at(i).end(), words.at(i).begin(),
@@ -213,7 +246,7 @@ bool CPU::verifyOneInstruction(std::string currentInstr)
 					return false;
 
 		}
-	
+		
 
 		switch (i)
 		{
@@ -241,7 +274,15 @@ bool CPU::verifyOneInstruction(std::string currentInstr)
 			}
 			else if (s.back() == ':')
 			{
+				s.pop_back();//remove the ':' before inserting the label!
+				
 				typeofInstr = 0;
+				tuple tup = { 0,0 };
+				if (isLabelValid(s) == true)//if already exists
+					return false;
+
+				labelMap.insert({ s, tup }); //just add to the map, so its there
+				return true;
 			}
 			else
 				return false;
@@ -270,6 +311,9 @@ bool CPU::verifyOneInstruction(std::string currentInstr)
 
 			if (truncated == 1 && typeofInstr==4) 
 				return false;
+			
+			if (typeofInstr == 4)//skip jumps and verify later with more context
+				return true;
 
 			if (s.size() > 4)
 				return false;
@@ -494,7 +538,7 @@ void CPU::decodeADD(std::vector<std::string> instruction)
 		instructionsEncoded.push_back(decodeOneRegister(instruction.at(1), 1));
 		transformToBytes(instruction.at(2), 0);
 	}
-	else if (isRegister(instruction.at(2)) && isMemory(instruction.at(1)))//mov mem, reg
+	else if (isRegister(instruction.at(2)) && isMemory(instruction.at(1)))//add mem, reg
 	{
 		if (numBytes == 0)
 		{
@@ -508,7 +552,7 @@ void CPU::decodeADD(std::vector<std::string> instruction)
 		instructionsEncoded.push_back(decodeOneRegister(instruction.at(2), 1));
 		transformToBytes(instruction.at(1), 0);
 	}
-	else//mov reg/mem, immd B_
+	else//add  reg/mem, immd B_
 	{
 		//instructionsEncoded.push_back(decodeOneRegister(instruction.at(1), 0));
 		//transformToBytes(instruction.at(2), 1);
@@ -521,7 +565,115 @@ void CPU::decodeJMP(std::vector<std::string> instruction)
 {
 	instructionsEncoded.push_back(0b11101001);
 	numBytes = 1;
-	transformToBytes(instruction.at(1), 1);
+	instructionsEncoded.push_back(0x00);
+	instructionsEncoded.push_back(0x00);
+	//transformToBytes(instruction.at(1), 1);
+}
+
+bool CPU::verifyAgain(std::string currentInstr, int currentIndex)
+{
+	std::vector<std::string> words;
+	std::stringstream ss(currentInstr);
+	std::string word;
+	while (ss >> word)
+	{
+		words.push_back(word);
+	}
+	std::transform(words.at(0).begin(), words.at(0).end(), words.at(0).begin(), [](unsigned char c) { return std::tolower(c); });
+
+	if (words.at(0) == "jmp")
+	{
+		std::string secondVal = words.at(1);
+		if (isLabelValid(secondVal) == false)
+			return false;
+			else
+			return true;
+
+	}
+	else//skip other instructions
+		return true;
+
+
+}
+
+void CPU::encodeJumpInstr(std::string currentInstr, int indexInstr)
+{
+	std::vector<std::string> words;
+	std::stringstream ss(currentInstr);
+	std::string word;
+	while (ss >> word)
+	{
+		words.push_back(word);
+	}
+	std::transform(words.at(0).begin(), words.at(0).end(), words.at(0).begin(), [](unsigned char c) { return std::tolower(c); });
+
+	if (words.at(0) == "jmp")
+	{
+		
+		std::string labelString = words.at(1);
+		
+		uint16_t encodedLabel = returnValueFromLabel(labelString);
+		
+		int currentJmpIndex = 0;
+		for (int i = 0; i < instructionsEncoded.size(); i++)
+		{
+			if (instructionsEncoded.at(i) == 0b11101001)
+			{
+				if (currentJmpIndex == currentJmpInstr)
+				{
+					uint8_t lowbyte = (uint8_t)encodedLabel;
+					instructionsEncoded.at(i + 1) = lowbyte;					
+					uint8_t highbyte = *((uint8_t*)&encodedLabel + 1);
+					instructionsEncoded.at(i + 2) = highbyte;
+
+					currentJmpInstr++;//increment global jump index
+					return;
+				}
+
+				currentJmpIndex++;//increment local jump index
+
+			}
+
+		}
+
+	}
+	else
+		return;
+	
+}
+
+void CPU::searchLabelAndPutValue(std::string label, int index)
+{
+	for (auto& i : labelMap)
+	{
+		std::string currentString = i.first;
+		if (currentString == label)
+		{
+			
+			i.second.instIndexEncoded = instructionsEncoded.size();
+			i.second.instrIndex = index;
+			
+			return;
+		}
+			
+	}
+
+}
+
+uint16_t CPU::returnValueFromLabel(std::string label)
+{
+	for (const auto& i : labelMap)
+	{
+		std::string currentString = i.first;
+		if (currentString == label)
+		{
+			return i.second.instIndexEncoded;
+		}
+
+	}
+
+
+
 }
 
 bool CPU::isMemory(std::string argument)
@@ -555,6 +707,17 @@ bool CPU::isRegister(std::string argument)
 
 	return false;
 	
+}
+
+bool CPU::isLabelValid(std::string argument)
+{
+	for (auto i : labelMap)
+	{
+		std::string currentString = i.first;
+		if (currentString == argument)
+			return true;
+	}
+	return false;
 }
 
 uint8_t CPU::decodeRegisters(std::string arg1, std::string arg2)

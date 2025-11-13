@@ -49,7 +49,7 @@ void BIUControlUnit::fetchInstrFromMem(BiuAddressBus* address, InstructionQueue*
 		return;
 
 		this->state = READING_INSTR;
-	
+				
 
 	if (address->addressbusState == address->OCCUPIED_WITH_DATA && membus->mainmembusstate==membus->FREE)//put address on external bus
 	{

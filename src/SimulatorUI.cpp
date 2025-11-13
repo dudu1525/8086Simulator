@@ -253,6 +253,10 @@ void SimulatorUI::drawSimulatorPanel()
     /////////////////////////////////////////////////////////////////////////// //first column
 
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+    //if its label, skip it! just increment more!
+
+
     ////////////////////////////////Internal BIU Registers
     ImGui::Text("Internal BIU Registers");
     ImGui::BeginChild("BIURegs", ImVec2(0, 110), true);
@@ -399,17 +403,28 @@ void SimulatorUI::drawSimulatorPanel()
   
     uint8_t val = 0x01;
     uint32_t startAddressCS = 0x1000;
-    for (int j=0;j<6554;j++)
+
+
+    ImGuiListClipper clipper;
+    clipper.Begin(6554);
+
+    while (clipper.Step())
     {
-        ImGui::Text("%05x x: ", startAddressCS+j*10);
-        ImGui::SameLine();
-        for (int i = 0; i < 10; i++)
+        
+        for (int j = clipper.DisplayStart; j < clipper.DisplayEnd; j++)
         {
-            ImGui::Text("%02x", memory->returnAddressAt(startAddressCS + j * 10 + i) );
-            ImGui::SameLine();
+            ImGui::Text("%05x x: ", startAddressCS + j * 10);
+            for (int i = 0; i < 10; i++)
+            {
+                
+                ImGui::SameLine();
+                ImGui::Text("%02x", memory->returnAddressAt(startAddressCS + j * 10 + i));
+            }
+
         }
-        ImGui::Dummy(ImVec2(0.0f, 10.0f));
     }
+    clipper.End();
+
 
     ImGui::EndChild();
 
@@ -419,18 +434,26 @@ void SimulatorUI::drawSimulatorPanel()
     ImGui::BeginChild("Memory2", ImVec2(0, 150), true);
   
     uint32_t startAddressDS = 0x012000;
-    uint8_t val2 = 0x03;
-    for (int j = 0; j < 6554; j++)
+
+    ImGuiListClipper clipper2;
+    clipper2.Begin(6554);
+
+    while (clipper2.Step())
     {
-        ImGui::Text("%05x x: ", startAddressDS + j * 10);
-        ImGui::SameLine();
-        for (int i = 0; i < 10; i++)
+
+        for (int j = clipper2.DisplayStart; j < clipper2.DisplayEnd; j++)
         {
-            ImGui::Text("%02x", memory->returnAddressAt(startAddressDS + j * 10 + i));
-            ImGui::SameLine();
+            ImGui::Text("%05x x: ", startAddressDS + j * 10);
+            for (int i = 0; i < 10; i++)
+            {
+
+                ImGui::SameLine();
+                ImGui::Text("%02x", memory->returnAddressAt(startAddressDS + j * 10 + i));
+            }
+
         }
-        ImGui::Dummy(ImVec2(0.0f, 10.0f));
     }
+    clipper2.End();
 
     ImGui::EndChild();
 
@@ -440,18 +463,25 @@ void SimulatorUI::drawSimulatorPanel()
     ImGui::BeginChild("Memory3", ImVec2(0, 150), true);
 
     uint32_t startAddressSS = 0x023000;
-    uint8_t val3 = 0x02;
-    for (int j = 0; j < 6554; j++)
+    ImGuiListClipper clipper3;
+    clipper3.Begin(6554);
+
+    while (clipper3.Step())
     {
-        ImGui::Text("%05x x: ", startAddressSS + j * 10);
-        ImGui::SameLine();
-        for (int i = 0; i < 10; i++)
+
+        for (int j = clipper3.DisplayStart; j < clipper3.DisplayEnd; j++)
         {
-            ImGui::Text("%02x", memory->returnAddressAt(startAddressSS + j * 10 + i));
-            ImGui::SameLine();
+            ImGui::Text("%05x x: ", startAddressSS + j * 10);
+            for (int i = 0; i < 10; i++)
+            {
+
+                ImGui::SameLine();
+                ImGui::Text("%02x", memory->returnAddressAt(startAddressSS + j * 10 + i));
+            }
+
         }
-        ImGui::Dummy(ImVec2(0.0f, 10.0f));
     }
+    clipper3.End();
 
     ImGui::EndChild();
 
