@@ -161,5 +161,8 @@
     <ClInclude Include="include\SimulatorUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\Structs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

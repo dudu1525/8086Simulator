@@ -7,7 +7,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
-
+#include <string>
 class CPU;
 class MainMemory;
 class SimulatorUI {
@@ -44,5 +44,7 @@ private:
 
 	bool inputWindowVisible=true;
 	bool commandsCorrect = false;
+
+	bool verifyIfLabel(std::string labelCouldBe);
 
 };

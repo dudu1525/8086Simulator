@@ -16,6 +16,7 @@
 #include "../include/EUControl.h"
 #include "../include/BiuDataBus.h"
 #include "../include/InstructionQueue.h"
+#include "../include/Structs.h"
 bool CPU::verifyInstructionsGiven()
 {
 	if (instructionsAssembly.size() == 0)
@@ -65,8 +66,10 @@ bool CPU::verifyInstructionsGiven()
 	for (int i = 0; i < instructionsEncoded.size(); i++)
 		printf("%x ", instructionsEncoded.at(i));
 	////////////////////////////////////////////////////////////load instructions
+	mem->clearMemory();
 	loadInstr(mem); 
-
+	euunit.labelMap.clear();
+	euunit.labelMap = labelMap;
 	return true;
 }
 void CPU::decodeInstr(std::string currentInstr, int indexInstr)
@@ -277,7 +280,7 @@ bool CPU::verifyOneInstruction(std::string currentInstr, int currentIndex)
 				s.pop_back();//remove the ':' before inserting the label!
 				
 				typeofInstr = 0;
-				tuple tup = { 0,0 };
+				TupleInstr tup = { 0,0 };
 				if (isLabelValid(s) == true)//if already exists
 					return false;
 

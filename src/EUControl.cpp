@@ -10,6 +10,8 @@
 #include <string>
 #include <iostream>
 
+#include <cmath>
+
 EUControl::EUControl(EUunit* euunit)
 {
 	this->euunit = euunit;
@@ -294,8 +296,10 @@ void EUControl::decodeinstr()
 	}
 
 	printf("Instr being decoded:%x\n", instrToBeFetched);
-	
-	currentInstructionIndex++;
+	if (incrementAfterJump)
+		currentInstructionIndex++;
+	incrementAfterJump = true;
+
 	commandsqueue.pop();
 }
 
@@ -579,7 +583,8 @@ void EUControl::decodeJumpInstr(uint16_t opcodeByte)
 
 		computedIp = (highbyte << 8) | lowbyte;//still unsigned, direct value to IP!
 
-		currentInstructionIndex = computedIp;
+
+		
 
 		//printf("OffsetGiven: %x\n", offsetGiven);
 		//computedIp= jumpAddress + 3 + offsetGiven;  //<for positive   >for negative: jumpAddress+offset
@@ -912,7 +917,8 @@ void EUControl::flushComponents(MainDataBus* databus)
 	this->euunit->alu.flushAlu();
 
 	this->biucontrol->flushSignal = true;
-
+	currentInstructionIndex = euunit->mapToInstrIndex(computedIp);
+	incrementAfterJump = false;
 
 }
 

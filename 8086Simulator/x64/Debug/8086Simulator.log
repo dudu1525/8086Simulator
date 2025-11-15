@@ -1,11 +1,31 @@
-﻿  CPU.cpp
-D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(147,76): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(331,41): warning C4101: 'e': unreferenced local variable
-D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(334,37): warning C4101: 'e': unreferenced local variable
-D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(364,40): warning C4101: 'e': unreferenced local variable
-D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(367,36): warning C4101: 'e': unreferenced local variable
-D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(421,40): warning C4101: 'e': unreferenced local variable
-D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(424,36): warning C4101: 'e': unreferenced local variable
-D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(653,56): warning C4267: '=': conversion from 'size_t' to 'uint16_t', possible loss of data
-D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(677,1): warning C4715: 'CPU::returnValueFromLabel': not all control paths return a value
+﻿  ALU.cpp
+  BIUControlUnit.cpp
+  BiuDataBus.cpp
+  CPU.cpp
+D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(150,76): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(334,41): warning C4101: 'e': unreferenced local variable
+D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(337,37): warning C4101: 'e': unreferenced local variable
+D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(367,40): warning C4101: 'e': unreferenced local variable
+D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(370,36): warning C4101: 'e': unreferenced local variable
+D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(424,40): warning C4101: 'e': unreferenced local variable
+D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(427,36): warning C4101: 'e': unreferenced local variable
+D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(656,56): warning C4267: '=': conversion from 'size_t' to 'uint16_t', possible loss of data
+  EUControl.cpp
+D:\an3\sem1\scs\8086Simulator\src\EUControl.cpp(859,41): warning C4244: 'argument': conversion from 'uint16_t' to 'uint8_t', possible loss of data
+D:\an3\sem1\scs\8086Simulator\src\EUControl.cpp(920,51): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+  EUunit.cpp
+  Main.cpp
+  SimulatorUI.cpp
+  Generating Code...
+D:\an3\sem1\scs\8086Simulator\src\SimulatorUI.cpp(62,1): warning C4715: 'SimulatorUI::initWindow': not all control paths return a value
+D:\an3\sem1\scs\8086Simulator\include\BiuAddressBus.h(24,1): warning C4715: 'BiuAddressBus::returnState': not all control paths return a value
+D:\an3\sem1\scs\8086Simulator\include\MainMembus.h(29,1): warning C4715: 'MainMembus::returnState': not all control paths return a value
+D:\an3\sem1\scs\8086Simulator\src\EUunit.cpp(22,1): warning C4715: 'EUunit::mapToInstrIndex': not all control paths return a value
+D:\an3\sem1\scs\8086Simulator\src\EUunit.cpp(209,1): warning C4715: 'EUunit::returnRegData': not all control paths return a value
+D:\an3\sem1\scs\8086Simulator\src\CPU.cpp(680,1): warning C4715: 'CPU::returnValueFromLabel': not all control paths return a value
+D:\an3\sem1\scs\8086Simulator\src\BiuDataBus.cpp(79,1): warning C4715: 'BiuDataBus::returnState': not all control paths return a value
+D:\an3\sem1\scs\8086Simulator\src\BIUControlUnit.cpp(298,1): warning C4715: 'BIUControlUnit::returnCurrentState': not all control paths return a value
+D:\an3\sem1\scs\8086Simulator\src\ALU.cpp(115,1): warning C4715: 'ALU::returnOperation': not all control paths return a value
+D:\an3\sem1\scs\8086Simulator\src\ALU.cpp(104,1): warning C4715: 'ALU::returnState': not all control paths return a value
+LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
   8086Simulator.vcxproj -> D:\an3\sem1\scs\8086Simulator\x64\Debug\8086Simulator.exe

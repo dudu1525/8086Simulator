@@ -3,6 +3,8 @@
 #include "BIUunit.h"
 #include "EUunit.h"
 
+#include "Structs.h"
+
 #include <map>
 
 class CPU {
@@ -60,11 +62,9 @@ private:
 		void transformToBytes(std::string argument, int type); //0-mem, 1-immediate
 	
 
-		typedef struct tuple {
-			uint16_t instIndexEncoded = 0x0000;
-			int instrIndex;}tuple;
+		
 
-		std::map<std::string, tuple> labelMap;
+		std::map<std::string, TupleInstr> labelMap;
 
 
 

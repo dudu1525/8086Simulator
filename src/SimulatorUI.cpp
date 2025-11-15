@@ -218,7 +218,7 @@ void SimulatorUI::drawInputPanel()
         }
     }
     else
-    {
+    {   
         ImGui::Text("Instructions are not correct!");
     }
     //can have another panel in which the encoded instructions are visible (the 001etc format)
@@ -254,9 +254,32 @@ void SimulatorUI::drawSimulatorPanel()
 
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
+
     //if its label, skip it! just increment more!
+    //////////////////////////////////////////////assembly instructions
+    ImGui::Text("Instructions:");
+    ImGui::BeginChild("Instructions", ImVec2(0, 400), true);
+    std::vector<std::string> instructs = cpu->returnInstructions();
+    for (int i = 0; i < instructs.size(); i++)
+    {     
+        if (verifyIfLabel(instructs.at(i)) == true && i == cpu->euunit.eucontrol.currentInstructionIndex)
+            cpu->euunit.eucontrol.currentInstructionIndex++;
+            
+        if (i == cpu->euunit.eucontrol.currentInstructionIndex)
+        {
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 0, 0, 1));
+            ImGui::Text("%s", instructs.at(i).c_str());
+            ImGui::PopStyleColor();
+        }
+        else
+        {
+            ImGui::Text("%s", instructs.at(i).c_str());
+        }
+        
+    }
 
-
+    ImGui::EndChild();
+    ImGui::Dummy(ImVec2(0.0f, 10.0f));
     ////////////////////////////////Internal BIU Registers
     ImGui::Text("Internal BIU Registers");
     ImGui::BeginChild("BIURegs", ImVec2(0, 110), true);
@@ -560,4 +583,12 @@ void SimulatorUI::passInstructions()
 
 
 
+}
+
+bool SimulatorUI::verifyIfLabel(std::string labelCouldBe)
+{
+    if (labelCouldBe.back() == ':')
+        return true;
+    else
+        return false;
 }

@@ -31,6 +31,7 @@ public:
 	bool writeToMemory(uint16_t data, bool flag8);
     bool setAddress(uint32_t addr);
     bool loadInstrIntoMemory(std::vector<uint8_t> instr,int size);
+    void clearMemory();
 
     uint32_t startInstrAddress=0x00001000;//display like 20 for a read, init 
     uint32_t startWrFetchAddress;//display like 20 at each fetch/write

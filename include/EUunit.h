@@ -5,7 +5,10 @@
 #include "EUControl.h"
 #include "ALU.h"
 #include "MainDataBus.h"
-
+#include "Structs.h"
+#include <map>
+#include <string>
+#include <stdint.h> 
 class EUunit {
 
 public:
@@ -46,7 +49,7 @@ public:
     };
 
     //functions
-
+    int mapToInstrIndex(uint16_t valEncoded);
 
 
 	void eustep();
@@ -61,10 +64,11 @@ public:
     EUControl eucontrol;
     ALU alu;
     MainDataBus maindatabus;
-private:
-	
+    std::map<std::string, TupleInstr> labelMap;
 
-	//SSEND DATA AS 0X00(DATA) DATA IS ALWAYS ON LOWER BYTE
+
+   
+	
 };
 
 

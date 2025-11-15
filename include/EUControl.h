@@ -97,7 +97,7 @@ public:
 	const char* returnCurrentDecodedInst();
 
 	uint16_t computedIp = 0x0000;
-	int currentInstructionIndex = -1; //incremeneted when a decode is met, or when a control flow instr happens
+	float currentInstructionIndex = -1; //incremeneted when a decode is met, or when a control flow instr happens
 
 private:
 	/////////////////////////////////refferences
@@ -150,7 +150,7 @@ private:
 
 
 	bool flagNotEnoughBytes = false;
-
+	bool incrementAfterJump = true;
 };
 
 #endif

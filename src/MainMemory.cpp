@@ -63,3 +63,9 @@ bool MainMemory::loadInstrIntoMemory(std::vector<uint8_t> instr,int size)
 
 	return false;
 }
+
+void MainMemory::clearMemory()
+{
+
+	memset(mem, 0x00, SIZE);
+}

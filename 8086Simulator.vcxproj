@@ -181,6 +181,7 @@
     <ClInclude Include="include\MainMemory.h" />
     <ClInclude Include="include\SegmentRegisters.h" />
     <ClInclude Include="include\SimulatorUI.h" />
+    <ClInclude Include="include\Structs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

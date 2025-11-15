@@ -9,6 +9,18 @@ EUunit::EUunit()
 {
 }
 
+int EUunit::mapToInstrIndex(uint16_t valEncoded)
+{
+    for (auto& i : labelMap)
+    {
+        if (i.second.instIndexEncoded == valEncoded)
+        {
+            return i.second.instrIndex;
+            }
+
+    }
+}
+
 void EUunit::eustep()
 {
 
