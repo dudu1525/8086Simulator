@@ -4,6 +4,8 @@
 
 #include "../include/MainDataBus.h"
 #include "../include/EUControl.h"
+#include "../include/Flags.h"
+
 void ALU::executeOp()
 {
 
@@ -29,15 +31,17 @@ void ALU::executeOp()
 		break;
 	}
 
-	//set flags now
+	///////////////////////SET FLAGS
+	flags->modifyFlagsAfterOp(operationToBeExecuted, operand1, operand2, result, bit8Active);
 	operand1 = 0x0000;
 	operand2 = 0x0000;
 	alustate = PUT_ON_DATABUS;
 
 }
 
-void ALU::setOperandsandOperation(uint16_t op1, uint16_t op2,int operation)
+void ALU::setOperandsandOperation(uint16_t op1, uint16_t op2,int operation, bool bit8active)
 {
+	this->bit8Active = bit8active;
 
 	operand1 = op1;
 	operand2 = op2;
@@ -112,4 +116,9 @@ const char* ALU::returnOperation()
 	case 2: return "SUBSTRACTION"; break;
 	case 10: return "NOOP"; break;
 	}
+}
+
+void ALU::getFlagsRefference(Flags* flags)
+{
+	this->flags = flags;
 }

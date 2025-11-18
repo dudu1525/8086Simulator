@@ -389,8 +389,13 @@ void SimulatorUI::drawSimulatorPanel()
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
     //////////////////////////////////////////// flags
     ImGui::Text("Flags");
-    ImGui::BeginChild("Flags", ImVec2(300, 100), true);
-
+    ImGui::BeginChild("Flags", ImVec2(300, 180), true);
+    ImGui::Text("Overflow Flag %d", cpu->euunit.flags.overflowflag);
+    ImGui::Text("Carry Flag %d", cpu->euunit.flags.carryflag);
+    ImGui::Text("AdditionalCarry Flag %d", cpu->euunit.flags.auxcarryflag);
+    ImGui::Text("Sign Flag %d", cpu->euunit.flags.signflag);
+    ImGui::Text("Zero Flag %d", cpu->euunit.flags.zeroflag);
+    ImGui::Text("Parity Flag %d", cpu->euunit.flags.parityflag);
     ImGui::EndChild();
 
     /////////////////////////////////////////////////////////////////////////////// 4th column

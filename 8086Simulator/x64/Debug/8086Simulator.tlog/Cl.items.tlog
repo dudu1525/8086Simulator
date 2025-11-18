@@ -13,6 +13,7 @@ D:\an3\sem1\scs\8086Simulator\src\BIUunit.cpp;D:\an3\sem1\scs\8086Simulator\8086
 D:\an3\sem1\scs\8086Simulator\src\CPU.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\CPU.obj
 D:\an3\sem1\scs\8086Simulator\src\EUControl.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\EUControl.obj
 D:\an3\sem1\scs\8086Simulator\src\EUunit.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\EUunit.obj
+D:\an3\sem1\scs\8086Simulator\src\Flags.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\Flags.obj
 D:\an3\sem1\scs\8086Simulator\src\InstructionQueue.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\InstructionQueue.obj
 D:\an3\sem1\scs\8086Simulator\src\InternalBIURegisters.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\InternalBIURegisters.obj
 D:\an3\sem1\scs\8086Simulator\src\Main.cpp;D:\an3\sem1\scs\8086Simulator\8086Simulator\x64\Debug\Main.obj

@@ -1,12 +1,14 @@
 #include "../include/EUControl.h"
 
 #include "../include/EUunit.h"
-
+#include "../include/Flags.h"
 
 
 EUunit::EUunit()
     : eucontrol(this) // initialize eucontrol with pointer to this
 {
+    alu.getFlagsRefference(&flags);
+
 }
 
 int EUunit::mapToInstrIndex(uint16_t valEncoded)

@@ -17,6 +17,12 @@ void BIUControlUnit::fetchInstrFromMem(BiuAddressBus* address, InstructionQueue*
 	//input some condition if there are no more instructions to be fetched
 
 	//PUT CONDITION IF INSTRUCTION QUEUE IS NOT FULL!!!! SO <5
+	if (eucontrol->stopExecution == true)
+	{
+		this->state = FREE;
+		return;
+
+	}
 
 	if (this->flushSignal == true)
 	{
@@ -98,6 +104,12 @@ void BIUControlUnit::fetchInstrFromMem(BiuAddressBus* address, InstructionQueue*
 
 void BIUControlUnit::writeDataToMem(BiuAddressBus* address, MainMembus* membus, SegmentRegisters* segreg, AddressComputeUnit* computeunit, MainMemory* memory, InternalBIURegisters* internalregs, BiuDataBus* databus)
 {
+	if (eucontrol->stopExecution == true)
+	{
+		this->state = FREE;
+		return;
+
+	}
 	if (state != WRITING_DATA)
 		return;
 		
@@ -189,6 +201,13 @@ void BIUControlUnit::writeDataToMem(BiuAddressBus* address, MainMembus* membus, 
 
 void BIUControlUnit::fetchDataFromMem(MainMembus* membus, MainMemory* memory, BiuDataBus* databus, InternalBIURegisters* internalregs,BiuAddressBus* address, AddressComputeUnit* computeunit, SegmentRegisters* segreg)
 {
+	if (eucontrol->stopExecution == true)
+	{
+		this->state = FREE;
+		return;
+
+	}
+
 	if (state != FETCHING_DATA)
 		return;
 

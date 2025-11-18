@@ -148,6 +148,7 @@
     <ClCompile Include="src\CPU.cpp" />
     <ClCompile Include="src\EUControl.cpp" />
     <ClCompile Include="src\EUunit.cpp" />
+    <ClCompile Include="src\Flags.cpp" />
     <ClCompile Include="src\InstructionQueue.cpp" />
     <ClCompile Include="src\InternalBIURegisters.cpp" />
     <ClCompile Include="src\Main.cpp" />
@@ -174,6 +175,7 @@
     <ClInclude Include="include\CPU.h" />
     <ClInclude Include="include\EUControl.h" />
     <ClInclude Include="include\EUunit.h" />
+    <ClInclude Include="include\Flags.h" />
     <ClInclude Include="include\InstructionQueue.h" />
     <ClInclude Include="include\InternalBIURegisters.h" />
     <ClInclude Include="include\MainDataBus.h" />

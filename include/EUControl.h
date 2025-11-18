@@ -76,7 +76,7 @@ public:
 		SIGNAL_MEM_FETCH_DATA,
 		AWAIT_ALU_OP,
 		FLUSH_COMPONENTS,
-
+		STOP_PROGRAM,
 		UPDATE_FLAGS
 		//can combine some of the states, to do more
 
@@ -98,7 +98,7 @@ public:
 
 	uint16_t computedIp = 0x0000;
 	float currentInstructionIndex = -1; //incremeneted when a decode is met, or when a control flow instr happens
-
+	bool stopExecution = false;//set to true, when program ended;
 private:
 	/////////////////////////////////refferences
 	EUunit* euunit;
@@ -151,6 +151,8 @@ private:
 
 	bool flagNotEnoughBytes = false;
 	bool incrementAfterJump = true;
+	bool bit8ActiveforOPS=false; //indicates if an operation is done on 8 bits on alu(true), or 16 bits (false)
+	
 };
 
 #endif

@@ -5,6 +5,7 @@
 #include "EUControl.h"
 #include "ALU.h"
 #include "MainDataBus.h"
+#include "Flags.h"
 #include "Structs.h"
 #include <map>
 #include <string>
@@ -12,6 +13,7 @@
 class EUunit {
 
 public:
+    std::vector<std::string> instructionsAssembly;
 	EUunit();
 	uint16_t tempreg1, tempreg2; //temp regs before alu
     uint16_t sp = 0xFFFF;//this shouldnt go lower than ffff, overflow must be checked!
@@ -63,6 +65,7 @@ public:
 
     EUControl eucontrol;
     ALU alu;
+    Flags flags;
     MainDataBus maindatabus;
     std::map<std::string, TupleInstr> labelMap;
 

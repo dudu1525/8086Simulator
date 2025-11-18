@@ -70,6 +70,7 @@ bool CPU::verifyInstructionsGiven()
 	loadInstr(mem); 
 	euunit.labelMap.clear();
 	euunit.labelMap = labelMap;
+	euunit.instructionsAssembly = this->instructionsAssembly;
 	return true;
 }
 void CPU::decodeInstr(std::string currentInstr, int indexInstr)

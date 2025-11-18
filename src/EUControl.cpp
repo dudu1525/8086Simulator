@@ -73,6 +73,13 @@ void EUControl::decodeinstr()
 	if (instrqueue->isQueueEmpty() == true)  //instr queue needs to have bytes available
 		return;
 
+	if (currentInstructionIndex >= euunit->instructionsAssembly.size()-1)
+	{
+		printf("execution must stop!\n");
+		stopExecution = true;
+		return;
+	}
+
 	uint8_t instrToBeFetched = instrqueue->frontOfQueue(); //instr to be fetched from queue
 	currentDecodedInstruction = instrToBeFetched;
 
@@ -933,11 +940,14 @@ void EUControl::signalALUForStartExec()
 
 	if (euunit->alu.alustate != euunit->alu.FREE)
 		return;
+	if (mainRegForRegOutput < 8 || mainRegForInput < 8)//on 8 bits operation
+		bit8ActiveforOPS = true;
 
-	euunit->alu.setOperandsandOperation(euunit->tempreg1, euunit->tempreg2, aluOpCommand);
+	euunit->alu.setOperandsandOperation(euunit->tempreg1, euunit->tempreg2, aluOpCommand, bit8ActiveforOPS);
 	euunit->tempreg1 = 0x0000;
 	euunit->tempreg2 = 0x0000;
 
+	bit8ActiveforOPS = false;//reset it
 
 	commandsqueue.pop();
 }
