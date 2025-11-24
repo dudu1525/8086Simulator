@@ -51,6 +51,7 @@ private:
 		int currentJmpInstr = 0; //signals which values for the jump need to be reset, used by encodeJumpInstr
 		void searchLabelAndPutValue(std::string label,int index);
 		uint16_t returnValueFromLabel(std::string label);
+		bool verifyImmediateValue(std::string immdGiven);
 
 		int reg1=0, reg2=0;
 		int numBytes = 0;//0 byte, 1-word
@@ -59,7 +60,10 @@ private:
 		bool isLabelValid(std::string argument);
 		uint8_t decodeRegisters(std::string arg1, std::string arg2);
 		uint8_t decodeOneRegister(std::string argument, int direction);
+		uint8_t decodeOneRegisterSW(std::string argument);
 		void transformToBytes(std::string argument, int type); //0-mem, 1-immediate
+		
+		void decodeImmediateValue(std::string argument, int instructionType);//add,sub,etc
 	
 
 		

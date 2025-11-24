@@ -558,6 +558,58 @@ void CPU::decodeADD(std::vector<std::string> instruction)
 	}
 	else//add  reg/mem, immd B_
 	{
+		//100000 s w
+		if (isRegister(instruction.at(1))) //add reg, immd
+		{
+			
+			if (numBytes == 0)//byte
+			{
+				instructionsEncoded.push_back(0B10000010);
+				instructionsEncoded.push_back(decodeOneRegisterSW(instruction.at(1)));
+				decodeImmediateValue(instruction.at(2), 0);
+				//need to push 1 byte
+			}
+			else //need to check if immediate label is 
+			{
+				if (verifyImmediateValue(instruction.at(2)) == true)
+				{
+					instructionsEncoded.push_back(0B10000011);//need to sign extend
+					instructionsEncoded.push_back(decodeOneRegisterSW(instruction.at(1)));
+					decodeImmediateValue(instruction.at(2), 0);
+					//need to push one byte only
+				}
+				else
+				{
+					instructionsEncoded.push_back(0B10000001);//no need to sign extend
+					instructionsEncoded.push_back(decodeOneRegisterSW(instruction.at(1)));
+					decodeImmediateValue(instruction.at(2), 1);
+					//need to push 2 bytes
+
+				}
+
+
+				
+			}
+			
+			
+		}
+		else //of type add mem, immd
+		{ ////////////////////////////////////NEED TO ADD WORD PTR/BYTE PTR INSIDE THE COMMAND ITSELF
+
+			if (numBytes == 0)//byte
+			{
+
+			}
+			else
+			{
+
+			}
+
+			
+		}
+
+
+
 		//instructionsEncoded.push_back(decodeOneRegister(instruction.at(1), 0));
 		//transformToBytes(instruction.at(2), 1);
 	}
@@ -679,6 +731,16 @@ uint16_t CPU::returnValueFromLabel(std::string label)
 
 
 }
+
+bool CPU::verifyImmediateValue(std::string immdGiven)
+{
+
+	if (immdGiven.size() > 2) //no need to extend
+		return false;
+	return true;//then its a small value that needs to be sign extented
+}
+
+
 
 bool CPU::isMemory(std::string argument)
 {
@@ -862,6 +924,48 @@ uint8_t CPU::decodeOneRegister(std::string argument, int direction)
 
 }
 
+uint8_t CPU::decodeOneRegisterSW(std::string argument)
+{
+	if (!argument.empty() && argument.back() == ',')
+		argument.pop_back();
+
+	int reg1 = 0;
+	if (argument == "ax" || argument == "al")//000
+	{
+		reg1 = 0;
+	}
+	else if (argument == "cx" || argument == "cl") //001
+	{
+		reg1 = 1;
+	}
+	else if (argument == "dx" || argument == "dl") //010
+	{
+		reg1 = 2;
+	}
+	else if (argument == "bx" || argument == "bl") //011
+	{
+		reg1 = 3;
+	}
+	else if (argument == "ah" || argument == "sp") //100
+	{
+		reg1 = 4;
+	}
+	else if (argument == "ch" || argument == "bp") //101
+	{
+		reg1 = 5;
+	}
+	else if (argument == "dh" || argument == "si") //110
+	{
+		reg1 = 6;
+	}
+	else if (argument == "bh" || argument == "di") //111
+	{
+		reg1 = 7;
+	}
+
+	return (0b11000000 | reg1);
+}
+
 void CPU::transformToBytes(std::string argument, int type)
 {
 	if (!argument.empty() && argument.front() == '[') {
@@ -899,6 +1003,44 @@ void CPU::transformToBytes(std::string argument, int type)
 		instructionsEncoded.push_back(lowbyte);
 		uint8_t highbyte = *((uint8_t*)&x + 1);
 		instructionsEncoded.push_back(highbyte);
+	}
+
+
+}
+
+void CPU::decodeImmediateValue(std::string argument, int instructionType)
+{
+
+	if (!argument.empty() && argument.front() == '[') {
+		argument.erase(argument.begin());
+	}
+	if (!argument.empty() && argument.back() == ',') {
+		argument.pop_back();
+	}
+	if (!argument.empty() && argument.back() == ']') {
+		argument.pop_back();
+	}
+	if (!argument.empty() && argument.back() == 'h') {
+		argument.pop_back();
+	}
+	if (!argument.empty() && argument.back() == 'H') {
+		argument.pop_back();
+	}
+
+	uint16_t x = static_cast<uint16_t>(std::stoul(argument, NULL, 16));
+
+	if (instructionType == 1)//word
+	{
+		uint8_t lowbyte = (uint8_t)x;
+		instructionsEncoded.push_back(lowbyte);
+		uint8_t highbyte = *((uint8_t*)&x + 1);
+		instructionsEncoded.push_back(highbyte);
+
+	}
+	else
+	{
+		uint8_t lowbyte = (uint8_t)x;
+		instructionsEncoded.push_back(lowbyte);
 	}
 
 

@@ -31,7 +31,6 @@ public:
 	void euControlStep(MainDataBus* databus);
 
 	void decodeinstr();
-	void decodeinstrExtended(InstructionQueue* instrqueue, int numofInstr);//^integrated into decodeinstr
 
 	void sendDataFromInstrToBus(MainDataBus* databus); 
 	void putDataIntoDataRegs(MainDataBus* databus);
@@ -113,10 +112,10 @@ private:
 
 	bool decodeRegister(uint8_t mainByte, uint8_t byteWithWbit, bool typeOfInstr);
 	void decodeRegRegInstr(uint8_t byteToBeDecoded, int bit8);
-
+	bool decodeRegisterSW(uint8_t mainByte, uint8_t byteWithWbit);
 	void decodeJumpInstr(uint16_t opcodeByte);
-
-
+	void decodeSUBInstr();
+	
 	/////////////////////////////////variables to indicate flow of execution
 	
 

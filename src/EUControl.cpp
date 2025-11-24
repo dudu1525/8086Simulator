@@ -294,6 +294,131 @@ void EUControl::decodeinstr()
 
 		commandsqueue.push(DECODING);
 	}
+	else if ((instrToBeFetched >> 2 & 0b111111) == 0b100000)/////////////////////////////////////////////////ADD REG/MEM, IMMD
+	{
+		fetchSkipped = true;//means pop the state after signaling to the BIUControl
+		getDataFromBIU = false;
+		if (instrqueue->availableAmountOfBytes(2) == false)
+			return;
+		instrqueue->dequeue();
+		uint8_t secondPartOP = instrqueue->frontOfQueue(); //mod,000,r/m; 
+		instrqueue->dequeue();
+
+		uint8_t modBits = (secondPartOP >> 6) & 0b11;
+		if (instrToBeFetched % 2 == 1)//word (for memory)
+			this->bit8forFetching = false;
+		else
+			this->bit8forFetching = true;
+
+		uint8_t sBit = (instrToBeFetched >> 1) & 0b1;
+		printf("SBIT: %x\n", sBit);
+		if (modBits == 0b11)//reg
+		{
+			decodeRegisterSW(secondPartOP, instrToBeFetched);
+			mainRegForInput = mainRegForRegOutput;
+			printf("THE REGISTER:%d\n", mainRegForRegOutput);
+			//based on the s and w bit, push on the data bus a certain number of 
+			if (sBit == 1 && instrToBeFetched % 2 == 1) //SIGN EXTEND AS ONLY ONE BYTE IS GIVEN
+			{
+				commandsqueue.push(SENDING_FROM_INSTR_QUEUE);
+				instrQueueFuturePosition.push(2);
+			}
+			else if (sBit == 0 && instrToBeFetched % 2 == 1)
+			{
+				commandsqueue.push(SENDING_FROM_INSTR_QUEUE);
+				instrQueueFuturePosition.push(0);
+				commandsqueue.push(SENDING_FROM_INSTR_QUEUE);
+				instrQueueFuturePosition.push(1);
+
+			}
+			else
+			{
+				commandsqueue.push(SENDING_FROM_INSTR_QUEUE);
+				instrQueueFuturePosition.push(0);
+
+			}
+
+			//put on second temp 
+			locationForTempRegs.push(1);
+			commandsqueue.push(POPULATE_TEMP_REGISTERS);
+
+
+			locationFromWhenPopulatingDataBus.push(4);//put output first (sub ah,al -> out=ah, 4=out 0=in
+			commandsqueue.push(PUT_DATA_ON_BUS);
+
+			//put on first temp
+			locationForTempRegs.push(0);
+			commandsqueue.push(POPULATE_TEMP_REGISTERS);
+
+			aluOpCommand = 0;//signal addition
+			commandsqueue.push(SIGNAL_ALU);
+			commandsqueue.push(AWAIT_ALU_OP);
+
+			commandsqueue.push(POPULATE_REGISTERS);
+
+
+		}
+		else //mem
+		{	
+			//put address on main data bus
+			commandsqueue.push(SENDING_FROM_INSTR_QUEUE);
+			instrQueueFuturePosition.push(0);
+			commandsqueue.push(SENDING_FROM_INSTR_QUEUE);
+			instrQueueFuturePosition.push(1);
+			//put on internal regs
+			commandsqueue.push(PUT_ON_INTERNAL_REGS);
+			locationForInternalRegsWrite.push(2);//put on offset2 in biuInternal
+
+			//signal a fetch
+			commandsqueue.push(SIGNAL_MEM_FETCH_DATA);
+
+			//based on the s and w bit, push on the data bus a certain number of 
+			if (sBit == 1 && instrToBeFetched % 2 == 1) //SIGN EXTEND AS ONLY ONE BYTE IS GIVEN
+			{
+				commandsqueue.push(SENDING_FROM_INSTR_QUEUE);
+				instrQueueFuturePosition.push(2);
+			}
+			else if (sBit == 0 && instrToBeFetched % 2 == 1)
+			{
+				commandsqueue.push(SENDING_FROM_INSTR_QUEUE);
+				instrQueueFuturePosition.push(0);
+				commandsqueue.push(SENDING_FROM_INSTR_QUEUE);
+				instrQueueFuturePosition.push(1);
+
+			}
+			else
+			{
+				commandsqueue.push(SENDING_FROM_INSTR_QUEUE);
+				instrQueueFuturePosition.push(0);
+
+			}
+
+			//put on second temp 
+			locationForTempRegs.push(1);
+			commandsqueue.push(POPULATE_TEMP_REGISTERS);
+			//put the memory data on first temp reg
+			locationForTempRegs.push(0);
+			commandsqueue.push(GET_FROM_INTERNAL_REGS);
+
+			aluOpCommand = 0;//signal addition
+			commandsqueue.push(SIGNAL_ALU);
+
+			commandsqueue.push(AWAIT_ALU_OP);
+
+			locationForInternalRegsWrite.push(0);//write on data reg1
+			locationForInternalRegsWrite.push(4);//write on offsetreg1
+
+			commandsqueue.push(PUT_ON_INTERNAL_REGS);//one to put data
+			commandsqueue.push(PUT_ON_INTERNAL_REGS);//one to copy offset1 used for fetch
+
+			commandsqueue.push(SIGNAL_MEM_WRITE_DATA);
+
+
+
+		}
+		commandsqueue.push(DECODING);
+
+	}
 	else if ((instrToBeFetched >> 2 & 0b111111) == 0b111010)/////////////////////////////////////////////////////jump instr
 	{
 
@@ -310,9 +435,7 @@ void EUControl::decodeinstr()
 	commandsqueue.pop();
 }
 
-void EUControl::decodeinstrExtended(InstructionQueue* instrqueue, int numofInstr)
-{
-}
+
 
 //decoding part
 //###########################################################################################################################################
@@ -409,6 +532,107 @@ bool EUControl::decodeRegister(uint8_t mainByte, uint8_t byteWithWbit, bool type
 	//0=al, 1=cl, 2=dl, 3=bl, 4=ah, 5=	ch, 6=dh, 7=bh;
 	//8=ax, 9=cx, 10=dx,11=bx, 12=sp, 13=bp, 14=si, 15=di
 	
+
+
+
+	if (wbit == 1)//word
+	{
+		switch (reg)
+		{
+		case 0:
+			mainRegForRegOutput = 8;
+			break;
+		case 1:
+			mainRegForRegOutput = 9;
+
+			break;
+		case 2:
+			mainRegForRegOutput = 10;
+
+			break;
+
+		case 3:
+
+			mainRegForRegOutput = 11;
+			break;
+		case 4:
+			mainRegForRegOutput = 12;
+
+			break;
+		case 5:
+			mainRegForRegOutput = 13;
+
+			break;
+		case 6:
+			mainRegForRegOutput = 14;
+
+			break;
+		case 7:
+			mainRegForRegOutput = 15;
+
+			break;
+
+		}
+		return true;
+	}
+	else//byte
+	{
+		switch (reg)
+		{
+		case 0:
+			mainRegForRegOutput = 0;
+			break;
+		case 1:
+			mainRegForRegOutput = 1;
+
+			break;
+		case 2:
+			mainRegForRegOutput = 2;
+
+			break;
+
+		case 3:
+
+			mainRegForRegOutput = 3;
+			break;
+		case 4:
+			mainRegForRegOutput = 4;
+
+			break;
+		case 5:
+			mainRegForRegOutput = 5;
+
+			break;
+		case 6:
+			mainRegForRegOutput = 6;
+
+			break;
+		case 7:
+			mainRegForRegOutput = 7;
+
+			break;
+
+		}
+
+
+		return false;
+	}
+
+
+}
+
+bool EUControl::decodeRegisterSW(uint8_t mainByte, uint8_t byteWithWbit)
+{
+	int wbit;
+	uint8_t reg;
+	
+		wbit = byteWithWbit & 0b1;
+		reg = (mainByte) & 0b111;
+	
+
+	//0=al, 1=cl, 2=dl, 3=bl, 4=ah, 5=	ch, 6=dh, 7=bh;
+	//8=ax, 9=cx, 10=dx,11=bx, 12=sp, 13=bp, 14=si, 15=di
+
 
 
 
@@ -653,7 +877,7 @@ void EUControl::sendDataFromInstrToBus(MainDataBus* databus)
 		
 
 	}
-	else//high byte
+	else if (bytePos==1)//high byte
 	{
 		if (databus->mainbusstate != databus->FREE && databus->mainbusstate != databus->LOWER_SET)
 			return;
@@ -661,6 +885,29 @@ void EUControl::sendDataFromInstrToBus(MainDataBus* databus)
 		uint8_t fetchedDataByte = instrqueue->dequeue();
 
 		databus->putOnHigherPart(fetchedDataByte);
+
+		
+	}
+	else // FOR SW
+	{
+		if (databus->mainbusstate != databus->FREE && databus->mainbusstate != databus->LOWER_SET)
+			return;
+		instrQueueFuturePosition.pop();
+		uint8_t fetchedDataByte = instrqueue->dequeue();
+
+		databus->putOnLowerPart(fetchedDataByte);
+
+
+		if ((fetchedDataByte & 0x80) != 0)
+		{
+			databus->putOnHigherPart(0xFF);
+		}
+		else
+		{
+			databus->putOnHigherPart(0x00);
+		}
+
+		printf("PUT FROM SW COMMAND\n");
 
 		
 	}

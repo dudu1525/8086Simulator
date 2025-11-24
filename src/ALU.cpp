@@ -26,6 +26,13 @@ void ALU::executeOp()
 		result = operand1 + operand2;
 		break;
 
+	case 1: //substract
+		//operand given in normal way, negative numbers are given in 2scomplement = -3 = FFFD
+	{
+		uint16_t negativeOperand2 = ~operand2 + 0x0001;
+		result = operand1 + operand2;
+		break;
+	}
 	default:
 		result = 0x0000;
 		break;
