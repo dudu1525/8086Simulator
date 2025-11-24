@@ -305,12 +305,15 @@ void EUControl::decodeinstr()
 		instrqueue->dequeue();
 
 		uint8_t modBits = (secondPartOP >> 6) & 0b11;
-		if (instrToBeFetched % 2 == 1)//word (for memory)
+		
+
+		uint8_t sBit = (instrToBeFetched >> 1) & 0b1;
+
+		if (instrToBeFetched % 2 == 1 )//word (for memory)
 			this->bit8forFetching = false;
 		else
 			this->bit8forFetching = true;
 
-		uint8_t sBit = (instrToBeFetched >> 1) & 0b1;
 		printf("SBIT: %x\n", sBit);
 		if (modBits == 0b11)//reg
 		{
@@ -397,8 +400,11 @@ void EUControl::decodeinstr()
 			locationForTempRegs.push(1);
 			commandsqueue.push(POPULATE_TEMP_REGISTERS);
 			//put the memory data on first temp reg
-			locationForTempRegs.push(0);
+			
 			commandsqueue.push(GET_FROM_INTERNAL_REGS);
+
+			locationForTempRegs.push(0);
+			commandsqueue.push(POPULATE_TEMP_REGISTERS);
 
 			aluOpCommand = 0;//signal addition
 			commandsqueue.push(SIGNAL_ALU);

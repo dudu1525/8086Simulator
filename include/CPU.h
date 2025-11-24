@@ -60,7 +60,7 @@ private:
 		bool isLabelValid(std::string argument);
 		uint8_t decodeRegisters(std::string arg1, std::string arg2);
 		uint8_t decodeOneRegister(std::string argument, int direction);
-		uint8_t decodeOneRegisterSW(std::string argument);
+		uint8_t decodeOneRegisterSW(std::string argument, int type);
 		void transformToBytes(std::string argument, int type); //0-mem, 1-immediate
 		
 		void decodeImmediateValue(std::string argument, int instructionType);//add,sub,etc

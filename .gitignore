@@ -28,3 +28,6 @@
 # Visual Studio
 *.vs
 
+8086Simulator/
+
+x64/

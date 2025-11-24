@@ -122,32 +122,6 @@ void CPU::decodeInstr(std::string currentInstr, int indexInstr)
 void CPU::loadInstr(MainMemory* mainmem)
 {
 
-	//call memory load instructions 
-
-	//uint8_t instr[38] = {
-	//	0b10111000 ,0x12, 0x00, // MOV AX, 0X1412
-	//	0b10001001, 0b00000110, 0x10, 0x00, //MOV [0010], AX    
-	//	0b00000011, 0b00000110, 0x10, 0x00, //ADD AX, [0010]
-	//	0b11101001, 0x10, 0x00, //JMP  //jumps to 0x0007, 
-
-	//	0B10001010, 0b11101000,  //mov ch=101, al=000 
-
-	//	0b11101001, 0x07, 0x00,
-	//	0b10001011, 0b00011110, 0x10,0x00,  //MOV BX, [0010]           <<<SHOULD GO HERE!!!!
-	//	0b00000011, 0b00001110, 0x10, 0x00,     //ADD CX=001, [0010]      
-	//	0b00000000, 0b00101110, 0x10,0x00, //ADD [0010], CX    cl now
-
-	//	0b00000010, 0b11101001, //add ch, cl
-	//	
-
-	//};
-	//decode in the instr directly the address of the label!!! so just modify directly the IP
-	// 
-	//when wanna go back, the decoder sees if label is specified, and if its back, it computes the 
-	//offset based on the 2scomplement.
-	//the instr itself just modifies the ip! and adds whats required, (wraps around for negative values=high numbers)
-	//jmp label ==> jmp offset from jump to label (relative)
-
 	mainmem->loadInstrIntoMemory(instructionsEncoded, instructionsEncoded.size());
 
 }
@@ -219,7 +193,38 @@ bool CPU::verifyOneInstruction(std::string currentInstr, int currentIndex)
 	//up until now, the instruction was tokenized
 
 	if (words.size() > 3)
+	{
+		if (words.at(0) == "add" || words.at(0) == "ADD" || words.at(0) == "SUB" || words.at(0) == "sub")
+			if (words.at(1) == "BYTE" || words.at(1) == "byte" || words.at(1) == "WORD" || words.at(1) == "word")
+				if (words.at(2) == "PTR" || words.at(2) == "ptr")
+					if (words.at(3).front() == '[')
+					{
+						
+						try {
+							std::string s = words.at(4);
+							size_t pos = 0;
+							uint16_t x = static_cast<uint16_t>(std::stoul(s, &pos, 16));
+
+							if (pos != s.size()) {
+								return false;
+							}
+							if (x > 0xff && (words.at(1) == "BYTE" || words.at(1) == "byte"))
+								return false;
+							if (x > 0xffff)
+								return false;
+						}
+						catch (const std::invalid_argument& e) {
+							return false;
+						}
+						catch (const std::out_of_range& e) {
+							return false;
+						}
+						return true;
+					}
+
+		
 		return false;
+	}
 
 	int typeofInstr=-1; //0 - mov reg, immd
 	int sizeInstr = -1; //0-byte, 1-word
@@ -565,7 +570,7 @@ void CPU::decodeADD(std::vector<std::string> instruction)
 			if (numBytes == 0)//byte
 			{
 				instructionsEncoded.push_back(0B10000010);
-				instructionsEncoded.push_back(decodeOneRegisterSW(instruction.at(1)));
+				instructionsEncoded.push_back(decodeOneRegisterSW(instruction.at(1),0) );
 				decodeImmediateValue(instruction.at(2), 0);
 				//need to push 1 byte
 			}
@@ -574,14 +579,14 @@ void CPU::decodeADD(std::vector<std::string> instruction)
 				if (verifyImmediateValue(instruction.at(2)) == true)
 				{
 					instructionsEncoded.push_back(0B10000011);//need to sign extend
-					instructionsEncoded.push_back(decodeOneRegisterSW(instruction.at(1)));
+					instructionsEncoded.push_back(decodeOneRegisterSW(instruction.at(1),0));
 					decodeImmediateValue(instruction.at(2), 0);
 					//need to push one byte only
 				}
 				else
 				{
 					instructionsEncoded.push_back(0B10000001);//no need to sign extend
-					instructionsEncoded.push_back(decodeOneRegisterSW(instruction.at(1)));
+					instructionsEncoded.push_back(decodeOneRegisterSW(instruction.at(1),0));
 					decodeImmediateValue(instruction.at(2), 1);
 					//need to push 2 bytes
 
@@ -593,17 +598,41 @@ void CPU::decodeADD(std::vector<std::string> instruction)
 			
 			
 		}
-		else //of type add mem, immd
-		{ ////////////////////////////////////NEED TO ADD WORD PTR/BYTE PTR INSIDE THE COMMAND ITSELF
+		else //of type add mem, immd with word ptr
+		{ 
+			std::string instrLen = instruction.at(1);
+			std::string memPart = instruction.at(3);
+			std::string immdPart = instruction.at(4);
 
-			if (numBytes == 0)//byte
-			{
+			uint16_t x = static_cast<uint16_t>(std::stoul(immdPart, NULL, 16));
+			
 
+			if (instrLen == "WORD" || instrLen == "word")
+			{	
+				if (x>0xff)
+				{
+					instructionsEncoded.push_back(0B10000001);
+					instructionsEncoded.push_back(0b00000000); //mod==00/01/10, 000, r/m=000
+					transformToBytes(memPart, 0);
+					decodeImmediateValue(immdPart, 1);
+				}
+				else
+				{
+					instructionsEncoded.push_back(0B10000011);
+					instructionsEncoded.push_back(0b00000000);
+					transformToBytes(memPart, 0);
+					decodeImmediateValue(immdPart, 0);
+
+				}
 			}
 			else
 			{
-
+				instructionsEncoded.push_back(0B10000010);
+				instructionsEncoded.push_back(0b00000000);
+				transformToBytes(memPart, 0);
+				decodeImmediateValue(immdPart, 0);
 			}
+			
 
 			
 		}
@@ -924,7 +953,7 @@ uint8_t CPU::decodeOneRegister(std::string argument, int direction)
 
 }
 
-uint8_t CPU::decodeOneRegisterSW(std::string argument)
+uint8_t CPU::decodeOneRegisterSW(std::string argument, int type)
 {
 	if (!argument.empty() && argument.back() == ',')
 		argument.pop_back();
@@ -963,7 +992,10 @@ uint8_t CPU::decodeOneRegisterSW(std::string argument)
 		reg1 = 7;
 	}
 
-	return (0b11000000 | reg1);
+	if (type==0)
+		return (0b11000000 | reg1);
+		else
+		return (0b00000000 | reg1);
 }
 
 void CPU::transformToBytes(std::string argument, int type)
