@@ -189,7 +189,7 @@ void EUControl::decodeinstr()
 
 
 		
-	}
+	}/////////////////////need to add cmp and test to this also fewer instructions for cmp and test since they just test the variables, not actually modify them
 	else if ((instrToBeFetched >> 2 & 0b111111) == 0b000000 || (instrToBeFetched >> 2 & 0b111111) == 0b001010) ///////////////////////////////////////////////////////type ADD or SUB
 	{
 		fetchSkipped = true;//means pop the state after signaling to the BIUControl
@@ -226,7 +226,7 @@ void EUControl::decodeinstr()
 			if (opBits == 0)
 				aluOpCommand = 0;//signal addition
 			else if (opBits == 1)
-				aluOpCommand = 1;
+				aluOpCommand = 1;//signal substract
 
 			commandsqueue.push(SIGNAL_ALU);
 			commandsqueue.push(AWAIT_ALU_OP);
@@ -272,7 +272,7 @@ void EUControl::decodeinstr()
 			if (opBits == 0)
 				aluOpCommand = 0;//signal addition
 			else if (opBits == 1)
-				aluOpCommand = 1;
+				aluOpCommand = 1; //signal substract
 
 			commandsqueue.push(SIGNAL_ALU);
 
@@ -303,7 +303,7 @@ void EUControl::decodeinstr()
 
 		commandsqueue.push(DECODING);
 	}
-	else if ((instrToBeFetched >> 2 & 0b111111) == 0b100000)/////////////////////////////////////////////////ADD REG/MEM, IMMD or SUB/
+	else if ((instrToBeFetched >> 2 & 0b111111) == 0b100000)/////////////////////////////////////////////////ADD REG/MEM, IMMD or SUB/cmp   TEST NEEDS TO BE SEPARATE?
 	{
 		fetchSkipped = true;//means pop the state after signaling to the BIUControl
 		getDataFromBIU = false;
@@ -315,7 +315,7 @@ void EUControl::decodeinstr()
 
 		uint8_t modBits = (secondPartOP >> 6) & 0b11;
 
-		uint8_t opBits = (secondPartOP >> 3) & 0b111; //101 is substract, 000-add
+		uint8_t opBits = (secondPartOP >> 3) & 0b111; //101 is substract, 000-add, 111-CMP,  000test,but diff first byte, so not addressed here
 		printf("opbits:%x\n", opBits);
 
 		uint8_t sBit = (instrToBeFetched >> 1) & 0b1;

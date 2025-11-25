@@ -97,13 +97,30 @@ void CPU::decodeInstr(std::string currentInstr, int indexInstr)
 	}
 	else if (words.at(0) == "sub")
 	{
-		decodeSUB(words);
+		decodeGeneral(words, 0); //0 = SUB
 
 	}
 	else if (words.at(0) == "jmp")
 	{
-		decodeJMP(words); //just so it fills up the memory, it will be remade later
+		decodeJMP(words, 0); //just so it fills up the memory, it will be remade later
 
+	}
+	else if (words.at(0) == "cmp")
+	{
+		decodeGeneral(words, 1); //0 = SUB, 1 = CMP
+
+	}
+	else if (words.at(0) == "test")
+	{
+		decodeGeneral(words, 2); //2 = TEST
+	}
+	else if (words.at(0) == "je")
+	{
+		decodeJMP(words, 1);
+	}
+	else if (words.at(0) == "jne")
+	{
+		decodeJMP(words, 2);
 	}
 	else if (words.at(0).back() == ':') //is a label
 	{
@@ -194,7 +211,8 @@ bool CPU::verifyOneInstruction(std::string currentInstr, int currentIndex)
 
 	if (words.size() > 3)
 	{
-		if (words.at(0) == "add" || words.at(0) == "ADD" || words.at(0) == "SUB" || words.at(0) == "sub")
+		if (words.at(0) == "add" || words.at(0) == "ADD" || words.at(0) == "SUB" || words.at(0) == "sub" || words.at(0) == "CMP" || words.at(0) == "cmp"
+				|| words.at(0) == "TEST" || words.at(0) == "test")
 			if (words.at(1) == "BYTE" || words.at(1) == "byte" || words.at(1) == "WORD" || words.at(1) == "word")
 				if (words.at(2) == "PTR" || words.at(2) == "ptr")
 					if (words.at(3).front() == '[')
@@ -269,7 +287,7 @@ bool CPU::verifyOneInstruction(std::string currentInstr, int currentIndex)
 			{
 				typeofInstr = 1;
 			}
-			else if (s == "add")
+			else if (s == "add" || s=="cmp" || s=="test")
 			{
 				typeofInstr = 2;
 			}
@@ -277,7 +295,7 @@ bool CPU::verifyOneInstruction(std::string currentInstr, int currentIndex)
 			{
 				typeofInstr = 3;
 			}
-			else if (s == "jmp")
+			else if (s == "jmp" || s=="je" || s=="jne")
 			{
 				typeofInstr = 4;
 			}
@@ -642,19 +660,42 @@ void CPU::decodeADD(std::vector<std::string> instruction)
 
 }
 
-void CPU::decodeSUB(std::vector<std::string> instruction)
+void CPU::decodeGeneral(std::vector<std::string> instruction, int type)
 {
 	if (isRegister(instruction.at(1)) && isRegister(instruction.at(2)))
 	{	//0b 001010 d w
 		//00 01 02 03
 		if (numBytes == 0)//byte
-		{
-			instructionsEncoded.push_back(0B00101010);
+		{	
+				if (type==0)//SUB
+				{
+					instructionsEncoded.push_back(0B00101010);
+				}
+				else if (type == 1)//CMP
+				{
+					instructionsEncoded.push_back(0B00111010);
+				}
+				else if (type == 2)//TEST
+				{
+					instructionsEncoded.push_back(0B00010010);
+				}
 
 		}
 		else//word
-		{
-			instructionsEncoded.push_back(0B00101011);
+		{		
+				if (type==0)
+				{
+					instructionsEncoded.push_back(0B00101011);
+				}
+				else if (type == 1)
+				{
+					instructionsEncoded.push_back(0B00111011);
+				}
+				else if (type == 2)
+				{
+					instructionsEncoded.push_back(0B00010011);
+				}
+
 
 		}
 
@@ -665,11 +706,36 @@ void CPU::decodeSUB(std::vector<std::string> instruction)
 	{
 		if (numBytes == 0)
 		{
-			instructionsEncoded.push_back(0B00101010);
+			if (type == 0)
+			{
+				instructionsEncoded.push_back(0B00101010);
+			}
+			else if (type == 1)
+			{
+				instructionsEncoded.push_back(0B00111010);
+			}
+			else if (type == 2)
+			{
+				instructionsEncoded.push_back(0B00010010);
+			}
+
+			
 		}
 		else
 		{
-			instructionsEncoded.push_back(0B00101011);
+			if (type == 0)
+			{
+				instructionsEncoded.push_back(0B00101011);
+			}
+			else if (type == 1)
+			{
+				instructionsEncoded.push_back(0B00111011);
+			}
+			else if (type == 2)
+			{
+				instructionsEncoded.push_back(0B00010011);
+			}
+			
 		}
 
 		instructionsEncoded.push_back(decodeOneRegister(instruction.at(1), 1));
@@ -679,26 +745,59 @@ void CPU::decodeSUB(std::vector<std::string> instruction)
 	{
 		if (numBytes == 0)
 		{
-			instructionsEncoded.push_back(0B00101000);
+			if (type == 0)//sub
+			{
+				instructionsEncoded.push_back(0B00101000);
+			}
+			else if (type == 1)//cmp
+			{
+				instructionsEncoded.push_back(0B00111000);
+			}
+			else if (type == 2)//test ???
+			{
+				instructionsEncoded.push_back(0B00010000);
+			}
+			
 		}
 		else
 		{
-			instructionsEncoded.push_back(0B00101001);
+
+			if (type == 0)
+			{
+				instructionsEncoded.push_back(0B00101001);
+			}
+			else if (type == 1)
+			{
+				instructionsEncoded.push_back(0B00111001);
+			}
+			else if (type == 2)
+			{
+				instructionsEncoded.push_back(0B00010001);
+			}
+
+			
 		}
 
 		instructionsEncoded.push_back(decodeOneRegister(instruction.at(2), 1));
 		transformToBytes(instruction.at(1), 0);
 	}
-	else//sub  reg/mem, immd B_
+	else//sub/CMP  reg/mem, immd B_            ///////TEST OF THIS TYPE IS NOT IMPLEMENTED
 	{
-		//100000 s w
+		//100000 s w    //TEST IS NOT OF THIS TYPE
 		if (isRegister(instruction.at(1))) //sub reg, immd
 		{
 
 			if (numBytes == 0)//byte
 			{
 				instructionsEncoded.push_back(0B10000010);
-				instructionsEncoded.push_back(decodeOneRegisterSW(instruction.at(1), 0,1));
+				if (type==0)//sub
+				{
+					instructionsEncoded.push_back(decodeOneRegisterSW(instruction.at(1), 0, 1));
+				}
+				else if (type == 1)//cmp
+				{
+					instructionsEncoded.push_back(decodeOneRegisterSW(instruction.at(1), 0, 2));
+				}
 				decodeImmediateValue(instruction.at(2), 0);
 				//need to push 1 byte
 			}
@@ -707,14 +806,28 @@ void CPU::decodeSUB(std::vector<std::string> instruction)
 				if (verifyImmediateValue(instruction.at(2)) == true)
 				{
 					instructionsEncoded.push_back(0B10000011);//need to sign extend
-					instructionsEncoded.push_back(decodeOneRegisterSW(instruction.at(1), 0,1));
+					if (type==0)
+					{
+						instructionsEncoded.push_back(decodeOneRegisterSW(instruction.at(1), 0, 1));
+					}
+					else if (type == 1)
+					{
+						instructionsEncoded.push_back(decodeOneRegisterSW(instruction.at(1), 0, 2));
+					}
 					decodeImmediateValue(instruction.at(2), 0);
 					//need to push one byte only
 				}
 				else
 				{
 					instructionsEncoded.push_back(0B10000001);//no need to sign extend
-					instructionsEncoded.push_back(decodeOneRegisterSW(instruction.at(1), 0,1));
+					if (type==0)
+					{
+						instructionsEncoded.push_back(decodeOneRegisterSW(instruction.at(1), 0, 1));
+					}
+					else if (type == 1)//cmp
+					{
+						instructionsEncoded.push_back(decodeOneRegisterSW(instruction.at(1), 0, 2));
+					}
 					decodeImmediateValue(instruction.at(2), 1);
 					//need to push 2 bytes
 
@@ -740,14 +853,29 @@ void CPU::decodeSUB(std::vector<std::string> instruction)
 				if (x > 0xff)
 				{
 					instructionsEncoded.push_back(0B10000001);
-					instructionsEncoded.push_back(0b00101000); //mod==00/01/10, 000, r/m=000
+					if (type==0)//sub
+					{
+						instructionsEncoded.push_back(0b00101000); //mod==00/01/10, 000, r/m=000
+					}
+					else if (type == 1)//cmp
+					{
+						instructionsEncoded.push_back(0b00111000);
+					}
 					transformToBytes(memPart, 0);
 					decodeImmediateValue(immdPart, 1);
 				}
 				else
 				{
 					instructionsEncoded.push_back(0B10000011);
-					instructionsEncoded.push_back(0b00101000);
+
+					if (type==0)//sub
+					{
+						instructionsEncoded.push_back(0b00101000);
+					}
+					else if (type == 1)//cmp
+					{
+						instructionsEncoded.push_back(0b00111000);
+					}
 					transformToBytes(memPart, 0);
 					decodeImmediateValue(immdPart, 0);
 
@@ -756,7 +884,14 @@ void CPU::decodeSUB(std::vector<std::string> instruction)
 			else
 			{
 				instructionsEncoded.push_back(0B10000010);
-				instructionsEncoded.push_back(0b00101000);
+				if (type==0)//sub
+				{
+					instructionsEncoded.push_back(0b00101000);
+				}
+				else if (type == 1)//cmp
+				{
+					instructionsEncoded.push_back(0b00111000);
+				}
 				transformToBytes(memPart, 0);
 				decodeImmediateValue(immdPart, 0);
 			}
@@ -769,9 +904,24 @@ void CPU::decodeSUB(std::vector<std::string> instruction)
 
 }
 
-void CPU::decodeJMP(std::vector<std::string> instruction)
-{
-	instructionsEncoded.push_back(0b11101001);
+void CPU::decodeJMP(std::vector<std::string> instruction, int type)
+{	
+		if (type==0)//jmp
+		{
+			instructionsEncoded.push_back(0b11101001);
+		}
+		else if (type == 1)//je
+		{
+			instructionsEncoded.push_back(0b01110100);
+			
+		}
+		else if (type == 2)//jne
+		{
+			instructionsEncoded.push_back(0b01110101);
+			
+
+		}
+
 	numBytes = 1;
 	instructionsEncoded.push_back(0x00);
 	instructionsEncoded.push_back(0x00);
@@ -789,7 +939,7 @@ bool CPU::verifyAgain(std::string currentInstr, int currentIndex)
 	}
 	std::transform(words.at(0).begin(), words.at(0).end(), words.at(0).begin(), [](unsigned char c) { return std::tolower(c); });
 
-	if (words.at(0) == "jmp")
+	if (words.at(0) == "jmp" || words.at(0) == "jne" || words.at(0) == "je")
 	{
 		std::string secondVal = words.at(1);
 		if (isLabelValid(secondVal) == false)
@@ -815,7 +965,7 @@ void CPU::encodeJumpInstr(std::string currentInstr, int indexInstr)
 	}
 	std::transform(words.at(0).begin(), words.at(0).end(), words.at(0).begin(), [](unsigned char c) { return std::tolower(c); });
 
-	if (words.at(0) == "jmp")
+	if (words.at(0) == "jmp" || words.at(0) == "jne" || words.at(0) == "je")
 	{
 		
 		std::string labelString = words.at(1);
@@ -825,7 +975,7 @@ void CPU::encodeJumpInstr(std::string currentInstr, int indexInstr)
 		int currentJmpIndex = 0;
 		for (int i = 0; i < instructionsEncoded.size(); i++)
 		{
-			if (instructionsEncoded.at(i) == 0b11101001)
+			if (instructionsEncoded.at(i) == 0b11101001 || instructionsEncoded.at(i) == 0b01110100 || instructionsEncoded.at(i) == 0b01110101)
 			{
 				if (currentJmpIndex == currentJmpInstr)
 				{
@@ -1121,12 +1271,25 @@ uint8_t CPU::decodeOneRegisterSW(std::string argument, int type, int operation)
 		else
 			return (0b00000000 | reg1);
 	}
-	else if (operation==1)
+	else if (operation==1)//sub
 	{
 		if (type == 0)
 			return (0b11101000 | reg1);
 		else
 			return (0b00101000 | reg1);
+
+	}
+	else if (operation == 2)//cmp
+	{
+		if (type == 0)
+			return (0b11111000 | reg1);
+		else
+			return (0b00111000 | reg1);
+
+	}
+	else if (operation == 3)//test
+	{
+		//its not of type opcodeSW
 
 	}
 }

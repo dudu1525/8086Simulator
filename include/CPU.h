@@ -42,9 +42,12 @@ private:
 	//internal decoding functions
 	void decodeMOV(std::vector<std::string> instruction);
 		void decodeADD(std::vector<std::string> instruction);
-		void decodeSUB(std::vector<std::string> instruction);
-		void decodeJMP(std::vector<std::string> instruction);
-
+		void decodeGeneral(std::vector<std::string> instruction, int type);
+		void decodeJMP(std::vector<std::string> instruction, int type);
+		void decodeCMP(std::vector<std::string> instruction);
+		void decodeTEST(std::vector<std::string> instruction);
+		void decodeJE(std::vector<std::string> instruction);
+		
 		bool verifyAgain(std::string currentInstr, int currentIndex);
 
 		void encodeJumpInstr(std::string currentInstr, int indexInstr);

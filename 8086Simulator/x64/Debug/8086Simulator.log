@@ -1,4 +1,1 @@
-﻿  EUControl.cpp
-D:\an3\sem1\scs\8086Simulator\src\EUControl.cpp(1136,41): warning C4244: 'argument': conversion from 'uint16_t' to 'uint8_t', possible loss of data
-D:\an3\sem1\scs\8086Simulator\src\EUControl.cpp(1197,51): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-  8086Simulator.vcxproj -> D:\an3\sem1\scs\8086Simulator\x64\Debug\8086Simulator.exe
+﻿  8086Simulator.vcxproj -> D:\an3\sem1\scs\8086Simulator\x64\Debug\8086Simulator.exe
