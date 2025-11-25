@@ -97,7 +97,7 @@ void CPU::decodeInstr(std::string currentInstr, int indexInstr)
 	}
 	else if (words.at(0) == "sub")
 	{
-
+		decodeSUB(words);
 
 	}
 	else if (words.at(0) == "jmp")
@@ -570,7 +570,7 @@ void CPU::decodeADD(std::vector<std::string> instruction)
 			if (numBytes == 0)//byte
 			{
 				instructionsEncoded.push_back(0B10000010);
-				instructionsEncoded.push_back(decodeOneRegisterSW(instruction.at(1),0) );
+				instructionsEncoded.push_back(decodeOneRegisterSW(instruction.at(1),0,0) );
 				decodeImmediateValue(instruction.at(2), 0);
 				//need to push 1 byte
 			}
@@ -579,14 +579,14 @@ void CPU::decodeADD(std::vector<std::string> instruction)
 				if (verifyImmediateValue(instruction.at(2)) == true)
 				{
 					instructionsEncoded.push_back(0B10000011);//need to sign extend
-					instructionsEncoded.push_back(decodeOneRegisterSW(instruction.at(1),0));
+					instructionsEncoded.push_back(decodeOneRegisterSW(instruction.at(1),0,0));
 					decodeImmediateValue(instruction.at(2), 0);
 					//need to push one byte only
 				}
 				else
 				{
 					instructionsEncoded.push_back(0B10000001);//no need to sign extend
-					instructionsEncoded.push_back(decodeOneRegisterSW(instruction.at(1),0));
+					instructionsEncoded.push_back(decodeOneRegisterSW(instruction.at(1),0,0));
 					decodeImmediateValue(instruction.at(2), 1);
 					//need to push 2 bytes
 
@@ -637,12 +637,135 @@ void CPU::decodeADD(std::vector<std::string> instruction)
 			
 		}
 
-
-
-		//instructionsEncoded.push_back(decodeOneRegister(instruction.at(1), 0));
-		//transformToBytes(instruction.at(2), 1);
 	}
 
+
+}
+
+void CPU::decodeSUB(std::vector<std::string> instruction)
+{
+	if (isRegister(instruction.at(1)) && isRegister(instruction.at(2)))
+	{	//0b 001010 d w
+		//00 01 02 03
+		if (numBytes == 0)//byte
+		{
+			instructionsEncoded.push_back(0B00101010);
+
+		}
+		else//word
+		{
+			instructionsEncoded.push_back(0B00101011);
+
+		}
+
+		instructionsEncoded.push_back(decodeRegisters(instruction.at(1), instruction.at(2)));
+
+	}
+	else if (isRegister(instruction.at(1)) && isMemory(instruction.at(2)))//sub reg, mem
+	{
+		if (numBytes == 0)
+		{
+			instructionsEncoded.push_back(0B00101010);
+		}
+		else
+		{
+			instructionsEncoded.push_back(0B00101011);
+		}
+
+		instructionsEncoded.push_back(decodeOneRegister(instruction.at(1), 1));
+		transformToBytes(instruction.at(2), 0);
+	}
+	else if (isRegister(instruction.at(2)) && isMemory(instruction.at(1)))//sub mem, reg
+	{
+		if (numBytes == 0)
+		{
+			instructionsEncoded.push_back(0B00101000);
+		}
+		else
+		{
+			instructionsEncoded.push_back(0B00101001);
+		}
+
+		instructionsEncoded.push_back(decodeOneRegister(instruction.at(2), 1));
+		transformToBytes(instruction.at(1), 0);
+	}
+	else//sub  reg/mem, immd B_
+	{
+		//100000 s w
+		if (isRegister(instruction.at(1))) //sub reg, immd
+		{
+
+			if (numBytes == 0)//byte
+			{
+				instructionsEncoded.push_back(0B10000010);
+				instructionsEncoded.push_back(decodeOneRegisterSW(instruction.at(1), 0,1));
+				decodeImmediateValue(instruction.at(2), 0);
+				//need to push 1 byte
+			}
+			else //need to check if immediate label is 
+			{
+				if (verifyImmediateValue(instruction.at(2)) == true)
+				{
+					instructionsEncoded.push_back(0B10000011);//need to sign extend
+					instructionsEncoded.push_back(decodeOneRegisterSW(instruction.at(1), 0,1));
+					decodeImmediateValue(instruction.at(2), 0);
+					//need to push one byte only
+				}
+				else
+				{
+					instructionsEncoded.push_back(0B10000001);//no need to sign extend
+					instructionsEncoded.push_back(decodeOneRegisterSW(instruction.at(1), 0,1));
+					decodeImmediateValue(instruction.at(2), 1);
+					//need to push 2 bytes
+
+				}
+
+
+
+			}
+
+
+		}
+		else //of type sub mem, immd with word ptr
+		{
+			std::string instrLen = instruction.at(1);
+			std::string memPart = instruction.at(3);
+			std::string immdPart = instruction.at(4);
+
+			uint16_t x = static_cast<uint16_t>(std::stoul(immdPart, NULL, 16));
+
+
+			if (instrLen == "WORD" || instrLen == "word")
+			{
+				if (x > 0xff)
+				{
+					instructionsEncoded.push_back(0B10000001);
+					instructionsEncoded.push_back(0b00101000); //mod==00/01/10, 000, r/m=000
+					transformToBytes(memPart, 0);
+					decodeImmediateValue(immdPart, 1);
+				}
+				else
+				{
+					instructionsEncoded.push_back(0B10000011);
+					instructionsEncoded.push_back(0b00101000);
+					transformToBytes(memPart, 0);
+					decodeImmediateValue(immdPart, 0);
+
+				}
+			}
+			else
+			{
+				instructionsEncoded.push_back(0B10000010);
+				instructionsEncoded.push_back(0b00101000);
+				transformToBytes(memPart, 0);
+				decodeImmediateValue(immdPart, 0);
+			}
+
+
+
+		}
+
+	}
 
 }
 
@@ -953,7 +1076,7 @@ uint8_t CPU::decodeOneRegister(std::string argument, int direction)
 
 }
 
-uint8_t CPU::decodeOneRegisterSW(std::string argument, int type)
+uint8_t CPU::decodeOneRegisterSW(std::string argument, int type, int operation)
 {
 	if (!argument.empty() && argument.back() == ',')
 		argument.pop_back();
@@ -991,11 +1114,21 @@ uint8_t CPU::decodeOneRegisterSW(std::string argument, int type)
 	{
 		reg1 = 7;
 	}
-
-	if (type==0)
-		return (0b11000000 | reg1);
+	if (operation==0)//add
+	{
+		if (type == 0)
+			return (0b11000000 | reg1);
 		else
-		return (0b00000000 | reg1);
+			return (0b00000000 | reg1);
+	}
+	else if (operation==1)
+	{
+		if (type == 0)
+			return (0b11101000 | reg1);
+		else
+			return (0b00101000 | reg1);
+
+	}
 }
 
 void CPU::transformToBytes(std::string argument, int type)

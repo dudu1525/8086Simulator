@@ -190,7 +190,7 @@ void EUControl::decodeinstr()
 
 		
 	}
-	else if ((instrToBeFetched >> 2 & 0b111111) == 0b000000) ///////////////////////////////////////////////////////type ADD
+	else if ((instrToBeFetched >> 2 & 0b111111) == 0b000000 || (instrToBeFetched >> 2 & 0b111111) == 0b001010) ///////////////////////////////////////////////////////type ADD or SUB
 	{
 		fetchSkipped = true;//means pop the state after signaling to the BIUControl
 		getDataFromBIU = false;
@@ -204,6 +204,8 @@ void EUControl::decodeinstr()
 
 		uint8_t modBits = (secondPartOP >> 6) & 0b11;
 
+		uint8_t opBits = (instrToBeFetched >> 3) & 0b1; //operation bits, signal if its addition0, substract1, or
+		printf("OPBITS:%x\n", opBits);
 		if (modBits == 0b11) // ADD reg reg
 		{
 			decodeRegRegInstr(secondPartOP, instrToBeFetched % 2);
@@ -221,8 +223,11 @@ void EUControl::decodeinstr()
 
 			commandsqueue.push(POPULATE_TEMP_REGISTERS);
 
+			if (opBits == 0)
+				aluOpCommand = 0;//signal addition
+			else if (opBits == 1)
+				aluOpCommand = 1;
 
-			aluOpCommand = 0;//signal addition
 			commandsqueue.push(SIGNAL_ALU);
 			commandsqueue.push(AWAIT_ALU_OP);
 
@@ -256,15 +261,19 @@ void EUControl::decodeinstr()
 			locationFromWhenPopulatingDataBus.push(0);//signal data is needed from data regs
 			commandsqueue.push(PUT_DATA_ON_BUS); //put data on bus from data regs
 
-			locationForTempRegs.push(0);
 			locationForTempRegs.push(1);
+			locationForTempRegs.push(0);
 			commandsqueue.push(POPULATE_TEMP_REGISTERS);
 
 			commandsqueue.push(GET_FROM_INTERNAL_REGS);
 
 			commandsqueue.push(POPULATE_TEMP_REGISTERS);
 
-			aluOpCommand = 0;//signal addition
+			if (opBits == 0)
+				aluOpCommand = 0;//signal addition
+			else if (opBits == 1)
+				aluOpCommand = 1;
+
 			commandsqueue.push(SIGNAL_ALU);
 
 			commandsqueue.push(AWAIT_ALU_OP);
@@ -294,7 +303,7 @@ void EUControl::decodeinstr()
 
 		commandsqueue.push(DECODING);
 	}
-	else if ((instrToBeFetched >> 2 & 0b111111) == 0b100000)/////////////////////////////////////////////////ADD REG/MEM, IMMD
+	else if ((instrToBeFetched >> 2 & 0b111111) == 0b100000)/////////////////////////////////////////////////ADD REG/MEM, IMMD or SUB/
 	{
 		fetchSkipped = true;//means pop the state after signaling to the BIUControl
 		getDataFromBIU = false;
@@ -305,7 +314,9 @@ void EUControl::decodeinstr()
 		instrqueue->dequeue();
 
 		uint8_t modBits = (secondPartOP >> 6) & 0b11;
-		
+
+		uint8_t opBits = (secondPartOP >> 3) & 0b111; //101 is substract, 000-add
+		printf("opbits:%x\n", opBits);
 
 		uint8_t sBit = (instrToBeFetched >> 1) & 0b1;
 
@@ -314,12 +325,12 @@ void EUControl::decodeinstr()
 		else
 			this->bit8forFetching = true;
 
-		printf("SBIT: %x\n", sBit);
+
 		if (modBits == 0b11)//reg
 		{
 			decodeRegisterSW(secondPartOP, instrToBeFetched);
 			mainRegForInput = mainRegForRegOutput;
-			printf("THE REGISTER:%d\n", mainRegForRegOutput);
+		
 			//based on the s and w bit, push on the data bus a certain number of 
 			if (sBit == 1 && instrToBeFetched % 2 == 1) //SIGN EXTEND AS ONLY ONE BYTE IS GIVEN
 			{
@@ -353,7 +364,10 @@ void EUControl::decodeinstr()
 			locationForTempRegs.push(0);
 			commandsqueue.push(POPULATE_TEMP_REGISTERS);
 
-			aluOpCommand = 0;//signal addition
+			if (opBits == 0)
+				aluOpCommand = 0;//signal addition
+			else if (opBits ==0b101)
+				aluOpCommand = 1;
 			commandsqueue.push(SIGNAL_ALU);
 			commandsqueue.push(AWAIT_ALU_OP);
 
@@ -406,7 +420,10 @@ void EUControl::decodeinstr()
 			locationForTempRegs.push(0);
 			commandsqueue.push(POPULATE_TEMP_REGISTERS);
 
-			aluOpCommand = 0;//signal addition
+			if (opBits ==0b000)
+				aluOpCommand = 0;//signal addition
+			else if (opBits ==0b101)
+				aluOpCommand = 1;
 			commandsqueue.push(SIGNAL_ALU);
 
 			commandsqueue.push(AWAIT_ALU_OP);

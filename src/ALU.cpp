@@ -30,7 +30,7 @@ void ALU::executeOp()
 		//operand given in normal way, negative numbers are given in 2scomplement = -3 = FFFD
 	{
 		uint16_t negativeOperand2 = ~operand2 + 0x0001;
-		result = operand1 + operand2;
+		result = operand1 + negativeOperand2;
 		break;
 	}
 	default:
