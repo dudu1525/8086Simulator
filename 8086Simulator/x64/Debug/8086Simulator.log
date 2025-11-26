@@ -1,1 +1,4 @@
-﻿  8086Simulator.vcxproj -> D:\an3\sem1\scs\8086Simulator\x64\Debug\8086Simulator.exe
+﻿  ALU.cpp
+D:\an3\sem1\scs\8086Simulator\src\ALU.cpp(140,1): warning C4715: 'ALU::returnState': not all control paths return a value
+D:\an3\sem1\scs\8086Simulator\src\ALU.cpp(152,1): warning C4715: 'ALU::returnOperation': not all control paths return a value
+  8086Simulator.vcxproj -> D:\an3\sem1\scs\8086Simulator\x64\Debug\8086Simulator.exe

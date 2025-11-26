@@ -190,7 +190,8 @@ void EUControl::decodeinstr()
 
 		
 	}/////////////////////need to add cmp and test to this also fewer instructions for cmp and test since they just test the variables, not actually modify them
-	else if ((instrToBeFetched >> 2 & 0b111111) == 0b000000 || (instrToBeFetched >> 2 & 0b111111) == 0b001010) ///////////////////////////////////////////////////////type ADD or SUB
+	else if ((instrToBeFetched >> 2 & 0b111111) == 0b000000 || (instrToBeFetched >> 2 & 0b111111) == 0b001010 || 
+		(instrToBeFetched >> 2 & 0b111111) == 0b001110 || (instrToBeFetched >> 2 & 0b111111) == 0b000100) ///////////////////////////////////////////////////////type ADD or SUB
 	{
 		fetchSkipped = true;//means pop the state after signaling to the BIUControl
 		getDataFromBIU = false;
@@ -204,7 +205,7 @@ void EUControl::decodeinstr()
 
 		uint8_t modBits = (secondPartOP >> 6) & 0b11;
 
-		uint8_t opBits = (instrToBeFetched >> 3) & 0b1; //operation bits, signal if its addition0, substract1, or
+		uint8_t opBits = (instrToBeFetched >> 2) & 0b111111; //operation bits, signal if its addition0, substract1, or
 		printf("OPBITS:%x\n", opBits);
 		if (modBits == 0b11) // ADD reg reg
 		{
@@ -223,15 +224,25 @@ void EUControl::decodeinstr()
 
 			commandsqueue.push(POPULATE_TEMP_REGISTERS);
 
-			if (opBits == 0)
+			if (opBits == 0b000000 )
 				aluOpCommand = 0;//signal addition
-			else if (opBits == 1)
+			else if (opBits == 0b001010)
 				aluOpCommand = 1;//signal substract
+			else if (opBits == 0b001110)
+			{
+				aluOpCommand = 2;//cmp
+
+			}
+			else if (opBits == 0b000100)
+			{
+				aluOpCommand = 3; //test
+			}
 
 			commandsqueue.push(SIGNAL_ALU);
 			commandsqueue.push(AWAIT_ALU_OP);
 
-			commandsqueue.push(POPULATE_REGISTERS);
+				if (opBits== 0b000000 || opBits== 0b001010)
+			commandsqueue.push(POPULATE_REGISTERS); //populate data regs only if addition/substraction
 
 
 		}
@@ -269,10 +280,19 @@ void EUControl::decodeinstr()
 
 			commandsqueue.push(POPULATE_TEMP_REGISTERS);
 
-			if (opBits == 0)
+			if (opBits == 0b000000)
 				aluOpCommand = 0;//signal addition
-			else if (opBits == 1)
-				aluOpCommand = 1; //signal substract
+			else if (opBits == 0b001010)
+				aluOpCommand = 1;//signal substract
+			else if (opBits == 0b001110)
+			{
+				aluOpCommand = 2;//cmp
+
+			}
+			else if (opBits == 0b000100)
+			{
+				aluOpCommand = 3; //test
+			}
 
 			commandsqueue.push(SIGNAL_ALU);
 
@@ -282,18 +302,22 @@ void EUControl::decodeinstr()
 			{
 		
 				//mainregforOutput used for populating register
+				if (opBits == 0b000000 || opBits == 0b001010) //only for addition or substraction
 				commandsqueue.push(POPULATE_REGISTERS);
 
 			}
 			else //type add MEM, reg
 			{
-				locationForInternalRegsWrite.push(0);//write on data reg1
-				locationForInternalRegsWrite.push(4);//write on offsetreg1
+				if (opBits == 0b000000 || opBits == 0b001010) //if operation is addition or substraction
+				{
+					locationForInternalRegsWrite.push(0);//write on data reg1
+					locationForInternalRegsWrite.push(4);//write on offsetreg1
 
-				commandsqueue.push(PUT_ON_INTERNAL_REGS);//one to put data
-				commandsqueue.push(PUT_ON_INTERNAL_REGS);//one to copy offset1 used for fetch
+					commandsqueue.push(PUT_ON_INTERNAL_REGS);//one to put data
+					commandsqueue.push(PUT_ON_INTERNAL_REGS);//one to copy offset1 used for fetch
 
-				commandsqueue.push(SIGNAL_MEM_WRITE_DATA);
+					commandsqueue.push(SIGNAL_MEM_WRITE_DATA);
+				}
 				//this is popped after writing data
 			}
 
@@ -366,11 +390,14 @@ void EUControl::decodeinstr()
 
 			if (opBits == 0)
 				aluOpCommand = 0;//signal addition
-			else if (opBits ==0b101)
-				aluOpCommand = 1;
+			else if (opBits == 0b101)
+				aluOpCommand = 1;//substraction
+			else if (opBits == 111)
+				aluOpCommand = 2;//cmp
 			commandsqueue.push(SIGNAL_ALU);
 			commandsqueue.push(AWAIT_ALU_OP);
 
+			if (opBits==0 || opBits==0b101) //populate regs only if addition or substraction
 			commandsqueue.push(POPULATE_REGISTERS);
 
 
@@ -424,17 +451,23 @@ void EUControl::decodeinstr()
 				aluOpCommand = 0;//signal addition
 			else if (opBits ==0b101)
 				aluOpCommand = 1;
+			else if (opBits == 0b111)
+			{
+				aluOpCommand = 2;//cmp
+			}
 			commandsqueue.push(SIGNAL_ALU);
 
 			commandsqueue.push(AWAIT_ALU_OP);
+			if (opBits == 0 || opBits == 0b101) //execute only if addition or substraction
+			{
+				locationForInternalRegsWrite.push(0);//write on data reg1
+				locationForInternalRegsWrite.push(4);//write on offsetreg1
 
-			locationForInternalRegsWrite.push(0);//write on data reg1
-			locationForInternalRegsWrite.push(4);//write on offsetreg1
+				commandsqueue.push(PUT_ON_INTERNAL_REGS);//one to put data
+				commandsqueue.push(PUT_ON_INTERNAL_REGS);//one to copy offset1 used for fetch
 
-			commandsqueue.push(PUT_ON_INTERNAL_REGS);//one to put data
-			commandsqueue.push(PUT_ON_INTERNAL_REGS);//one to copy offset1 used for fetch
-
-			commandsqueue.push(SIGNAL_MEM_WRITE_DATA);
+				commandsqueue.push(SIGNAL_MEM_WRITE_DATA);
+			}
 
 
 

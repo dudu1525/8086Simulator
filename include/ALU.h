@@ -25,7 +25,7 @@ public:
 	//4 for add
 	//4 for sub
 
-	void executeOp();
+	void executeOp(EUControl* eucontrol);
 	void setOperandsandOperation(uint16_t op1, uint16_t op2,int operation, bool bit8active);
 	void putOnBus(MainDataBus* maindatabus, EUControl* eucontrol);
 	void flushAlu();
