@@ -140,10 +140,26 @@ void EUControl::decodeinstr()
 
 		uint8_t dbit = (instrToBeFetched >> 1) & 0b1;
 
-		commandsqueue.push(SENDING_FROM_INSTR_QUEUE);
-		instrQueueFuturePosition.push(0);
-		commandsqueue.push(SENDING_FROM_INSTR_QUEUE);
-		instrQueueFuturePosition.push(1);
+		uint8_t secondMemReg = (secondPartOP) & 0b111;
+			if (secondMemReg==0b110)
+			{
+				commandsqueue.push(SENDING_FROM_INSTR_QUEUE);
+				instrQueueFuturePosition.push(0);
+				commandsqueue.push(SENDING_FROM_INSTR_QUEUE);
+				instrQueueFuturePosition.push(1);
+			}
+			else 
+			{
+				if (secondMemReg == 0b111)//bx
+					indirectAddressingRegister = 0;
+				else if (secondMemReg == 0b100)//si
+					indirectAddressingRegister = 1;
+				else if (secondMemReg == 0b101)//di
+					indirectAddressingRegister = 2;
+
+				commandsqueue.push(PUT_DATA_ON_BUS);
+				locationFromWhenPopulatingDataBus.push(2); //from indirectAddressRegister
+			}
 
 		if (dbit == 1) //type MOV REG, MEM
 		{
@@ -1143,8 +1159,16 @@ void EUControl::putDataOnBus(MainDataBus* databus)//even high bytes are put on t
 
 		break;
 
-	case 2://alu
-
+	case 2://indirect address registers
+	{
+		if (indirectAddressingRegister == 0)//bx
+			databus->data = euunit->bx;
+		else if (indirectAddressingRegister == 1)//si
+			databus->data = euunit->si;
+		else if (indirectAddressingRegister == 2)//di
+			databus->data = euunit->di;
+		databus->mainbusstate = databus->FULL;
+	}
 	break;
 
 	case 4:

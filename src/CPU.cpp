@@ -523,7 +523,9 @@ void CPU::decodeMOV(std::vector<std::string> instruction)
 			instructionsEncoded.push_back(0B10001011);
 		}
 
-		instructionsEncoded.push_back(  decodeOneRegister(instruction.at(1), 1) );
+		instructionsEncoded.push_back(  decodeOneRegister(instruction.at(1), 1, clearMemOperand(instruction.at(2)) ) );
+		
+	if (clearMemOperand(instruction.at(2)) == 0)
 		transformToBytes(instruction.at(2), 0);
 	}
 	else if (isRegister(instruction.at(2)) && isMemory(instruction.at(1)))//mov mem, reg
@@ -537,13 +539,14 @@ void CPU::decodeMOV(std::vector<std::string> instruction)
 			instructionsEncoded.push_back(0B10001001);
 		}
 
-		instructionsEncoded.push_back( decodeOneRegister(instruction.at(2), 1));
-		transformToBytes(instruction.at(1), 0);
+		instructionsEncoded.push_back( decodeOneRegister(instruction.at(2), 1, clearMemOperand(instruction.at(1)) ) );
+			if (clearMemOperand(instruction.at(1))==0) //get the immediate value only if type of memory addressing needs it
+				transformToBytes(instruction.at(1), 0);
 	}
 	else//mov reg, immd B_
 	{
 		
-		instructionsEncoded.push_back(decodeOneRegister(instruction.at(1), 0));
+		instructionsEncoded.push_back(decodeOneRegister(instruction.at(1), 0, 0));
 		transformToBytes(instruction.at(2), 1);
 	}
 
@@ -579,7 +582,7 @@ void CPU::decodeADD(std::vector<std::string> instruction)
 			instructionsEncoded.push_back(0B00000011);
 		}
 
-		instructionsEncoded.push_back(decodeOneRegister(instruction.at(1), 1));
+		instructionsEncoded.push_back(decodeOneRegister(instruction.at(1), 1, 0));
 		transformToBytes(instruction.at(2), 0);
 	}
 	else if (isRegister(instruction.at(2)) && isMemory(instruction.at(1)))//add mem, reg
@@ -593,7 +596,7 @@ void CPU::decodeADD(std::vector<std::string> instruction)
 			instructionsEncoded.push_back(0B00000001);
 		}
 
-		instructionsEncoded.push_back(decodeOneRegister(instruction.at(2), 1));
+		instructionsEncoded.push_back(decodeOneRegister(instruction.at(2), 1, 0));
 		transformToBytes(instruction.at(1), 0);
 	}
 	else//add  reg/mem, immd B_
@@ -755,7 +758,7 @@ void CPU::decodeGeneral(std::vector<std::string> instruction, int type)
 			
 		}
 
-		instructionsEncoded.push_back(decodeOneRegister(instruction.at(1), 1));
+		instructionsEncoded.push_back(decodeOneRegister(instruction.at(1), 1, 0));
 		transformToBytes(instruction.at(2), 0);
 	}
 	else if (isRegister(instruction.at(2)) && isMemory(instruction.at(1)))//sub mem, reg
@@ -795,7 +798,7 @@ void CPU::decodeGeneral(std::vector<std::string> instruction, int type)
 			
 		}
 
-		instructionsEncoded.push_back(decodeOneRegister(instruction.at(2), 1));
+		instructionsEncoded.push_back(decodeOneRegister(instruction.at(2), 1, 0));
 		transformToBytes(instruction.at(1), 0);
 	}
 	else//sub/CMP  reg/mem, immd B_            ///////TEST OF THIS TYPE IS NOT IMPLEMENTED
@@ -1149,7 +1152,7 @@ uint8_t CPU::decodeRegisters(std::string arg1, std::string arg2)
 
 }
 
-uint8_t CPU::decodeOneRegister(std::string argument, int direction)
+uint8_t CPU::decodeOneRegister(std::string argument, int direction, int typeOfMemGiven)
 {
 	if (!argument.empty() && argument.back() == ',')
 		argument.pop_back();
@@ -1157,9 +1160,21 @@ uint8_t CPU::decodeOneRegister(std::string argument, int direction)
 	int reg1 = returnRegister(argument);
 
 	if (direction == 1)//reg, mem  or mem/reg
-	{
+	{		if (typeOfMemGiven==0)
 		return (0b00000000 | (reg1 << 3) | 0b110); //first 2-0s means no mem displacement 
-
+	else if (typeOfMemGiven == 1) //bx
+	{
+		return (0b00000000 | (reg1 << 3) | 0b111); //111 = bx
+	}
+	else if (typeOfMemGiven == 2)//si
+	{
+		return (0b00000000 | (reg1 << 3) | 0b100); //100=si
+	}
+	else if (typeOfMemGiven == 3)//di
+	{
+		return (0b00000000 | (reg1 << 3) | 0b101); //101 = di
+	}
+	
 	}
 	else//reg, immd
 	{		
@@ -1354,4 +1369,37 @@ int CPU::returnRegister(std::string argument)
 
 
 	return reg1;
+}
+
+int CPU::clearMemOperand(std::string argument)
+{
+	if (!argument.empty() && argument.front() == ',') {
+		argument.erase(argument.begin());
+	}
+	if (!argument.empty() && argument.front() == '[') {
+		argument.erase(argument.begin());
+	}
+	if (!argument.empty() && argument.back() == ',') {
+		argument.pop_back();
+	}
+	if (!argument.empty() && argument.back() == ']') {
+		argument.pop_back();
+	}
+	if (!argument.empty() && argument.back() == 'h') {
+		argument.pop_back();
+	}
+	if (!argument.empty() && argument.back() == 'H') {
+		argument.pop_back();
+	}
+	if (argument == "bx" || argument == "BX")
+		return 1;
+	else if (argument == "si" || argument == "SI")
+		return 2;
+	else if (argument == "di" || argument == "DI")
+		return 3;
+	else
+	return 0;//normal direct address
+
+
+
 }

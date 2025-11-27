@@ -153,6 +153,7 @@ private:
 	bool incrementAfterJump = true;
 	bool bit8ActiveforOPS=false; //indicates if an operation is done on 8 bits on alu(true), or 16 bits (false)
 	int pushOrPop = 0;//0-push, 1-pop
+	int indirectAddressingRegister = 0;//0 - bx, 1 - si, 2 - di
 	
 };
 
