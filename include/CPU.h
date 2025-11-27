@@ -44,9 +44,7 @@ private:
 		void decodeADD(std::vector<std::string> instruction);
 		void decodeGeneral(std::vector<std::string> instruction, int type);
 		void decodeJMP(std::vector<std::string> instruction, int type);
-		void decodeCMP(std::vector<std::string> instruction);
-		void decodeTEST(std::vector<std::string> instruction);
-		void decodeJE(std::vector<std::string> instruction);
+		void encodeStackInstr(std::vector<std::string> instruction, int type); //push or pop
 		
 		bool verifyAgain(std::string currentInstr, int currentIndex);
 
@@ -67,7 +65,7 @@ private:
 		void transformToBytes(std::string argument, int type); //0-mem, 1-immediate
 		
 		void decodeImmediateValue(std::string argument, int instructionType);//add,sub,etc
-	
+		int returnRegister(std::string argument);
 
 		
 

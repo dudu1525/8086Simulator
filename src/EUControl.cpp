@@ -56,6 +56,8 @@ void EUControl::euControlStep(MainDataBus* databus)
 
 	case UPDATE_FLAGS:  break;
 
+	case AWAIT_PUSH_POP_INSTR: pushPopOperations(databus); break;
+
 	default: std::cout << "Front state: UNKNOWN\n"; break;
 	}
 
@@ -495,6 +497,30 @@ void EUControl::decodeinstr()
 			return;
 		decodeConditionalJumps(1);
 	}
+	else if ((instrToBeFetched >> 3 & 0b11111) == 0b01010)/////////////////////////////PUSH
+	{
+		pushOrPop = 0;
+		instrqueue->dequeue();
+		mainRegForInput = (instrToBeFetched & 0b00000111)+8; //+8 so is considered a word
+		locationFromWhenPopulatingDataBus.push(0);//put data from data regs
+		commandsqueue.push(PUT_DATA_ON_BUS);
+		locationForInternalRegsWrite.push(0);//write on datareg1 inside biu regs
+		commandsqueue.push(PUT_ON_INTERNAL_REGS);
+		commandsqueue.push(AWAIT_PUSH_POP_INSTR);
+
+		commandsqueue.push(DECODING);
+	}
+	else if ((instrToBeFetched >> 3 & 0b11111) == 0b01011)////////////////////////////POP
+	{
+		pushOrPop = 1;
+		instrqueue->dequeue();
+		mainRegForRegOutput = (instrToBeFetched & 0b00000111) + 8;
+		commandsqueue.push(AWAIT_PUSH_POP_INSTR);
+		commandsqueue.push(GET_FROM_INTERNAL_REGS);
+		commandsqueue.push(POPULATE_REGISTERS);
+
+		commandsqueue.push(DECODING);
+	}
 
 
 	if (incrementAfterJump)
@@ -533,6 +559,7 @@ void EUControl::printCurrentState()
 		case AWAIT_ALU_OP:std::cout << "Front state: AWAIT ALU DATA\n"; break;
 		case UPDATE_FLAGS: std::cout << "Front state: UPDATE_FLAGS\n"; break;
 		case FLUSH_COMPONENTS: std::cout << "Front state:FLUSH COMPONENTS\n"; break;
+		case AWAIT_PUSH_POP_INSTR: std::cout << "Pushing/Popping data\n"; break;
 		default: std::cout << "Front state: UNKNOWN\n"; break;
 		}
 	
@@ -578,6 +605,7 @@ const char* EUControl::returnCurrentState()
 	case AWAIT_ALU_OP:return "Front state: AWAIT ALU DATA\n"; break;
 	case UPDATE_FLAGS: return "Front state: UPDATE_FLAGS\n"; break;
 	case FLUSH_COMPONENTS: return "Front state: Flushing Components"; break;
+	case AWAIT_PUSH_POP_INSTR: return "Front state: Push/Pop Instr"; break;
 	default: return "Front state: UNKNOWN\n"; break;
 	}
 
@@ -1182,6 +1210,32 @@ void EUControl::signalBIUForWrite()
 		return;
 
 	biucontrol->state = biucontrol->WRITING_DATA;
+}
+
+void EUControl::pushPopOperations(MainDataBus* databus)
+{
+	if (commandsqueue.empty() == true)
+		return;
+
+	if (commandsqueue.front() != AWAIT_PUSH_POP_INSTR)
+		return;
+
+	if (biucontrol->state != biucontrol->FREE)
+		return;
+
+	if (pushOrPop == 0)//push
+	{	//need to verify for underflow
+		euunit->sp -= 2;
+		biucontrol->state = biucontrol->PUSHING_DATA;
+	}
+	else if (pushOrPop == 1)//pop
+	{		//need to verify for overflow
+		euunit->sp += 2;
+		biucontrol->state = biucontrol->POPPING_DATA;
+
+	}
+
+
 }
 
 void EUControl::getDataFromInternalBIURegs(MainDataBus* databus)

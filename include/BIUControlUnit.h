@@ -22,12 +22,15 @@ public:
 	bool bit8=false;//false->16bit sent, true->8bit sent
 
 	bool flushSignal = false;
+	
 
 	enum BIUControlState{
 		FREE,
 		READING_INSTR,
 		WRITING_DATA,
-		FETCHING_DATA
+		FETCHING_DATA,
+		PUSHING_DATA,
+		POPPING_DATA,
 	};
 	BIUControlState state=FREE;
 
@@ -37,10 +40,12 @@ public:
 	
 	void fetchDataFromMem(MainMembus* membus, MainMemory* memory, BiuDataBus* databus, InternalBIURegisters* internalregs, BiuAddressBus* address, AddressComputeUnit* computeunit, SegmentRegisters* segreg);
 	
+	void pushData(AddressComputeUnit* computeunit, BiuDataBus* databus, BiuAddressBus* address, SegmentRegisters* segreg, MainMemory* memory, InternalBIURegisters* internalregs); //given pushes and pops are faster, Ill make them take in 2 'cycles'
 
+	void popData(AddressComputeUnit* computeunit, BiuDataBus* databus, BiuAddressBus* address, SegmentRegisters* segreg, MainMemory* memory, InternalBIURegisters* internalregs);//given pushes and pops are faster, Ill make them take in 2 'cycles'
 	
 
-	void signalEUControlDataWritten(); //eu control can be in state: need data, if its in this state, then the biu control sends a signal to eucontrol
+	void signalEUControl(); //eu control can be in state: need data, if its in this state, then the biu control sends a signal to eucontrol
 										//and eu controll will then send the signal to read from memory and put data on MAIN DATA BUS
 	//^^^^USED BY THE BIU TO SIGNAL THAT HAS BEEN WRITTEN ON INTERNAL REGS AFTER AN INSTR FETCH
 
@@ -51,6 +56,8 @@ public:
 private:
 	int writeToMemFlag = 2; //flag needed so data isnt written when theres an operation of reading being done
 							//0- reading, 1-writing 2-idle
+	
+	uint16_t SPValue = 0xffff; //MATCHES the SP INSIDE EU UNIT
 
 	EUControl* eucontrol;
 };

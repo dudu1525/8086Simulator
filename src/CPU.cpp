@@ -122,6 +122,14 @@ void CPU::decodeInstr(std::string currentInstr, int indexInstr)
 	{
 		decodeJMP(words, 2);
 	}
+	else if (words.at(0) == "push")
+	{
+		encodeStackInstr(words, 0);
+	}
+	else if (words.at(0) == "pop")
+	{
+		encodeStackInstr(words, 1);
+	}
 	else if (words.at(0).back() == ':') //is a label
 	{
 		
@@ -244,7 +252,7 @@ bool CPU::verifyOneInstruction(std::string currentInstr, int currentIndex)
 		return false;
 	}
 
-	int typeofInstr=-1; //0 - mov reg, immd
+	int typeofInstr=-1; //0 - mov reg, immd, 5-pushpop
 	int sizeInstr = -1; //0-byte, 1-word
 	//1 - reg, mem // mem,reg   2 - reg,reg   3- add reg,reg  4-add reg, mem  5-add mem,reg  6-jmp
 	//
@@ -311,6 +319,10 @@ bool CPU::verifyOneInstruction(std::string currentInstr, int currentIndex)
 				labelMap.insert({ s, tup }); //just add to the map, so its there
 				return true;
 			}
+			else if (s == "push" || s == "pop")
+			{
+				typeofInstr = 5;
+			}
 			else
 				return false;
 		
@@ -367,18 +379,23 @@ bool CPU::verifyOneInstruction(std::string currentInstr, int currentIndex)
 			
 			if (s == "ah" || s == "bh" || s == "ch" || s == "dh" ||
 				s == "al" || s == "bl" || s == "cl" || s == "dl")
-			{
+			{	
+				if (typeofInstr == 5)
+					return false;
 				sizeInstr = 0;
 				break;
 			}
-
+			
 			if (s == "ax" || s == "bx" || s == "cx" || s == "dx" ||
 				s == "di" || s == "si" || s == "sp" || s == "bp") 
 			{
 				sizeInstr = 1;
 				break;
 			}
-
+			if (sizeInstr != 1 && typeofInstr == 5)
+			{
+				return false;
+			}
 			//try to make hex number
 			try {
 				size_t pos = 0;
@@ -929,6 +946,23 @@ void CPU::decodeJMP(std::vector<std::string> instruction, int type)
 	//transformToBytes(instruction.at(1), 1);
 }
 
+void CPU::encodeStackInstr(std::vector<std::string> instruction, int type)
+{
+	int reg = returnRegister(instruction.at(1));
+	if (type == 0) //push
+	{		if (reg<8)
+		instructionsEncoded.push_back((0b01010000 | reg));
+	
+		return;
+	}
+	else if (type == 1)//pop
+	{		if (reg<8)
+		instructionsEncoded.push_back((0b01011000 | reg));
+		return;
+
+	}
+}
+
 bool CPU::verifyAgain(std::string currentInstr, int currentIndex)
 {
 	std::vector<std::string> words;
@@ -1103,73 +1137,11 @@ uint8_t CPU::decodeRegisters(std::string arg1, std::string arg2)
 
 
 	int reg1=0, reg2=0;
-	if (arg1 == "ax" || arg1 == "al")//000
-	{
-		reg1 = 0;
-	}
-	else if (arg1 == "cx" || arg1 == "cl") //001
-	{
-		reg1 = 1;
-	}
-	else if (arg1 == "dx" || arg1 == "dl") //010
-	{
-		reg1 = 2;
-	}
-	else if (arg1 == "bx" || arg1 == "bl") //011
-	{
-		reg1 = 3;
-	}
-	else if (arg1 == "ah" || arg1 == "sp") //100
-	{
-		reg1 = 4;
-	}
-	else if (arg1 == "ch" || arg1 == "bp") //101
-	{
-		reg1 = 5;
-	}
-	else if (arg1 == "dh" || arg1 == "si") //110
-	{
-		reg1 = 6;
-	}
-	else if (arg1 == "bh" || arg1 == "di") //111
-	{
-		reg1 = 7;
-	}
 
 
+	reg1 = returnRegister(arg1);
 
-	if (arg2 == "ax" || arg2 == "al")//000
-	{
-		reg2 = 0;
-	}
-	else if (arg2 == "cx" || arg2 == "cl") //001
-	{
-		reg2 = 1;
-	}
-	else if (arg2 == "dx" || arg2 == "dl") //010
-	{
-		reg2 = 2;
-	}
-	else if (arg2 == "bx" || arg2 == "bl") //011
-	{
-		reg2 = 3;
-	}
-	else if (arg2 == "ah" || arg2 == "sp") //100
-	{
-		reg2 = 4;
-	}
-	else if (arg2 == "ch" || arg2 == "bp") //101
-	{
-		reg2 = 5;
-	}
-	else if (arg2 == "dh" || arg2 == "si") //110
-	{
-		reg2 = 6;
-	}
-	else if (arg2 == "bh" || arg2 == "di") //111
-	{
-		reg2 = 7;
-	}
+	reg2 = returnRegister(arg2);
 
 	return (0b11000000 | (reg1 << 3) | reg2);
 
@@ -1182,39 +1154,7 @@ uint8_t CPU::decodeOneRegister(std::string argument, int direction)
 	if (!argument.empty() && argument.back() == ',')
 		argument.pop_back();
 
-	int reg1 = 0;
-	if (argument == "ax" || argument == "al")//000
-	{
-		reg1 = 0;
-	}
-	else if (argument == "cx" || argument == "cl") //001
-	{
-		reg1 = 1;
-	}
-	else if (argument == "dx" || argument == "dl") //010
-	{
-		reg1 = 2;
-	}
-	else if (argument == "bx" || argument == "bl") //011
-	{
-		reg1 = 3;
-	}
-	else if (argument == "ah" || argument == "sp") //100
-	{
-		reg1 = 4;
-	}
-	else if (argument == "ch" || argument == "bp") //101
-	{
-		reg1 = 5;
-	}
-	else if (argument == "dh" || argument == "si") //110
-	{
-		reg1 = 6;
-	}
-	else if (argument == "bh" || argument == "di") //111
-	{
-		reg1 = 7;
-	}
+	int reg1 = returnRegister(argument);
 
 	if (direction == 1)//reg, mem  or mem/reg
 	{
@@ -1236,39 +1176,8 @@ uint8_t CPU::decodeOneRegisterSW(std::string argument, int type, int operation)
 	if (!argument.empty() && argument.back() == ',')
 		argument.pop_back();
 
-	int reg1 = 0;
-	if (argument == "ax" || argument == "al")//000
-	{
-		reg1 = 0;
-	}
-	else if (argument == "cx" || argument == "cl") //001
-	{
-		reg1 = 1;
-	}
-	else if (argument == "dx" || argument == "dl") //010
-	{
-		reg1 = 2;
-	}
-	else if (argument == "bx" || argument == "bl") //011
-	{
-		reg1 = 3;
-	}
-	else if (argument == "ah" || argument == "sp") //100
-	{
-		reg1 = 4;
-	}
-	else if (argument == "ch" || argument == "bp") //101
-	{
-		reg1 = 5;
-	}
-	else if (argument == "dh" || argument == "si") //110
-	{
-		reg1 = 6;
-	}
-	else if (argument == "bh" || argument == "di") //111
-	{
-		reg1 = 7;
-	}
+	int reg1 = returnRegister(argument);
+	
 	if (operation==0)//add
 	{
 		if (type == 0)
@@ -1377,4 +1286,72 @@ void CPU::decodeImmediateValue(std::string argument, int instructionType)
 	}
 
 
+}
+
+int CPU::returnRegister(std::string argument)
+{
+	if (!argument.empty() && argument.front() == '[') {
+		argument.erase(argument.begin());
+	}
+	if (!argument.empty() && argument.back() == ',') {
+		argument.pop_back();
+	}
+	if (!argument.empty() && argument.back() == ']') {
+		argument.pop_back();
+	}
+	if (!argument.empty() && argument.back() == 'h') {
+		argument.pop_back();
+	}
+	if (!argument.empty() && argument.back() == 'H') {
+		argument.pop_back();
+	}
+	if (argument == "ax" || argument == "al")//000
+	{
+		reg1 = 0;
+	}
+	else if (argument == "cx" || argument == "cl") //001
+	{
+		reg1 = 1;
+	}
+	else if (argument == "dx" || argument == "dl") //010
+	{
+		reg1 = 2;
+	}
+	else if (argument == "bx" || argument == "bl") //011
+	{
+		reg1 = 3;
+	}
+	else if (argument == "ah" || argument == "sp") //100
+	{
+		reg1 = 4;
+	}
+	else if (argument == "ch" || argument == "bp") //101
+	{
+		reg1 = 5;
+	}
+	else if (argument == "dh" || argument == "si") //110
+	{
+		reg1 = 6;
+	}
+	else if (argument == "bh" || argument == "di") //111
+	{
+		reg1 = 7;
+	}
+	else if (argument == "ss")
+	{
+		reg1 = 8;
+	}
+	else if (argument == "cs")
+	{
+		reg1 = 9;
+	}
+	else if (argument == "ds")
+	{
+		reg1 = 10;
+	}
+	else if (argument == "es")
+		reg1 = 11;
+
+
+	return reg1;
 }

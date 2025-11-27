@@ -18,6 +18,9 @@ void BIUunit::stepBIU()
 
 	biucontrol.fetchInstrFromMem(&incomingaddress, &instrqueue, &membus, &segreg, &addressUnit, mainmem); //last one so 
 
+	biucontrol.pushData(&addressUnit,&incomingbiudata, &incomingaddress, &segreg, mainmem, &internalregs);
+	biucontrol.popData(&addressUnit, &incomingbiudata, &incomingaddress, &segreg, mainmem, &internalregs);
+
 	incomingbiudata.sendDataToInternalRegisters(&internalregs);
 }
 

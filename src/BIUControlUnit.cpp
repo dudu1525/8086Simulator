@@ -175,7 +175,7 @@ void BIUControlUnit::writeDataToMem(BiuAddressBus* address, MainMembus* membus, 
 		this->state = FREE;
 		this->writeToMemFlag = 2;//reset write to mem flag to noop
 
-		this->signalEUControlDataWritten();
+		this->signalEUControl();
 		//signal here the euunit
 		return;
 	}
@@ -211,7 +211,8 @@ void BIUControlUnit::fetchDataFromMem(MainMembus* membus, MainMemory* memory, Bi
 	if (state != FETCHING_DATA)
 		return;
 
-	
+
+
 	//also add a signal that is required to be passed as 1 from the eu unit or  the main data bus
 
 
@@ -288,7 +289,85 @@ void BIUControlUnit::fetchDataFromMem(MainMembus* membus, MainMemory* memory, Bi
 
 }
 
-void BIUControlUnit::signalEUControlDataWritten()
+void BIUControlUnit::pushData(AddressComputeUnit* computeunit, BiuDataBus* databus, BiuAddressBus* address, SegmentRegisters* segreg, MainMemory* memory, InternalBIURegisters* internalregs)
+{
+	if (eucontrol->stopExecution == true)
+	{
+		this->state = FREE;
+		return;
+
+	}
+
+	if (state != PUSHING_DATA)
+		return;
+
+	
+
+	if (address->addressbusState == address->FREE)//first set address
+	{
+		uint32_t transfAddress{};
+		transfAddress = computeunit->generatePhysicalAddress(segreg->ssreg, SPValue, 2);
+		SPValue -= 2;
+		address->addressbusState = address->OCCUPIED_WITH_DATA;
+		address->addressbus = transfAddress;
+		memory->setAddress(address->addressbus);
+		return;
+	}
+	if (address->addressbusState != address->FREE)//write the data
+	{
+		address->addressbusState = address->FREE;
+		databus->fetchDataFromRegs(internalregs);
+	
+		memory->writeToMemory(databus->databus, false);
+		databus->databusstate = databus->FREE;
+		state = FREE;
+		address->addressbus = 0x0000;
+		this->signalEUControl();
+
+		return;
+	}
+
+}
+
+void BIUControlUnit::popData(AddressComputeUnit* computeunit, BiuDataBus* databus, BiuAddressBus* address, SegmentRegisters* segreg, MainMemory* memory, InternalBIURegisters* internalregs)
+{
+
+	if (eucontrol->stopExecution == true)
+	{
+		this->state = FREE;
+		return;
+
+	}
+
+	if (state != POPPING_DATA)
+		return;
+
+	if (address->addressbusState == address->FREE)//first set address
+	{
+		uint32_t transfAddress{};
+		SPValue += 2;
+		transfAddress = computeunit->generatePhysicalAddress(segreg->ssreg, SPValue, 2);
+		
+		address->addressbusState = address->OCCUPIED_WITH_DATA;
+		address->addressbus = transfAddress;
+		memory->setAddress(address->addressbus);
+		return;
+	}
+
+	if (address->addressbusState != address->FREE)//write the data to 
+	{
+		databus->databus= memory->readFromMemory(false);
+		databus->bit8active = false;
+		databus->databusstate = databus->OCCUPIED_TO_INTERNALREGS;
+		state = FREE;
+		address->addressbus = 0x0000;
+		//databus signals for popping the state of the EUControl
+		return;
+	}
+
+}
+
+void BIUControlUnit::signalEUControl()
 {
 	
 	eucontrol->popState();//data was written, advance to the next state
@@ -310,6 +389,8 @@ const char* BIUControlUnit::returnCurrentState()
 	case READING_INSTR: return "Current State: Reading Instruction"; break;
 	case FETCHING_DATA: return "Current State: Fetching Data From Memory"; break;
 	case WRITING_DATA: return "Current State: Writing Data to Memory"; break;
+	case PUSHING_DATA: return "Current State: Pushing data to Memory"; break;
+	case POPPING_DATA: return "Current State: Popping Data from Memory"; break;
 	case FREE: return "Current State: Free"; break;
 
 

@@ -43,7 +43,7 @@ public:
 
 	void signalBIUForWrite();//for both fetch/write signals, the euC is in this state before, and after this, it just comes the next instruction, simple
 
-
+	void pushPopOperations(MainDataBus* databus);
 
 	void getDataFromInternalBIURegs(MainDataBus* databus);
 
@@ -76,7 +76,8 @@ public:
 		AWAIT_ALU_OP,
 		FLUSH_COMPONENTS,
 		STOP_PROGRAM,
-		UPDATE_FLAGS
+		UPDATE_FLAGS,
+		AWAIT_PUSH_POP_INSTR,
 		//can combine some of the states, to do more
 
 	};
@@ -151,6 +152,7 @@ private:
 	bool flagNotEnoughBytes = false;
 	bool incrementAfterJump = true;
 	bool bit8ActiveforOPS=false; //indicates if an operation is done on 8 bits on alu(true), or 16 bits (false)
+	int pushOrPop = 0;//0-push, 1-pop
 	
 };
 

@@ -18,7 +18,7 @@ public:
         {
             throw std::runtime_error("Address out of bounds");
         }
-        else if (location == 2 && addressToBeSent >=0x32fff)
+        else if (location == 2 && addressToBeSent >0x32fff)
         {
             throw std::runtime_error("Address out of bounds");
         }
