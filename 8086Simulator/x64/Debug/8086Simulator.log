@@ -1,4 +1,4 @@
-﻿  ALU.cpp
-D:\an3\sem1\scs\8086Simulator\src\ALU.cpp(140,1): warning C4715: 'ALU::returnState': not all control paths return a value
-D:\an3\sem1\scs\8086Simulator\src\ALU.cpp(152,1): warning C4715: 'ALU::returnOperation': not all control paths return a value
+﻿  EUControl.cpp
+D:\an3\sem1\scs\8086Simulator\src\EUControl.cpp(1210,41): warning C4244: 'argument': conversion from 'uint16_t' to 'uint8_t', possible loss of data
+D:\an3\sem1\scs\8086Simulator\src\EUControl.cpp(1271,51): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
   8086Simulator.vcxproj -> D:\an3\sem1\scs\8086Simulator\x64\Debug\8086Simulator.exe

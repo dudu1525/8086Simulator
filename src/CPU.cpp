@@ -924,6 +924,7 @@ void CPU::decodeJMP(std::vector<std::string> instruction, int type)
 
 	numBytes = 1;
 	instructionsEncoded.push_back(0x00);
+	if (type==0)
 	instructionsEncoded.push_back(0x00);
 	//transformToBytes(instruction.at(1), 1);
 }
@@ -980,9 +981,13 @@ void CPU::encodeJumpInstr(std::string currentInstr, int indexInstr)
 				if (currentJmpIndex == currentJmpInstr)
 				{
 					uint8_t lowbyte = (uint8_t)encodedLabel;
-					instructionsEncoded.at(i + 1) = lowbyte;					
-					uint8_t highbyte = *((uint8_t*)&encodedLabel + 1);
-					instructionsEncoded.at(i + 2) = highbyte;
+					instructionsEncoded.at(i + 1) = lowbyte;
+					if (instructionsEncoded.at(i)== 0b11101001) //for normal jumps, push 2
+					{
+						uint8_t highbyte = *((uint8_t*)&encodedLabel + 1);
+						instructionsEncoded.at(i + 2) = highbyte;
+					}
+
 
 					currentJmpInstr++;//increment global jump index
 					return;

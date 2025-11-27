@@ -73,7 +73,7 @@ void EUControl::decodeinstr()
 	if (instrqueue->isQueueEmpty() == true)  //instr queue needs to have bytes available
 		return;
 
-	if (currentInstructionIndex >= euunit->instructionsAssembly.size()-1)
+	if (currentInstructionIndex >= euunit->instructionsAssembly.size()-1 && instrqueue->frontOfQueue()==0x00)
 	{
 		printf("execution must stop!\n");
 		stopExecution = true;
@@ -482,8 +482,21 @@ void EUControl::decodeinstr()
 		if (flagNotEnoughBytes == true)
 			return;
 	}
+	else if ((instrToBeFetched & 0b11111111) == 0b01110100) //je
+	{
+		if (instrqueue->availableAmountOfBytes(2) == false)
+			return;
 
-	printf("Instr being decoded:%x\n", instrToBeFetched);
+		decodeConditionalJumps(0);
+	}
+	else if ((instrToBeFetched & 0b11111111) == 0b01110101)//jne
+	{
+		if (instrqueue->availableAmountOfBytes(2) == false)
+			return;
+		decodeConditionalJumps(1);
+	}
+
+
 	if (incrementAfterJump)
 		currentInstructionIndex++;
 	incrementAfterJump = true;
@@ -894,6 +907,34 @@ void EUControl::decodeJumpInstr(uint16_t opcodeByte)
 
 
 
+}
+void EUControl::decodeConditionalJumps(int type)
+{
+	instrqueue->dequeue();
+
+	if (type==0)//je command
+	{
+		if (euunit->flags.zeroflag == 1)
+		{
+			commandsqueue.push(FLUSH_COMPONENTS);
+			uint8_t lowbyte = instrqueue->frontOfQueue();
+			
+			computedIp = (0x0000) | lowbyte;
+		}
+	}
+	else if (type == 1)//jne 
+	{
+		if (euunit->flags.zeroflag == 0)
+		{
+			commandsqueue.push(FLUSH_COMPONENTS);
+			uint8_t lowbyte = instrqueue->frontOfQueue();
+			
+			computedIp = (0x0000) | lowbyte;
+		}
+	}
+	
+	instrqueue->dequeue();
+	commandsqueue.push(DECODING);
 }
 //###########################################################################################################################################
 //execution commands below

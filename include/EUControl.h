@@ -114,7 +114,7 @@ private:
 	void decodeRegRegInstr(uint8_t byteToBeDecoded, int bit8);
 	bool decodeRegisterSW(uint8_t mainByte, uint8_t byteWithWbit);
 	void decodeJumpInstr(uint16_t opcodeByte);
-	void decodeSUBInstr();
+	void decodeConditionalJumps(int type);//type reffers to which cond jump is taken, 0=je, 1=jne,..etc
 	
 	/////////////////////////////////variables to indicate flow of execution
 	

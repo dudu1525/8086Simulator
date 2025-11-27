@@ -16,8 +16,7 @@ class SimulatorUI {
 public:
 	SimulatorUI(CPU* cpu,MainMemory* mem );
 
-	void takeUserInput();
-	void makeMachineCode();
+
 
 	int initWindow();
 	void mainRun();
