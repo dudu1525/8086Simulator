@@ -290,8 +290,8 @@ void EUControl::decodeinstr()
 			locationFromWhenPopulatingDataBus.push(0);//signal data is needed from data regs
 			commandsqueue.push(PUT_DATA_ON_BUS); //put data on bus from data regs
 
-			locationForTempRegs.push(1);
 			locationForTempRegs.push(0);
+			locationForTempRegs.push(1);
 			commandsqueue.push(POPULATE_TEMP_REGISTERS);
 
 			commandsqueue.push(GET_FROM_INTERNAL_REGS);

@@ -30,7 +30,9 @@ void ALU::executeOp(EUControl* eucontrol)
 		//operand given in normal way, negative numbers are given in 2scomplement = -3 = FFFD
 	{
 		uint16_t negativeOperand2 = ~operand2 + 0x0001;
+		printf("Negated operand: %x\n", negativeOperand2);
 		result = operand1 + negativeOperand2;
+		flags->modifyFlagsAfterOp(operationToBeExecuted, operand1, operand2, result, bit8Active);
 		break;
 	}
 	case 2://cmp
@@ -62,7 +64,7 @@ void ALU::executeOp(EUControl* eucontrol)
 	}
 
 	///////////////////////SET FLAGS
-	flags->modifyFlagsAfterOp(operationToBeExecuted, operand1, operand2, result, bit8Active);
+//	flags->modifyFlagsAfterOp(operationToBeExecuted, operand1, operand2, result, bit8Active);
 	operand1 = 0x0000;
 	operand2 = 0x0000;
 	alustate = PUT_ON_DATABUS;
