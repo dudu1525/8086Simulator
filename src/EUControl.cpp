@@ -410,7 +410,7 @@ void EUControl::decodeinstr()
 				aluOpCommand = 0;//signal addition
 			else if (opBits == 0b101)
 				aluOpCommand = 1;//substraction
-			else if (opBits == 111)
+			else if (opBits ==0b111)
 				aluOpCommand = 2;//cmp
 			commandsqueue.push(SIGNAL_ALU);
 			commandsqueue.push(AWAIT_ALU_OP);
@@ -987,10 +987,16 @@ void EUControl::decodeConditionalJumps(int type)
 void EUControl::sendDataFromInstrToBus(MainDataBus* databus)
 {
 	if (commandsqueue.empty() == true)
+	{
+		printf("commands queue empty!\n");
 		return;
+	}
 	
 	if (this->commandsqueue.front() != SENDING_FROM_INSTR_QUEUE)
+	{
+		printf("Front not sending from instr queue!\n");
 		return;
+	}
 
 
 	if (instrqueue->isQueueEmpty() == true)

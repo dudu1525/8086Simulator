@@ -1013,7 +1013,8 @@ void CPU::encodeJumpInstr(std::string currentInstr, int indexInstr)
 		int currentJmpIndex = 0;
 		for (int i = 0; i < instructionsEncoded.size(); i++)
 		{
-			if (instructionsEncoded.at(i) == 0b11101001 || instructionsEncoded.at(i) == 0b01110100 || instructionsEncoded.at(i) == 0b01110101)
+			if ((instructionsEncoded.at(i) == 0b11101001 || instructionsEncoded.at(i) == 0b01110100 || instructionsEncoded.at(i) == 0b01110101) && 
+				(instructionsEncoded.at(i-1)!=0x81 && instructionsEncoded.at(i - 1) != 0x80 && instructionsEncoded.at(i - 1) != 0x82 && instructionsEncoded.at(i - 1) != 0x83))
 			{
 				if (currentJmpIndex == currentJmpInstr)
 				{

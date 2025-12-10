@@ -6,8 +6,9 @@
 #include "../include/EUControl.h"
 #include "../include/Flags.h"
 
-void ALU::executeOp(EUControl* eucontrol)
+void ALU::executeOp(EUControl* eucontrol, MainDataBus* maindatabus)
 {
+	printf("FROM ALU EXECUTE OP: OPERATION:%d\n", operationToBeExecuted);
 
 	if (alustate!=EXECUTING_OP) //eucontrol sets as executing
 		return;
@@ -37,11 +38,15 @@ void ALU::executeOp(EUControl* eucontrol)
 	}
 	case 2://cmp
 	{
+		printf("CMP CALLED!\n");
 		uint16_t negativeOperand2 = ~operand2 + 0x0001;
 		result = operand1 + negativeOperand2;
 		flags->modifyFlagsAfterOp(operationToBeExecuted, operand1, operand2, result, bit8Active);
 		alustate = FREE;
 		result = 0x0000;
+		//reset bus 
+		maindatabus->mainbusstate =maindatabus->FREE;
+		maindatabus->data = 0x0000;
 		operationToBeExecuted = 10;
 		eucontrol->popState();
 		return;
@@ -58,6 +63,10 @@ void ALU::executeOp(EUControl* eucontrol)
 		return;
 		break;
 	}
+	case 10:
+	{
+		return;
+	}
 	default:
 		result = 0x0000;
 		break;
@@ -65,6 +74,7 @@ void ALU::executeOp(EUControl* eucontrol)
 
 	///////////////////////SET FLAGS
 //	flags->modifyFlagsAfterOp(operationToBeExecuted, operand1, operand2, result, bit8Active);
+
 	operand1 = 0x0000;
 	operand2 = 0x0000;
 	alustate = PUT_ON_DATABUS;
@@ -98,8 +108,8 @@ void ALU::putOnBus(MainDataBus* maindatabus, EUControl* eucontrol)
 	if (maindatabus->mainbusstate != maindatabus->FREE)
 		return;
 
+	printf("put on bus called\n");
 	
-
 	//if (operationToBeExecuted == 0)
 	//{
 		maindatabus->data = result;

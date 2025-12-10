@@ -29,7 +29,7 @@ void EUunit::eustep()
     this->eucontrol.euControlStep(&maindatabus);
 
     this->alu.putOnBus(&maindatabus, &eucontrol);
-    this->alu.executeOp(&eucontrol);
+    this->alu.executeOp(&eucontrol, &maindatabus);
     
   
 
